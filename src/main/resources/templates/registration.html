@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="css/fragments.css">
+</head>
+<body>
+<div th:replace="~{__fragments :: navigation('sign_up')}"></div>
+    <h2>Sign UP!</h2>
+    <form th:action="@{/create_user}" th:object="${user}" method="POST">
+        <label>
+            <input th:field="*{email}" placeholder="email">
+        </label>
+        <label>
+            <input type="text" th:field="*{login}" placeholder="login">
+        </label>
+        <label>
+            <input type="text" th:field="*{password}" placeholder="password">
+        </label>
+        <button type="submit">create user</button>
+    </form>
+</body>
+</html>

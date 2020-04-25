@@ -21,4 +21,8 @@ public class Node {
 
     @Column(name = "port")
     private String port;
+
+    @ManyToOne
+    @JoinColumn(name = "id_currency")
+    private Currency currency;
 }
