@@ -16,3 +16,4 @@ create table users_roles
 );
 
 INSERT INTO wallet.roles (id, title) VALUES (1, 'ROLE_USER');
+alter table wallet.users alter column password type varchar(255) using password::varchar(255);
