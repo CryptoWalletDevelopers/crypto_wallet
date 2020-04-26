@@ -11,8 +11,10 @@ create table users_roles
 (
     user_id bigint  not null,
     role_id integer not null,
+    constraint users_roles_pk primary key (user_id, role_id),
     foreign key (user_id) references users (id),
     foreign key (role_id) references roles (id)
 );
 
 INSERT INTO wallet.roles (id, title) VALUES (1, 'ROLE_USER');
+alter table wallet.users alter column password type varchar(255) using password::varchar(255);

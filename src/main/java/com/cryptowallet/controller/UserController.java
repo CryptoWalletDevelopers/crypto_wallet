@@ -64,10 +64,9 @@ public class UserController {
             userService.saveUser(user);
         } else {
             validationErrors.put("User already exists", "User already exists");
-            System.out.println(6);
             user.setEmail("");
             user.setLogin("");
-            user.setPassword(null);
+            user.setPassword("");
             model.addAttribute("user", user);
             model.addAttribute("not_valid", validationErrors);
             return "registration";
@@ -84,30 +83,24 @@ public class UserController {
         boolean isCorrect = true;
         if (LengthValidator.isNotValid(6, 30, user.getPassword())) {
             validationErrors.put("password length error", "Password must be between 6 and 30 characters");
-            System.out.println(1);
             isCorrect = false;
         } else if (CharSetValidator.isNotValid(user.getPassword())) {
             validationErrors.put("password charset error", "Password contains invalid characters");
-            System.out.println(2);
             isCorrect = false;
         }
 
         if (LengthValidator.isNotValid(3, 30, user.getLogin())) {
             validationErrors.put("login length error", "Login must be between 3 and 30 characters");
-            System.out.println(3);
             isCorrect = false;
         } else if (CharSetValidator.isNotValid(user.getLogin())) {
             validationErrors.put("login charset error", "Login contains invalid characters");
-            System.out.println(4);
             isCorrect = false;
         }
 
         if (CharSetValidator.isNotValid(user.getEmail())) {
             validationErrors.put("email charset error", "Email contains invalid characters");
-            System.out.println(5);
             isCorrect = false;
         }
-
         return isCorrect;
     }
 
