@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import io.github.novacrypto.bip44.*;
 import io.github.novacrypto.bip32.ExtendedPrivateKey;
-import io.github.novacrypto.b
+import io.github.novacrypto.bip39.SeedCalculator;
+import io.github.novacrypto.bip32.networks.Bitcoin;
 
 import java.security.PrivateKey;
 
@@ -37,7 +38,7 @@ public  class SeedGenerator {
         System.out.println(bytesToHex(seed));
         System.out.println(a);
 
-        ExtendedPrivateKey rootKey = ExtendedPrivateKey.fromSeed(new SeedCalculator().calculateSeed(secret,""), Bitcoin.TEST_NET);
+        ExtendedPrivateKey rootKey = ExtendedPrivateKey.fromSeed(seed, Bitcoin.TEST_NET);
         AddressIndex account = BIP44
                 .m()
                 .purpose44()
@@ -46,7 +47,6 @@ public  class SeedGenerator {
                 .external()
                 .address(5);
 
-//        PrivateKey addressKey = rootKey.derive(account, Account.DERIVATION);
         ExtendedPrivateKey accountPrivate = rootKey.derive(account.toString());
         System.out.println(accountPrivate.toString());
     }

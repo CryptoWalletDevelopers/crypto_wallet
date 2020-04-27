@@ -26,15 +26,19 @@
 
 	<repositories>
 		<repository>
-		<id>novacrypto</id>
-		<url>https://mvnrepository.com/artifact/io.github.novacrypto/</url>
+			<id>BIP</id>
+			<url>https://dl.bintray.com/novacrypto/BIP/</url>
 		</repository>
 
 		<repository>
-			<id>local-maven-repo</id>
-			<url>file:///${project.basedir}/src/main/resources/jar/</url>
+			<id>General</id>
+			<url>https://dl.bintray.com/novacrypto/General/</url>
 		</repository>
 
+		<repository>
+			<id>Hashing</id>
+			<url>https://dl.bintray.com/novacrypto/Hashing/</url>
+		</repository>
 	</repositories>
 
 
@@ -118,48 +122,21 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-
+		
 		<dependency>
-			<groupId>novacrypto</groupId>
+			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP44</artifactId>
 			<version>2019.01.27</version>
 		</dependency>
 		<dependency>
-			<groupId>local-maven-rep</groupId>
+			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP32</artifactId>
 			<version>2019.01.27</version>
-<!--			<systemPath>${project.basedir}/src/main/resources/jar/BIP32-2019.01.27.jar</systemPath>-->
 		</dependency>
 		<dependency>
-			<groupId>local-maven-rep</groupId>
+			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP39</artifactId>
 			<version>2019.01.27</version>
-<!--			<systemPath>${project.basedir}/src/main/resources/jar/BIP39-2019.01.27.jar</systemPath>-->
-		</dependency>
-		<dependency>
-			<groupId>local-maven-rep</groupId>
-			<artifactId>ToRuntime</artifactId>
-			<version>2019.01.27</version>
-<!--			<systemPath>${project.basedir}/src/main/resources/jar/ToRuntime-2019.01.27.jar</systemPath>-->
-		</dependency>
-		<dependency>
-			<groupId>local-maven-rep</groupId>
-			<artifactId>SHA256</artifactId>
-			<version>2019.01.27</version>
-<!--			<systemPath>${project.basedir}/src/main/resources/jar/SHA256-2019.01.27.jar</systemPath>-->
-		</dependency>
-		<dependency>
-			<groupId>local-maven-rep</groupId>
-			<artifactId>Hash160</artifactId>
-			<version>2019.01.27</version>
-<!--			<systemPath>${project.basedir}/src/main/resources/jar/Hash160-2019.01.27.jar</systemPath>-->
-		</dependency>
-		<dependency>
-			<groupId>local-maven-rep</groupId>
-			<artifactId>Base58</artifactId>
-			<version>2019.01.27</version>
-<!--			<systemPath>${project.basedir}/src/main/resources/jar/Base58-2019.01.27.jar</systemPath>-->
 		</dependency>
 	</dependencies>
 
