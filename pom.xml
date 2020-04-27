@@ -24,8 +24,22 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
-	<dependencies>
+	<repositories>
+		<repository>
+		<id>novacrypto</id>
+		<url>https://mvnrepository.com/artifact/io.github.novacrypto/</url>
+		</repository>
 
+		<repository>
+			<id>local-maven-repo</id>
+			<url>file:///${project.basedir}/src/main/resources/jar/</url>
+		</repository>
+
+	</repositories>
+
+
+
+	<dependencies>
 		<!--Thymeleaf-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -104,8 +118,50 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-	</dependencies>
 
+
+		<dependency>
+			<groupId>novacrypto</groupId>
+			<artifactId>BIP44</artifactId>
+			<version>2019.01.27</version>
+		</dependency>
+		<dependency>
+			<groupId>local-maven-rep</groupId>
+			<artifactId>BIP32</artifactId>
+			<version>2019.01.27</version>
+<!--			<systemPath>${project.basedir}/src/main/resources/jar/BIP32-2019.01.27.jar</systemPath>-->
+		</dependency>
+		<dependency>
+			<groupId>local-maven-rep</groupId>
+			<artifactId>BIP39</artifactId>
+			<version>2019.01.27</version>
+<!--			<systemPath>${project.basedir}/src/main/resources/jar/BIP39-2019.01.27.jar</systemPath>-->
+		</dependency>
+		<dependency>
+			<groupId>local-maven-rep</groupId>
+			<artifactId>ToRuntime</artifactId>
+			<version>2019.01.27</version>
+<!--			<systemPath>${project.basedir}/src/main/resources/jar/ToRuntime-2019.01.27.jar</systemPath>-->
+		</dependency>
+		<dependency>
+			<groupId>local-maven-rep</groupId>
+			<artifactId>SHA256</artifactId>
+			<version>2019.01.27</version>
+<!--			<systemPath>${project.basedir}/src/main/resources/jar/SHA256-2019.01.27.jar</systemPath>-->
+		</dependency>
+		<dependency>
+			<groupId>local-maven-rep</groupId>
+			<artifactId>Hash160</artifactId>
+			<version>2019.01.27</version>
+<!--			<systemPath>${project.basedir}/src/main/resources/jar/Hash160-2019.01.27.jar</systemPath>-->
+		</dependency>
+		<dependency>
+			<groupId>local-maven-rep</groupId>
+			<artifactId>Base58</artifactId>
+			<version>2019.01.27</version>
+<!--			<systemPath>${project.basedir}/src/main/resources/jar/Base58-2019.01.27.jar</systemPath>-->
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
