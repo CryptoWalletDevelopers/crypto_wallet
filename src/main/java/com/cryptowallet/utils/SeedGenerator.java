@@ -10,8 +10,6 @@ import io.github.novacrypto.bip32.ExtendedPrivateKey;
 import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip32.networks.Bitcoin;
 
-import java.security.PrivateKey;
-
 
 @Component
 @Data
@@ -39,15 +37,23 @@ public  class SeedGenerator {
         System.out.println(a);
 
         ExtendedPrivateKey rootKey = ExtendedPrivateKey.fromSeed(seed, Bitcoin.TEST_NET);
-        AddressIndex account = BIP44
+        AddressIndex addressIndex = BIP44
                 .m()
                 .purpose44()
-                .coinType(2)
-                .account(1)
+                .coinType(0)
+                .account(0)
                 .external()
-                .address(5);
+                .address(0);
 
-        ExtendedPrivateKey accountPrivate = rootKey.derive(account.toString());
-        System.out.println(accountPrivate.toString());
+        ExtendedPrivateKey accountPrivate = rootKey.derive(addressIndex.toString());
+        System.out.println(accountPrivate.extendedBase58());
+
+        Account account = BIP44
+                .m()
+                .purpose44()
+                .coinType(0)
+                .account(0);
+        ExtendedPrivateKey addressKey = rootKey.derive(account, Account.DERIVATION);
+        System.out.println(addressKey.extendedBase58());
     }
 }
