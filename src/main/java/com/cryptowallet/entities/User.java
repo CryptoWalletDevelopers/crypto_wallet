@@ -5,12 +5,11 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.HashMap;
 
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +31,13 @@ public class User {
     @Column(name = "approved")
     private boolean approved;
 
+    @Column(name = "date_exp")
+    private String date_exp;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Collection<Address> addresses;
 
-
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="id_role")
+    private Role role;
 }

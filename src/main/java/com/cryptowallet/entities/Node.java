@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "nodes")
+@Table(name = "node")
 public class Node {
 
     @Id
@@ -21,4 +21,8 @@ public class Node {
 
     @Column(name = "port")
     private String port;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_currency")
+    private Currency currency;
 }
