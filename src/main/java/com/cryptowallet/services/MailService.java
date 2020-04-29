@@ -3,6 +3,7 @@ package com.cryptowallet.services;
 import com.cryptowallet.entities.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,8 +15,11 @@ import javax.mail.internet.MimeMessage;
 @Log4j2
 @Service
 public class MailService {
-    private final String ACTIVE_MESSAGE = "Welcome to Crypto Wallet. To activate your account please, visit next link: http://localhost:8189/activate/%s";
-    private final String RESTORE_MESSAGE = "visit next link: http://localhost:8189/restore/%s";
+    @Value("${wallet.url}")
+    private String url;
+
+    private final String ACTIVE_MESSAGE = "Welcome to Crypto Wallet. To activate your account please, visit next link: %s/activate/";
+    private final String RESTORE_MESSAGE = "visit next link: %s/restore/";
     private final String ACTIVE_TITLE = "Activation code";
     private final String RESTORE_TITLE = "Restore Password";
     private JavaMailSender sender;
@@ -36,14 +40,14 @@ public class MailService {
     public void sendMessageTodMail(User user, String messageType, String title) {
         try {
             String message = String.format(
-                    "Hello, %s! \n" + messageType,
-                    user.getLogin(), user.getActivationCode()
+                    "Hello, %s! \n" + messageType + "%s",
+                    user.getLogin(), url, user.getActivationCode()
             );
             sendMail(user.getEmail(), title, message);
         } catch (MessagingException e){
-            log.warn("Unable to create active mail message for user: " + user.getLogin());
+            log.warn("Unable to create mail message for user: " + user.getLogin());
         } catch (MailException e){
-            log.warn("Unable to send active mail message for user: " + user.getLogin());
+            log.warn("Unable to send mail message for user: " + user.getLogin());
         }
     }
 

@@ -2,6 +2,7 @@ package com.cryptowallet.controller;
 
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.UserService;
+import com.cryptowallet.utils.ValidateInputData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -24,13 +25,13 @@ public class MailController {
 
     private UserService userService;
     private PasswordEncoder passwordEncoder;
-    private Map<String, String> validationErrors;
+    private ValidateInputData validError;
 
     @Autowired
     public MailController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.validationErrors = new HashMap<>();
+        this.validError = new ValidateInputData();
     }
 
     @GetMapping("/activate/{code}")
@@ -55,13 +56,19 @@ public class MailController {
 
     @PostMapping("/restorePassword")
     public String sendMailRestorePassword (Model model, @RequestParam(name = "email") String email) {
-        if (userService.isUserExist(email)){
-            userService.restorePassword(email);
-            model.addAttribute("activeMessage", ACTIVATION_MESSAGE);
-            return "index";
+        validError.clearValidate();
+        if(validError.isEmailValid(email)) {
+            if (userService.isUserExist(email)){
+                userService.restorePassword(email);
+                model.addAttribute("activeMessage", ACTIVATION_MESSAGE);
+                return "index";
+            }else {
+                validError.putValidationErrors("User dont exist", "User dont exist");
+                model.addAttribute("not_valid", validError.getValidationErrors());
+                return "restorePassword";
+            }
         }else {
-            validationErrors.put("User dont exist", "User dont exist");
-            model.addAttribute("not_valid", validationErrors);
+            model.addAttribute("not_valid", validError.getValidationErrors());
             return "restorePassword";
         }
     }
@@ -83,10 +90,10 @@ public class MailController {
                                    @RequestParam(name = "email") String email) {
         User user = userService.findByEmail(email);
         if (user!=null){
-            user.setPassword(password);
-            if (!userService.isCorrectValidate(user)) {
+            validError.clearValidate();
+            if (!validError.isPasswordValid(password)) {
                 model.addAttribute("email", email);
-                model.addAttribute("not_valid", userService.getValidationErrors().values());
+                model.addAttribute("not_valid", validError.getValidationErrors().values());
                 return "newPassword";
             }else {
                 user.setPassword(passwordEncoder.encode(password));
@@ -97,6 +104,8 @@ public class MailController {
             }
         }else {
             model.addAttribute("email", email);
+            validError.putValidationErrors("User dont exist", "User dont exist");
+            model.addAttribute("not_valid", validError.getValidationErrors());
             return "newPassword";
         }
     }

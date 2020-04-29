@@ -5,6 +5,7 @@ import com.cryptowallet.services.RoleService;
 import com.cryptowallet.services.UserService;
 import com.cryptowallet.utils.PasswordGenerator;
 import com.cryptowallet.utils.UsersRoles;
+import com.cryptowallet.utils.ValidateInputData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -26,12 +27,14 @@ public class UserController {
     private UserService userService;
     private RoleService roleService;
     private PasswordEncoder passwordEncoder;
+    private ValidateInputData validError;
 
     @Autowired
     public UserController(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
+        this.validError = new ValidateInputData();
     }
 
     @GetMapping("/sign_up")
@@ -45,25 +48,25 @@ public class UserController {
     public String addUser(@ModelAttribute(name = "user") User user, Model model, HttpServletRequest request) {
         String password = user.getPassword();
         if (!userService.isUserExist(user.getEmail())) {
-            if (!userService.isCorrectValidate(user)) {
+            if (!validError.isCorrectValidate(user)) {
                 model.addAttribute("user", user);
-                model.addAttribute("not_valid", userService.getValidationErrors());
+                model.addAttribute("not_valid", validError.getValidationErrors());
                 return "registration";
             }
             user.setPassword(passwordEncoder.encode(password));
             user.setRoles(roleService.getAllRolesById(UsersRoles.ROLE_USER.getRole()));
             user.setToken(PasswordGenerator.generate(TOKEN_LENGTH));
-            user.setActivationCode(UUID.randomUUID().toString());
+            user.setActivationCode(userService.generateActiveCode());
             userService.saveUser(user);
             userService.sendActiveCodeToMail(user);
         } else {
-            userService.putValidationErrors("User already exists", "User already exists");
+            validError.putValidationErrors("User already exists", "User already exists");
             System.out.println(6);
             user.setEmail("");
             user.setLogin("");
             user.setPassword(null);
             model.addAttribute("user", user);
-            model.addAttribute("not_valid", userService.getValidationErrors());
+            model.addAttribute("not_valid", validError.getValidationErrors());
             return "registration";
         }
         try {

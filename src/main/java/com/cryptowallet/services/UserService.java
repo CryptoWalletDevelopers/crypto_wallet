@@ -28,7 +28,7 @@ public class UserService implements UserDetailsService {
     @Autowired
     private MailService mailService;
 
-    private Map<String, String> validationErrors=new HashMap<>();
+    //private Map<String, String> validationErrors=new HashMap<>();
 
     @Override
     @Transactional
@@ -66,46 +66,16 @@ public class UserService implements UserDetailsService {
 
     public void restorePassword(String email) {
         User user = userRepository.findByEmail(email).get();
-        user.setActivationCode(UUID.randomUUID().toString());
+        user.setActivationCode(generateActiveCode());
         userRepository.save(user);
         mailService.sendRestorePasswordMail(user);
     }
 
-    public boolean isCorrectValidate(User user) {
-        boolean isCorrect = true;
-        validationErrors.clear();
-        if (LengthValidator.isNotValid(6, 30, user.getPassword())) {
-            validationErrors.put("password length error", "Password must be between 6 and 30 characters");
-            System.out.println(1);
-            isCorrect = false;
-        } else if (CharSetValidator.isNotValid(user.getPassword())) {
-            validationErrors.put("password charset error", "Password contains invalid characters");
-            System.out.println(2);
-            isCorrect = false;
-        }
-
-        if (LengthValidator.isNotValid(3, 30, user.getLogin())) {
-            validationErrors.put("login length error", "Login must be between 3 and 30 characters");
-            System.out.println(3);
-            isCorrect = false;
-        } else if (CharSetValidator.isNotValid(user.getLogin())) {
-            validationErrors.put("login charset error", "Login contains invalid characters");
-            System.out.println(4);
-            isCorrect = false;
-        }
-
-        if (CharSetValidator.isNotValid(user.getEmail())) {
-            validationErrors.put("email charset error", "Email contains invalid characters");
-            System.out.println(5);
-            isCorrect = false;
-        }
-
-        return isCorrect;
-    }
-
-    public Map<String, String> getValidationErrors () {return this.validationErrors;}
-
-    public void putValidationErrors(String key, String text) {
-        validationErrors.put(key, text);
+    public String generateActiveCode () {
+        String code;
+        do{
+            code = UUID.randomUUID().toString();
+        }while (userRepository.findByActivationCode(code)!=null);
+        return code;
     }
 }
