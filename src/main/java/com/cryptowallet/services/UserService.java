@@ -28,8 +28,6 @@ public class UserService implements UserDetailsService {
     @Autowired
     private MailService mailService;
 
-    //private Map<String, String> validationErrors=new HashMap<>();
-
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
