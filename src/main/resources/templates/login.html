@@ -9,7 +9,7 @@
 <div th:replace="~{__fragments :: navigation('login')}"></div>
 <h1>Login!</h1>
 
-<form th:action="@{/authenticate}" method="POST">
+<form th:action="@{/authenticateTheUser}" method="POST">
     <div th:if="${param.error} != null">
         <div>
             Invalid username or password
@@ -24,5 +24,6 @@
     <input type="password" name="password" placeholder="password">
     <button type="submit">Login</button>
 </form>
+<a th:href="@{/restorePassword}">Restore password</a>
 </body>
 </html>

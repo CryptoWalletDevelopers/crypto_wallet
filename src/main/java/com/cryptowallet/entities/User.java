@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Collection;
-import java.util.HashMap;
 
 @Entity
 @Data
@@ -32,6 +31,9 @@ public class User {
 
     @Column(name = "approved")
     private boolean approved;
+
+    @Column(name = "activation_code")
+    private String activationCode;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Collection<Address> addresses;
