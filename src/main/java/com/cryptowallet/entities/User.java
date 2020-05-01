@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Date;
 
 @Entity
 @Data
@@ -33,17 +33,10 @@ public class User {
     private boolean approved;
 
     @Column(name = "date_exp")
-    private String date_exp;
-
-    @Column(name = "activation_code")
-    private String activationCode;
+    private Date date_exp;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Collection<Address> addresses;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="id_role")
-    private Role role;
 
     @ManyToMany
     @JoinTable(

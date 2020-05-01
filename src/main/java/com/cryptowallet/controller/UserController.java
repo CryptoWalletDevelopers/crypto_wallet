@@ -6,6 +6,7 @@ import com.cryptowallet.services.UserService;
 import com.cryptowallet.utils.PasswordGenerator;
 import com.cryptowallet.utils.UsersRoles;
 import com.cryptowallet.utils.ValidateInputData;
+import org.apache.logging.log4j.core.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -56,21 +57,20 @@ public class UserController {
             user.setPassword(passwordEncoder.encode(password));
             user.setRoles(roleService.getAllRolesById(UsersRoles.ROLE_USER.getRole()));
             user.setToken(PasswordGenerator.generate(TOKEN_LENGTH));
-            user.setActivationCode(userService.generateActiveCode());
+            System.out.println(user.toString());
             userService.saveUser(user);
-            userService.sendActiveCodeToMail(user);
+
         } else {
             validError.putValidationErrors("User already exists", "User already exists");
-            System.out.println(6);
             user.setEmail("");
             user.setLogin("");
-            user.setPassword(null);
+            user.setPassword("");
             model.addAttribute("user", user);
             model.addAttribute("not_valid", validError.getValidationErrors());
             return "registration";
         }
         try {
-            request.login(user.getLogin(), password);
+            request.login(user.getEmail(), password);
         } catch (ServletException e) {
             e.printStackTrace();
         }

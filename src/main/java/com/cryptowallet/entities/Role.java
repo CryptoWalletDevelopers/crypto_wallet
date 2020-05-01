@@ -2,6 +2,7 @@ package com.cryptowallet.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Objects;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "role")
+@Table(name = "roles")
 public class Role {
 
     @Id
@@ -21,7 +22,7 @@ public class Role {
     @Column(name = "title")
     private String title;
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private List<User> users;
 
     @Override

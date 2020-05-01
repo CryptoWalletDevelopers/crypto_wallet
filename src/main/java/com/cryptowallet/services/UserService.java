@@ -3,8 +3,6 @@ package com.cryptowallet.services;
 import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
 import com.cryptowallet.repositories.UserRepository;
-import com.cryptowallet.validation.CharSetValidator;
-import com.cryptowallet.validation.LengthValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,18 +13,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
 
 @Service
 public class UserService implements UserDetailsService {
-    @Autowired
     private UserRepository userRepository;
+    private MailService mailService;
 
     @Autowired
-    private MailService mailService;
+    public UserService(MailService mailService, UserRepository userRepository) {
+        this.mailService = mailService;
+        this.userRepository = userRepository;
+    }
 
     @Override
     @Transactional
@@ -58,22 +57,23 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User findByActivationCode (String code) {
-        return userRepository.findByActivationCode(code);
-    }
+//    public User findByActivationCode (String code) {
+//        return userRepository.findByActivationCode(code);
+//    }
 
     public void restorePassword(String email) {
         User user = userRepository.findByEmail(email).get();
-        user.setActivationCode(generateActiveCode());
+
         userRepository.save(user);
         mailService.sendRestorePasswordMail(user);
     }
 
     public String generateActiveCode () {
         String code;
-        do{
-            code = UUID.randomUUID().toString();
-        }while (userRepository.findByActivationCode(code)!=null);
-        return code;
+//        do{
+//            code = UUID.randomUUID().toString();
+//        }while (userRepository.findByActivationCode(code)!=null);
+//        return code;
+        return "0";
     }
 }

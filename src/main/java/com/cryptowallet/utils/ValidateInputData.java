@@ -2,9 +2,11 @@ package com.cryptowallet.utils;
 import com.cryptowallet.entities.User;
 import com.cryptowallet.validation.CharSetValidator;
 import com.cryptowallet.validation.LengthValidator;
+import lombok.extern.log4j.Log4j2;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class ValidateInputData {
     private Map<String, String> validationErrors;
 
@@ -24,7 +26,6 @@ public class ValidateInputData {
     public boolean isEmailValid (String email) {
         if (CharSetValidator.isNotValid(email)) {
             validationErrors.put("email charset error", "Email contains invalid characters");
-            System.out.println(5);
             return false;
         }
         return true;
@@ -32,12 +33,14 @@ public class ValidateInputData {
 
     public boolean isLoginValid (String login) {
         if (LengthValidator.isNotValid(3, 30, login)) {
-            validationErrors.put("login length error", "Login must be between 3 and 30 characters");
-            System.out.println(3);
+            String errorMessage = "Login must be between 3 and 30 characters";
+            validationErrors.put("login length error", errorMessage);
+            log.info(String.format("login [%s] is not valid : %s%n", login, errorMessage));
             return false;
         } else if (CharSetValidator.isNotValid(login)) {
-            validationErrors.put("login charset error", "Login contains invalid characters");
-            System.out.println(4);
+            String errorMessage = "Login contains invalid characters";
+            validationErrors.put("login charset error", errorMessage);
+            log.info(String.format("login [%s] is not valid : %s%n", login, errorMessage));
             return false;
         }
         return true;
@@ -45,12 +48,14 @@ public class ValidateInputData {
 
     public boolean isPasswordValid (String password) {
         if (LengthValidator.isNotValid(6, 30, password)) {
-            validationErrors.put("password length error", "Password must be between 6 and 30 characters");
-            System.out.println(1);
+            String errorMessage = "Password must be between 6 and 30 characters";
+            validationErrors.put("password length error", errorMessage);
+            log.info(String.format("password [%s] is not valid : %s%n", password, errorMessage));
             return false;
         } else if (CharSetValidator.isNotValid(password)) {
-            validationErrors.put("password charset error", "Password contains invalid characters");
-            System.out.println(2);
+            String errorMessage = "Password contains invalid characters";
+            validationErrors.put("password charset error", errorMessage);
+            log.info(String.format("password [%s] is not valid : %s%n", password, errorMessage));
             return false;
         }
         return true;

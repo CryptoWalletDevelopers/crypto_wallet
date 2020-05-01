@@ -36,17 +36,16 @@ public class MailController {
 
     @GetMapping("/activate/{code}")
     public String activateUser (Model model, @PathVariable String code)  {
-        User user = userService.findByActivationCode(code);
-        if(user!=null) {
-            user.setApproved(true);
-            user.setActivationCode(null);
-            userService.saveUser(user);
-            model.addAttribute("activeMessage", VERIFIED);
+//        User user = userService.findByActivationCode(code);
+//        if(user!=null) {
+//            user.setApproved(true);
+//            userService.saveUser(user);
+//            model.addAttribute("activeMessage", VERIFIED);
+//            return "index";
+//        }else {
+//            model.addAttribute("activeMessage", NOT_VERIFIED);
             return "index";
-        }else {
-            model.addAttribute("activeMessage", NOT_VERIFIED);
-            return "index";
-        }
+//        }
     }
 
     @GetMapping("/restorePassword")
@@ -75,14 +74,14 @@ public class MailController {
 
     @GetMapping("/restore/{code}")
     public String restoreUser (Model model, @PathVariable String code) {
-        User user = userService.findByActivationCode(code);
-        if(user!=null) {
-            model.addAttribute("email", user.getEmail());
-            return "newPassword";
-        }else {
-            model.addAttribute("activeMessage", NOT_VERIFIED);
-            return "index";
-        }
+//        User user = userService.findByActivationCode(code);
+//        if(user!=null) {
+//            model.addAttribute("email", user.getEmail());
+//            return "newPassword";
+//        }else {
+//            model.addAttribute("activeMessage", NOT_VERIFIED);
+//        }
+        return "index";
     }
 
     @PostMapping("/newPassword")
@@ -97,7 +96,7 @@ public class MailController {
                 return "newPassword";
             }else {
                 user.setPassword(passwordEncoder.encode(password));
-                user.setActivationCode(null);
+
                 userService.saveUser(user);
                 model.addAttribute("activeMessage", PASSWORD_SAVED);
                 return "index";
