@@ -10,7 +10,11 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor
+
+//        todo  ---  тут меняем комментированное
+//@Table(name = "user_tbl")
 @Table(name = "user")
+
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,9 @@
 
+-- и раскрыть данный блок
+
+-- ALTER TABLE wallet.user RENAME TO "user_tbl";
+-- ALTER TABLE wallet.users_id_seq RENAME TO "user_tbl_id_seq";
+
 drop table if exists roles;
 create table roles
 (

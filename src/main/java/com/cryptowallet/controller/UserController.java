@@ -48,6 +48,7 @@ public class UserController {
     @Transactional
     public String addUser(@ModelAttribute(name = "user") User user, Model model, HttpServletRequest request) {
         String password = user.getPassword();
+//        todo  ---  Тут ловим ошибку
         if (!userService.isUserExist(user.getEmail())) {
             if (!validError.isCorrectValidate(user)) {
                 model.addAttribute("user", user);
