@@ -2,16 +2,15 @@ package com.cryptowallet.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "roles")
+@Table(name = "role_tbl")
 public class Role {
 
     @Id
@@ -22,8 +21,8 @@ public class Role {
     @Column(name = "title")
     private String title;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private List<User> users;
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    private Collection<User> users;
 
     @Override
     public boolean equals (Object obj) {

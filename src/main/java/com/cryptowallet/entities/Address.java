@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "addresses")
+@Table(name = "address_tbl")
 public class Address {
 
     @Id
@@ -23,7 +23,7 @@ public class Address {
     private String address;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_client")
+    @JoinColumn(name = "id_user")
     private User user;
 
     @ManyToOne(cascade = CascadeType.ALL)

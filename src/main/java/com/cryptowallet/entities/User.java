@@ -11,9 +11,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 
-//        todo  ---  тут меняем комментированное
-//@Table(name = "user_tbl")
-@Table(name = "user")
+@Table(name = "user_tbl")
 
 public class User {
     @Id
@@ -42,12 +40,8 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Collection<Address> addresses;
 
-    @ManyToMany
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Collection<Role> roles;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_role")
+    private Role role;
 
 }

@@ -48,7 +48,6 @@ public class UserController {
     @Transactional
     public String addUser(@ModelAttribute(name = "user") User user, Model model, HttpServletRequest request) {
         String password = user.getPassword();
-//        todo  ---  Тут ловим ошибку
         if (!userService.isUserExist(user.getEmail())) {
             if (!validError.isCorrectValidate(user)) {
                 model.addAttribute("user", user);
@@ -56,9 +55,8 @@ public class UserController {
                 return "registration";
             }
             user.setPassword(passwordEncoder.encode(password));
-            user.setRoles(roleService.getAllRolesById(UsersRoles.ROLE_USER.getRole()));
+            user.setRole(roleService.getRoleById(UsersRoles.ROLE_USER.getRole()).get());
             user.setToken(PasswordGenerator.generate(TOKEN_LENGTH));
-            System.out.println(user.toString());
             userService.saveUser(user);
 
         } else {

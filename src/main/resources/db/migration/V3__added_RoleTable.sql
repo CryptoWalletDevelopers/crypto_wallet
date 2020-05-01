@@ -1,27 +1,22 @@
+ALTER TABLE address RENAME TO address_tbl;
+ALTER TABLE addresses_id_seq RENAME TO "address_tbl_id_seq";
 
--- и раскрыть данный блок
+ALTER TABLE wallet.role RENAME TO role_tbl;
 
--- ALTER TABLE wallet.user RENAME TO "user_tbl";
--- ALTER TABLE wallet.users_id_seq RENAME TO "user_tbl_id_seq";
+ALTER TABLE currency RENAME TO "currency_tbl";
+ALTER TABLE currencies_id_seq RENAME TO "currency_tbl_id_seq";
 
-drop table if exists roles;
-create table roles
-(
-    id    serial  not null,
-    title varchar not null,
-    primary key (id)
-);
+ALTER TABLE node RENAME TO "node_tbl";
+ALTER TABLE nodes_id_seq RENAME TO "node_tbl_id_seq";
 
-drop table if exists users_roles;
-create table users_roles
-(
-    user_id bigint  not null,
-    role_id integer not null,
-    constraint users_roles_pk primary key (user_id, role_id),
-    foreign key (user_id) references wallet.user (id),
-    foreign key (role_id) references roles (id)
-);
+ALTER TABLE wallet.user RENAME TO user_tbl;
+ALTER TABLE users_id_seq RENAME TO "user_tbl_id_seq";
 
-INSERT INTO wallet.roles (id, title) VALUES (1, 'ROLE_USER');
-alter table wallet.user alter column password type varchar(255) using password::varchar(255);
-alter table wallet.user add activation_code varchar(255);
+alter table wallet.user_tbl alter column password type varchar(255) using password::varchar(255);
+
+ALTER TABLE "address_tbl" add FOREIGN KEY (id_user) REFERENCES user_tbl (id);
+ALTER TABLE "address_tbl" add FOREIGN KEY (id_currency) REFERENCES currency_tbl (id);
+ALTER TABLE "node_tbl" add FOREIGN KEY (id_currency) REFERENCES currency_tbl (id);
+
+INSERT INTO wallet.role_tbl (id, title) VALUES (1, 'ROLE_USER');
+INSERT INTO wallet.role_tbl (id, title) VALUES (2, 'ROLE_ADMIN');

@@ -2,6 +2,7 @@ package com.cryptowallet.controller;
 
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.UserService;
+import com.cryptowallet.services.facades.UserServiceFacade;
 import com.cryptowallet.utils.ValidateInputData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,12 +27,14 @@ public class MailController {
     private UserService userService;
     private PasswordEncoder passwordEncoder;
     private ValidateInputData validError;
+    private UserServiceFacade userServiceFacade;
 
     @Autowired
-    public MailController(UserService userService, PasswordEncoder passwordEncoder) {
+    public MailController(UserService userService, PasswordEncoder passwordEncoder, UserServiceFacade userServiceFacade) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.validError = new ValidateInputData();
+        this.userServiceFacade = userServiceFacade;
     }
 
     @GetMapping("/activate/{code}")
@@ -58,7 +61,7 @@ public class MailController {
         validError.clearValidate();
         if(validError.isEmailValid(email)) {
             if (userService.isUserExist(email)){
-                userService.restorePassword(email);
+                userServiceFacade.restorePassword(email);
                 model.addAttribute("activeMessage", ACTIVATION_MESSAGE);
                 return "index";
             }else {
@@ -86,12 +89,12 @@ public class MailController {
 
     @PostMapping("/newPassword")
     public String saveNewPassword (Model model, @RequestParam(name = "password") String password,
-                                   @RequestParam(name = "email") String email) {
-        User user = userService.findByEmail(email);
+                                   @RequestParam(name = "login") String login) {
+        User user = userService.findByLogin(login);
         if (user!=null){
             validError.clearValidate();
             if (!validError.isPasswordValid(password)) {
-                model.addAttribute("email", email);
+                model.addAttribute("login", login);
                 model.addAttribute("not_valid", validError.getValidationErrors().values());
                 return "newPassword";
             }else {
@@ -102,7 +105,7 @@ public class MailController {
                 return "index";
             }
         }else {
-            model.addAttribute("email", email);
+            model.addAttribute("login", login);
             validError.putValidationErrors("User dont exist", "User dont exist");
             model.addAttribute("not_valid", validError.getValidationErrors());
             return "newPassword";
