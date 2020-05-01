@@ -9,7 +9,7 @@ import java.util.Collection;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "currencies")
+@Table(name = "currency")
 public class Currency {
 
     @Id
