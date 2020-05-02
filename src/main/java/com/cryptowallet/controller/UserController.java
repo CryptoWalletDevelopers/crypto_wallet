@@ -59,6 +59,7 @@ public class UserController {
             user.setRole(userServiceFacade.getUserRole());
             user.setToken(userServiceFacade.generateToken());
             userService.saveUser(user);
+            userServiceFacade.sendActiveCodeToMail(user);
         } else {
             validError.putValidationErrors("User already exists", "User already exists");
             user.setEmail("");
