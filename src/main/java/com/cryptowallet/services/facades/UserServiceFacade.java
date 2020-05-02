@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,10 +73,16 @@ public class UserServiceFacade implements UserDetailsService {
         return passwordEncoder.encode(password);
     }
 
-    public User findByEmail(String email) {
-        return userService.findByEmail(email);
+
+
+    public void resendTokenToActivation(User user) {
+        user.setToken(generateToken());
+        user.setDate_exp(new Date());
+        saveUser(user);
+        sendActiveCodeToMail(user);
     }
 
+    //Может оставить userService в контроллере и не дублировать методы
     public boolean isUserExist (String login) {
         return userService.isUserExist(login);
     }

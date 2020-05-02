@@ -1,24 +1,16 @@
 package com.cryptowallet.controller;
-
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.RoleService;
-import com.cryptowallet.services.UserService;
 import com.cryptowallet.services.facades.UserServiceFacade;
-import com.cryptowallet.utils.PasswordGenerator;
-import com.cryptowallet.utils.UsersRoles;
 import com.cryptowallet.utils.ValidateInputData;
-import org.apache.logging.log4j.core.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.UUID;
+import java.util.Date;
 
 
 @Controller
@@ -30,7 +22,8 @@ public class UserController {
     private final String PASSWORD_SAVED ="Your password has been successfully saved!";
     private final String MODEL_ATTRIBUTE = "activeMessage";
     private final String ERROR_ATTRIBUTE = "not_valid";
-
+    private final String USER_EXIST = "User already exists";
+    private final String USER_DONT_EXIST = "User dont exist";
     private UserServiceFacade userServiceFacade;
     private ValidateInputData validError;
 
@@ -59,10 +52,12 @@ public class UserController {
             user.setPassword(userServiceFacade.passwordEncode(password));
             user.setRole(userServiceFacade.getUserRole());
             user.setToken(userServiceFacade.generateToken());
+            user.setDate_exp(new Date());
             userServiceFacade.saveUser(user);
             userServiceFacade.sendActiveCodeToMail(user);
+            System.out.println("Time is " + user.getDate_exp());
         } else {
-            validError.putValidationErrors("User already exists", "User already exists");
+            validError.putValidationErrors(USER_EXIST, USER_EXIST);
             user.setEmail("");
             user.setLogin("");
             user.setPassword("");
@@ -71,7 +66,7 @@ public class UserController {
             return "registration";
         }
         try {
-            request.login(user.getEmail(), password);
+            request.login(user.getLogin(), password);
         } catch (ServletException e) {
             e.printStackTrace();
         }
@@ -111,7 +106,7 @@ public class UserController {
                 model.addAttribute(MODEL_ATTRIBUTE, ACTIVATION_MESSAGE);
                 return "index";
             }else {
-                validError.putValidationErrors("User dont exist", "User dont exist");
+                validError.putValidationErrors(USER_DONT_EXIST, USER_DONT_EXIST);
                 model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
                 return "restorePassword";
             }
@@ -151,7 +146,7 @@ public class UserController {
             }
         }else {
             model.addAttribute("login", login);
-            validError.putValidationErrors("User dont exist", "User dont exist");
+            validError.putValidationErrors(USER_DONT_EXIST, USER_DONT_EXIST);
             model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
             return "newPassword";
         }
@@ -162,15 +157,16 @@ public class UserController {
         if (principal == null) {
             return "redirect:/";
         }
-        System.out.println("principal.getName()  " + principal.getName());
-        User user = userServiceFacade.findByEmail(principal.getName());
+        User user = userServiceFacade.findByLogin(principal.getName());
         model.addAttribute("user", user);
         return "userProfile";
     }
 
-    @PostMapping ("/resendTokenToActivation")
-    public String resendTokenToActivation () {
+    @GetMapping ("/resendTokenToActivation")
+    public String resendTokenToActivation (Model model, Principal principal) {
+        User user = userServiceFacade.findByLogin(principal.getName());
+        userServiceFacade.resendTokenToActivation(user);
+        model.addAttribute("user", user);
         return "userProfile";
     }
-
 }

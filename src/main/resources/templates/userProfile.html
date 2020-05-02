@@ -7,17 +7,14 @@
 </head>
 <body>
 <div th:replace="~{__fragments :: navigation('Profile')}"></div>
-<h1>Input new password for yor account</h1>
-<h1 th:text="${email}"></h1>
-<form th:action="@{/resendTokenToActivation}" method="POST">
-    <div th:if="${not_valid} != null">
-        <p th:each="oi : ${not_valid}"
-           th:text="${oi}"/>
-    </div>
-    <input th:value="${email}" name="email" type="hidden" class="form-control">
-    <input type="password" name="password" placeholder="password">
-    <button type="submit">SEND</button>
-</form>
-<a th:href="@{/}">HOME</a>
+<h1>Profile</h1>
+<div th:if="not ${user.approved}">
+    <h3>Your account is not activated, check your mail or click on the link to resend the activation code </h3>
+    <a th:href="@{/resendTokenToActivation}">Resend activation code</a>
+</div>
+
+<h5 th:text="'Login: ' + ${user.login}" />
+<h5 th:text="'Email: ' + ${user.email}" />
+
 </body>
 </html>
