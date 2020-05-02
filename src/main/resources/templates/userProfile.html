@@ -2,19 +2,20 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Restore password</title>
+    <title>User Profile</title>
     <link rel="stylesheet" href="css/fragments.css">
 </head>
 <body>
-<div th:replace="~{__fragments :: navigation('login')}"></div>
-<h1>Input yor email to restore password</h1>
-
-<form th:action="@{/restorePassword}" method="POST">
+<div th:replace="~{__fragments :: navigation('Profile')}"></div>
+<h1>Input new password for yor account</h1>
+<h1 th:text="${email}"></h1>
+<form th:action="@{/resendTokenToActivation}" method="POST">
     <div th:if="${not_valid} != null">
         <p th:each="oi : ${not_valid}"
            th:text="${oi}"/>
     </div>
-    <input type="login" name="login" placeholder="login">
+    <input th:value="${email}" name="email" type="hidden" class="form-control">
+    <input type="password" name="password" placeholder="password">
     <button type="submit">SEND</button>
 </form>
 <a th:href="@{/}">HOME</a>

@@ -71,4 +71,24 @@ public class UserServiceFacade implements UserDetailsService {
     public String passwordEncode (String password) {
         return passwordEncoder.encode(password);
     }
+
+    public User findByEmail(String email) {
+        return userService.findByEmail(email);
+    }
+
+    public boolean isUserExist (String login) {
+        return userService.isUserExist(login);
+    }
+
+    public void saveUser (User user) {
+        userService.saveUser(user);
+    }
+
+    public User findByToken (String token) {
+        return userService.findByToken(token);
+    }
+
+    public User findByLogin (String login) {
+        return userService.findByLogin(login);
+    }
 }

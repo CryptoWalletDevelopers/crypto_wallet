@@ -23,6 +23,9 @@
                 </form>
             </li>
             <li sec:authorize="isAnonymous()" style="padding: 20px; font-size: 18px; background-color: rgba(30,27,210,0.12);"><a th:href="@{'/sign_up'}"> Sign UP </a></li>
+            <li sec:authorize="isAuthenticated()" class="nav-item" th:classappend="${activeTab == 'Profile' ? 'active' : ''}">
+                <a class="nav-link" th:href="@{/userProfile}" th:text="#{nav.userProfile}"></a>
+            </li>
             <li sec:authorize="isAuthenticated()" style="padding: 20px; font-size: 18px; background-color: rgba(30,27,210,0.12);">
                 <form th:action="@{'/logout'}" method="post">
                     <button type="submit">Log Out</button>

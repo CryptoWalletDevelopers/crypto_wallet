@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.UUID;
 
 
@@ -27,14 +28,14 @@ public class UserController {
     private final String ACTIVATION_MESSAGE = "A letter was sent to your mail. " +
             "Please follow the link in the letter to create a new password";
     private final String PASSWORD_SAVED ="Your password has been successfully saved!";
+    private final String MODEL_ATTRIBUTE = "activeMessage";
+    private final String ERROR_ATTRIBUTE = "not_valid";
 
     private UserServiceFacade userServiceFacade;
-    private UserService userService;
     private ValidateInputData validError;
 
     @Autowired
-    public UserController(UserService userService, UserServiceFacade userServiceFacade) {
-        this.userService = userService;
+    public UserController(UserServiceFacade userServiceFacade) {
         this.userServiceFacade = userServiceFacade;
         this.validError = new ValidateInputData();
     }
@@ -49,16 +50,16 @@ public class UserController {
     @Transactional
     public String addUser(@ModelAttribute(name = "user") User user, Model model, HttpServletRequest request) {
         String password = user.getPassword();
-        if (!userService.isUserExist(user.getEmail())) {
+        if (!userServiceFacade.isUserExist(user.getLogin())) {
             if (!validError.isCorrectValidate(user)) {
                 model.addAttribute("user", user);
-                model.addAttribute("not_valid", validError.getValidationErrors());
+                model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
                 return "registration";
             }
             user.setPassword(userServiceFacade.passwordEncode(password));
             user.setRole(userServiceFacade.getUserRole());
             user.setToken(userServiceFacade.generateToken());
-            userService.saveUser(user);
+            userServiceFacade.saveUser(user);
             userServiceFacade.sendActiveCodeToMail(user);
         } else {
             validError.putValidationErrors("User already exists", "User already exists");
@@ -66,7 +67,7 @@ public class UserController {
             user.setLogin("");
             user.setPassword("");
             model.addAttribute("user", user);
-            model.addAttribute("not_valid", validError.getValidationErrors());
+            model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
             return "registration";
         }
         try {
@@ -84,14 +85,14 @@ public class UserController {
 
     @GetMapping("/activate/{code}")
     public String activateUser (Model model, @PathVariable String code)  {
-        User user = userService.findByToken(code);
+        User user = userServiceFacade.findByToken(code);
         if(user!=null) {
             user.setApproved(true);
-            userService.saveUser(user);
-            model.addAttribute("activeMessage", VERIFIED);
+            userServiceFacade.saveUser(user);
+            model.addAttribute(MODEL_ATTRIBUTE, VERIFIED);
             return "index";
         }else {
-            model.addAttribute("activeMessage", NOT_VERIFIED);
+            model.addAttribute(MODEL_ATTRIBUTE, NOT_VERIFIED);
         return "index";
         }
     }
@@ -102,32 +103,32 @@ public class UserController {
     }
 
     @PostMapping("/restorePassword")
-    public String sendMailRestorePassword (Model model, @RequestParam(name = "email") String email) {
+    public String sendMailRestorePassword (Model model, @RequestParam(name = "login") String login) {
         validError.clearValidate();
-        if(validError.isEmailValid(email)) {
-            if (userService.isUserExist(email)){
-                userServiceFacade.restorePassword(email);
-                model.addAttribute("activeMessage", ACTIVATION_MESSAGE);
+        if(validError.isLoginValid(login)) {
+            if (userServiceFacade.isUserExist(login)){
+                userServiceFacade.restorePassword(login);
+                model.addAttribute(MODEL_ATTRIBUTE, ACTIVATION_MESSAGE);
                 return "index";
             }else {
                 validError.putValidationErrors("User dont exist", "User dont exist");
-                model.addAttribute("not_valid", validError.getValidationErrors());
+                model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
                 return "restorePassword";
             }
         }else {
-            model.addAttribute("not_valid", validError.getValidationErrors());
+            model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
             return "restorePassword";
         }
     }
 
     @GetMapping("/restore/{code}")
     public String restoreUser (Model model, @PathVariable String code) {
-        User user = userService.findByToken(code);
+        User user = userServiceFacade.findByToken(code);
         if(user!=null) {
             model.addAttribute("email", user.getEmail());
             return "newPassword";
         }else {
-            model.addAttribute("activeMessage", NOT_VERIFIED);
+            model.addAttribute(MODEL_ATTRIBUTE, NOT_VERIFIED);
         }
         return "index";
     }
@@ -135,25 +136,41 @@ public class UserController {
     @PostMapping("/newPassword")
     public String saveNewPassword (Model model, @RequestParam(name = "password") String password,
                                    @RequestParam(name = "login") String login) {
-        User user = userService.findByLogin(login);
-        if (user!=null){
+        if (userServiceFacade.isUserExist(login)){
+            User user = userServiceFacade.findByLogin(login);
             validError.clearValidate();
             if (!validError.isPasswordValid(password)) {
                 model.addAttribute("login", login);
-                model.addAttribute("not_valid", validError.getValidationErrors().values());
+                model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors().values());
                 return "newPassword";
             }else {
                 user.setPassword(userServiceFacade.passwordEncode(password));
-                userService.saveUser(user);
-                model.addAttribute("activeMessage", PASSWORD_SAVED);
+                userServiceFacade.saveUser(user);
+                model.addAttribute(MODEL_ATTRIBUTE, PASSWORD_SAVED);
                 return "index";
             }
         }else {
             model.addAttribute("login", login);
             validError.putValidationErrors("User dont exist", "User dont exist");
-            model.addAttribute("not_valid", validError.getValidationErrors());
+            model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
             return "newPassword";
         }
+    }
+
+    @GetMapping ("/userProfile")
+    public String userProfile (Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/";
+        }
+        System.out.println("principal.getName()  " + principal.getName());
+        User user = userServiceFacade.findByEmail(principal.getName());
+        model.addAttribute("user", user);
+        return "userProfile";
+    }
+
+    @PostMapping ("/resendTokenToActivation")
+    public String resendTokenToActivation () {
+        return "userProfile";
     }
 
 }
