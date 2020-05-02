@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-
-
 @Service
 public class UserService {
     private UserRepository userRepository;
@@ -17,6 +15,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public User findByToken (String token) {return userRepository.findByToken(token);}
 
     public User findByLogin(String login) {
         return userRepository.findByLogin(login).get();

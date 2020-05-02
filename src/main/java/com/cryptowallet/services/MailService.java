@@ -41,7 +41,7 @@ public class MailService {
         try {
             String message = String.format(
                     "Hello, %s! \n" + messageType + "%s",
-                    user.getLogin(), url, 0L
+                    user.getLogin(), url, user.getToken()
             );
             sendMail(user.getEmail(), title, message);
         } catch (MessagingException e){

@@ -12,7 +12,7 @@ public class PasswordGenerator {
     }
 
     public static String generate(int length) {
-        return generate(CharSets.STANDARD.getChars(), length);
+        return generate(CharSets.FOR_TOKEN.getChars(), length);
     }
 
 }

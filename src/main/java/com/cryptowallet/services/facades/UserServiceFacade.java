@@ -2,9 +2,10 @@ package com.cryptowallet.services.facades;
 
 import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
-import com.cryptowallet.repositories.UserRepository;
 import com.cryptowallet.services.MailService;
 import com.cryptowallet.services.RoleService;
+import com.cryptowallet.services.UserService;
+import com.cryptowallet.utils.PasswordGenerator;
 import com.cryptowallet.utils.UsersRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,21 +22,24 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceFacade implements UserDetailsService {
-    private UserRepository userRepository;
+    public static final int TOKEN_LENGTH = 50;
+    private UserService userService;
     private MailService mailService;
     private RoleService roleService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceFacade(UserRepository userRepository, MailService mailService, RoleService roleService) {
-        this.userRepository = userRepository;
+    public UserServiceFacade(UserService userService, MailService mailService, RoleService roleService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
         this.mailService = mailService;
         this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = userRepository.findByLogin(login).get();
+        User user = userService.findByLogin(login);
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
                 mapRolesToAuthorises(roleService.getAuthorities(UsersRoles.ROLE_USER.getRole())));
     }
@@ -50,19 +55,20 @@ public class UserServiceFacade implements UserDetailsService {
     }
 
     public void restorePassword(String login) {
-        User user = userRepository.findByLogin(login).get();
-
-        userRepository.save(user);
+        User user = userService.findByLogin(login);
+        userService.saveUser(user);
         mailService.sendRestorePasswordMail(user);
     }
 
-    public String generateActiveCode () {
-        String code;
-//        do{
-//            code = UUID.randomUUID().toString();
-//        }while (userRepository.findByActivationCode(code)!=null);
-//        return code;
-        return "0";
+    public String generateToken () {
+        return PasswordGenerator.generate(TOKEN_LENGTH);
     }
 
+    public Role getUserRole () {
+        return roleService.getRoleById(UsersRoles.ROLE_USER.getRole()).get();
+    }
+
+    public String passwordEncode (String password) {
+        return passwordEncoder.encode(password);
+    }
 }
