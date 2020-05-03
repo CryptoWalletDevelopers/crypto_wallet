@@ -10,7 +10,6 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor
-
 @Table(name = "user_tbl")
 
 public class User {
@@ -37,11 +36,18 @@ public class User {
     @Column(name = "date_exp")
     private Date date_exp;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Collection<Address> addresses;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_role")
     private Role role;
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                '}';
+    }
 }

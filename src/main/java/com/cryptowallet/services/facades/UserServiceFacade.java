@@ -40,7 +40,7 @@ public class UserServiceFacade implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = userService.findByLogin(login);
+        User user = authorize(login);
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
                 mapRolesToAuthorises(roleService.getAuthorities(UsersRoles.ROLE_USER.getRole())));
     }
@@ -49,53 +49,84 @@ public class UserServiceFacade implements UserDetailsService {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getTitle())).collect(Collectors.toList());
     }
 
-    public void sendActiveCodeToMail (User user) {
-        if(!user.isApproved()) {
-            mailService.sendActiveCodeToMail(user);
+    /**
+     * Вспомогательный метод, находящий пользователя либо по login, либо по email, которые ввел пользователь в общее поле
+     *
+     * @param loginOrEmail - Строка, по замыслу хранящая Login или Email пользователя
+     * @return - Возвращает конкретного пользователя или  null
+     */
+    public User authorize (String loginOrEmail) {
+        User user;
+        for (char ch : loginOrEmail.toCharArray()) {
+            if (ch == '@'){
+                user = userService.findByEmail(loginOrEmail.toLowerCase());
+                if (user != null) return user;
+            }
         }
-    }
-
-    public void restorePassword(String login) {
-        User user = userService.findByLogin(login);
-        userService.saveUser(user);
-        mailService.sendRestorePasswordMail(user);
+        user = userService.findByLogin(loginOrEmail.toLowerCase());
+        return user;
     }
 
     public String generateToken () {
-        return PasswordGenerator.generate(TOKEN_LENGTH);
-    }
-
-    public Role getUserRole () {
-        return roleService.getRoleById(UsersRoles.ROLE_USER.getRole()).get();
+        return PasswordGenerator.generateToken(TOKEN_LENGTH);
     }
 
     public String passwordEncode (String password) {
         return passwordEncoder.encode(password);
     }
 
+    public Role getUserRole () {
+        return roleService.getRoleById(UsersRoles.ROLE_USER.getRole()).get();
+    }
 
+    public boolean isUserExist(String login) {
+        return userService.isUserExist(login);
+    }
 
+    public User findByLogin(String login) {
+        return userService.findByLogin(login);
+    }
+
+    public User findByToken(String token) {
+        return userService.findByToken(token);
+    }
+
+    public void restorePassword(String login) {
+        User user = authorize(login);
+        userService.saveUser(user);
+        mailService.sendRestorePasswordMail(user);
+    }
+
+    public void sendActiveCodeToMail (User user) {
+        if(!user.isApproved()) {
+            user.setToken(generateToken());
+            user.setDate_exp(new Date());
+            saveUser(user);
+            mailService.sendActiveCodeToMail(user);
+        }
+    }
+
+//    Не уверен конечно, но мне кажется можно отказаться от этого метода.
     public void resendTokenToActivation(User user) {
-        user.setToken(generateToken());
-        user.setDate_exp(new Date());
+        sendActiveCodeToMail(user);
+    }
+
+    public void saveUser(User user) {
+        userService.saveUser(user);
+    }
+
+    public void createNewUser(User user) {
+        user.setPassword(passwordEncode(user.getPassword()));
+        user.setRole(getUserRole());
+        user.setEmail(user.getEmail().toLowerCase());
+        user.setLogin(user.getLogin().toLowerCase());
         saveUser(user);
         sendActiveCodeToMail(user);
     }
 
-    //Может оставить userService в контроллере и не дублировать методы
-    public boolean isUserExist (String login) {
-        return userService.isUserExist(login);
-    }
-
-    public void saveUser (User user) {
-        userService.saveUser(user);
-    }
-
-    public User findByToken (String token) {
-        return userService.findByToken(token);
-    }
-
-    public User findByLogin (String login) {
-        return userService.findByLogin(login);
+    public void clearFields(User user) {
+        user.setEmail("");
+        user.setLogin("");
+        user.setPassword("");
     }
 }

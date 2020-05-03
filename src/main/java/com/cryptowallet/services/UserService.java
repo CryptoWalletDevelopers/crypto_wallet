@@ -5,9 +5,6 @@ import com.cryptowallet.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-
 @Service
 public class UserService {
     private UserRepository userRepository;
@@ -20,11 +17,11 @@ public class UserService {
     public User findByToken (String token) {return userRepository.findByToken(token);}
 
     public User findByLogin(String login) {
-        return userRepository.findByLogin(login).get();
+        return userRepository.findByLogin(login.toLowerCase());
     }
 
-    public boolean isUserExist(String login) {
-        return userRepository.existsByLogin(login);
+    public boolean isUserExist(String loginOrEmail) {
+        return userRepository.existsByLogin(loginOrEmail.toLowerCase()) || userRepository.existsByEmail(loginOrEmail.toLowerCase());
     }
 
     public void saveUser(User user) {

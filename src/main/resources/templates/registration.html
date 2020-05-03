@@ -8,6 +8,11 @@
 <body>
 <div th:replace="~{__fragments :: navigation('sign_up')}"></div>
     <h2>Sign UP!</h2>
+
+    <div>
+        <p th:each="validError : ${not_valid}" th:text="${validError.getValue()}"></p>
+    </div>
+
     <form th:action="@{/create_user}" th:object="${user}" method="POST">
         <label>
             <input hidden th:field="*{id}" placeholder="id">
