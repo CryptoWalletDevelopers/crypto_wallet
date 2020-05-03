@@ -40,4 +40,6 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="id_role")
     private Role role;
+
+
 }
