@@ -1,5 +1,4 @@
 package com.cryptowallet.controller;
-
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.facades.UserServiceFacade;
 import com.cryptowallet.utils.ValidateInputData;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -20,7 +18,6 @@ import java.util.Date;
 public class UserController {
     private final int HOURS = 2;
     private final long EXPIRED_TIME = 60 * 60 * 1000 * HOURS;
-
     private final String VERIFIED = "Your account is verified!";
     private final String NOT_VERIFIED = "Your account is not verified!";
     private final String TOKEN_EXPIRED = "Your token is expired! We have sent you an email with a new token.";

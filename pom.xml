@@ -74,12 +74,6 @@
 			<artifactId>flyway-core</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
 		<!--Exclude logback, add log4j2 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -141,6 +135,11 @@
 <!--			<scope>test</scope>>-->
 <!--		</dependency>-->
 
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -149,13 +148,63 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+<!--						<plugin>-->
+<!--							<groupId>org.flywaydb</groupId>-->
+<!--							<artifactId>flyway-maven-plugin</artifactId>-->
+<!--							<version>6.0.1</version>-->
+<!--							<configuration>-->
+<!--								<configFiles>src/main/resources/flyway.conf</configFiles>-->
+<!--							</configuration>-->
+<!--						</plugin>-->
 			<plugin>
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>6.0.1</version>
-				<configuration>
-					<configFiles>src/main/resources/flyway.conf</configFiles>
-				</configuration>
+				<executions>
+					<execution>
+						<id>development</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>migrate</goal>
+						</goals>
+						<configuration>
+							<driver>org.postgresql.Driver</driver>
+<!--							jdbc:postgresql://<host>:<port>/<database>?user=myUsername&password=myPassword&<key1>=<value1>&<key2>=<value2>...-->
+<!--							<url>jdbc:postgresql://localhost:5432/?createDatabaseIfNotExist=true</url>-->
+							<url>jdbc:postgresql://localhost:5432/wallet</url>
+							<user>postgres</user>
+							<password>124818</password>
+							<connectRetries>10</connectRetries>
+							<schemas>
+								<schema>wallet</schema>
+							</schemas>
+							<locations>
+								<location>classpath:db.migration.production</location>
+							</locations>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>migrate</goal>
+						</goals>
+						<configuration>
+							<driver>org.postgresql.Driver</driver>
+							<url>jdbc:postgresql://localhost:5432/wallet_test</url>
+<!--							<url>jdbc:postgresql://localhost:5432/?createDatabaseIfNotExist=true</url>-->
+							<user>postgres</user>
+							<password>124818</password>
+							<connectRetries>10</connectRetries>
+							<schemas>
+								<schema>wallet_test</schema>
+							</schemas>
+							<locations>
+								<location>classpath:db.migration.test</location>
+							</locations>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
