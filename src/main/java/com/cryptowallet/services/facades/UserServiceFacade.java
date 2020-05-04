@@ -67,8 +67,10 @@ public class UserServiceFacade implements UserDetailsService {
         return user;
     }
 
-    public String generateToken () {
-        return PasswordGenerator.generateToken(TOKEN_LENGTH);
+    public void generateToken (User user) {
+        user.setToken(PasswordGenerator.generateToken(TOKEN_LENGTH));
+        user.setDate_exp(new Date());
+        saveUser(user);
     }
 
     public String passwordEncode (String password) {
@@ -93,22 +95,15 @@ public class UserServiceFacade implements UserDetailsService {
 
     public void restorePassword(String login) {
         User user = authorize(login);
-        userService.saveUser(user);
+        generateToken(user);
         mailService.sendRestorePasswordMail(user);
     }
 
     public void sendActiveCodeToMail (User user) {
         if(!user.isApproved()) {
-            user.setToken(generateToken());
-            user.setDate_exp(new Date());
-            saveUser(user);
+            generateToken(user);
             mailService.sendActiveCodeToMail(user);
         }
-    }
-
-//    Не уверен конечно, но мне кажется можно отказаться от этого метода.
-    public void resendTokenToActivation(User user) {
-        sendActiveCodeToMail(user);
     }
 
     public void saveUser(User user) {
@@ -122,6 +117,18 @@ public class UserServiceFacade implements UserDetailsService {
         user.setLogin(user.getLogin().toLowerCase());
         saveUser(user);
         sendActiveCodeToMail(user);
+    }
+
+    public void activateUser(User user) {
+        user.setApproved(true);
+        user.setToken(null);
+        user.setDate_exp(null);
+        saveUser(user);
+    }
+
+    public void updatePassword(User user, String password) {
+        user.setPassword(passwordEncode(password));
+        activateUser(user);
     }
 
     public void clearFields(User user) {

@@ -86,8 +86,7 @@ public class UserController {
         User user = userServiceFacade.findByToken(code);
         if (user != null) {
             if (user.getDate_exp().getTime() + EXPIRED_TIME > new Date().getTime()) {
-                user.setApproved(true);
-                userServiceFacade.saveUser(user);
+                userServiceFacade.activateUser(user);
                 model.addAttribute(MODEL_ATTRIBUTE, VERIFIED);
             } else {
                 model.addAttribute(MODEL_ATTRIBUTE, TOKEN_EXPIRED);
@@ -107,7 +106,7 @@ public class UserController {
     @PostMapping("/restorePassword")
     public String sendMailRestorePassword(Model model, @RequestParam(name = "login") String login) {
         validError.clearValidate();
-//        if (validError.isLoginValid(login)) { // А есть ли смысл проверять валидность поля для уже существующего пользователя? Ведь любая некорректная инф. просто не найдент пользователя.
+        if (validError.isLoginValid(login)) {
             if (userServiceFacade.isUserExist(login.toLowerCase())) {
                 userServiceFacade.restorePassword(login);
                 model.addAttribute(MODEL_ATTRIBUTE, ACTIVATION_MESSAGE);
@@ -117,18 +116,23 @@ public class UserController {
                 model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
                 return "restorePassword";
             }
-//        } else {
-//            model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
-//            return "restorePassword";
-//        }
+        } else {
+            model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
+            return "restorePassword";
+        }
     }
 
     @GetMapping("/restore/{code}")
     public String restoreUser(Model model, @PathVariable String code) {
         User user = userServiceFacade.findByToken(code);
         if (user != null) {
-            model.addAttribute("email", user.getEmail());
-            return "newPassword";
+            if (user.getDate_exp().getTime() + EXPIRED_TIME > new Date().getTime()) {
+                model.addAttribute("email", user.getEmail());
+                return "newPassword";
+            } else {
+                model.addAttribute(ERROR_ATTRIBUTE, NOT_VERIFIED);
+                return "restorePassword";
+            }
         } else {
             model.addAttribute(MODEL_ATTRIBUTE, NOT_VERIFIED);
         }
@@ -143,12 +147,11 @@ public class UserController {
             User user = userServiceFacade.authorize(email);
             validError.clearValidate();
             if (!validError.isPasswordValid(password)) {
-                model.addAttribute("login", email);
+                model.addAttribute("email", email);
                 model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors().values());
                 return "newPassword";
             } else {
-                user.setPassword(userServiceFacade.passwordEncode(password));
-                userServiceFacade.saveUser(user);
+                userServiceFacade.updatePassword(user, password);
                 model.addAttribute(MODEL_ATTRIBUTE, PASSWORD_SAVED);
                 return "index";
             }
@@ -173,7 +176,7 @@ public class UserController {
     @GetMapping("/resendTokenToActivation")
     public String resendTokenToActivation(Model model, Principal principal) {
         User user = userServiceFacade.findByLogin(principal.getName());
-        userServiceFacade.resendTokenToActivation(user); //  Мне кажется можно использовать sendActiveCodeToMail()
+        userServiceFacade.sendActiveCodeToMail(user);
         model.addAttribute("user", user);
         return "userProfile";
     }
