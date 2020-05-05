@@ -64,21 +64,12 @@ public class UserController {
     @Transactional
     public String createUser(@ModelAttribute(name = "user") User user, Model model, HttpServletRequest request) {
         String password = user.getPassword();
-
-        if (!userServiceFacade.isUserExist(user.getLogin())) {
-            if (!validError.isCorrectValidate(user)) {
-                model.addAttribute("user", user);
-                model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
-                return "registration";
-            }
-            userServiceFacade.createNewUser(user);
-        } else {
-            validError.putValidationErrors(USER_EXIST, USER_EXIST);
-            userServiceFacade.clearFields(user);
-            model.addAttribute("user", user);
+        validError.validate(user, userServiceFacade);
+        if (!validError.isEmpty()){
             model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
             return "registration";
         }
+        userServiceFacade.createNewUser(user);
 
         try {
             request.login(user.getLogin(), password);
