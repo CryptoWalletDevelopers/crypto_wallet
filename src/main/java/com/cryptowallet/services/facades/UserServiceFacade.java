@@ -5,8 +5,6 @@ import com.cryptowallet.entities.User;
 import com.cryptowallet.services.MailService;
 import com.cryptowallet.services.RoleService;
 import com.cryptowallet.services.UserService;
-import com.cryptowallet.utils.PasswordGenerator;
-import com.cryptowallet.utils.UsersRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,12 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceFacade implements UserDetailsService {
-    public static final int TOKEN_LENGTH = 50;
     private UserService userService;
     private MailService mailService;
     private RoleService roleService;
@@ -40,9 +36,9 @@ public class UserServiceFacade implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = authorize(login);
+        User user = findUser(login);
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
-                mapRolesToAuthorises(roleService.getAuthorities(UsersRoles.ROLE_USER.getRole())));
+                mapRolesToAuthorises(roleService.getRolesCollection(user.getRole())));
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorises(Collection<Role> roles) {
@@ -55,7 +51,7 @@ public class UserServiceFacade implements UserDetailsService {
      * @param loginOrEmail - Строка, по замыслу хранящая Login или Email пользователя
      * @return - Возвращает конкретного пользователя или  null
      */
-    public User authorize (String loginOrEmail) {
+    public User findUser(String loginOrEmail) {
         User user;
         for (char ch : loginOrEmail.toCharArray()) {
             if (ch == '@'){
@@ -67,20 +63,15 @@ public class UserServiceFacade implements UserDetailsService {
         return user;
     }
 
-    public void generateToken (User user) {
-        user.setToken(PasswordGenerator.generateToken(TOKEN_LENGTH));
-        user.setDate_exp(new Date());
-        saveUser(user);
-    }
-
     public String passwordEncode (String password) {
         return passwordEncoder.encode(password);
     }
 
-    public Role getUserRole () {
-        return roleService.getRoleById(UsersRoles.ROLE_USER.getRole()).get();
-    }
-
+    /**
+     *
+     * @param login - Строка, по замыслу хранящая Login или Email пользователя
+     * @return - возвращает булиевое значение о существовании пользователя с данной записью в БД
+     */
     public boolean isUserExist(String login) {
         return userService.isUserExist(login);
     }
@@ -93,29 +84,32 @@ public class UserServiceFacade implements UserDetailsService {
         return userService.findByToken(token);
     }
 
+    /**
+     * Метод находит пользователя,
+     * создает токен и ставит отметку создания токена в базу,
+     * после чего токен подшивается в ссылку для восстановления пароля
+     *
+     * @param login - Строка, по замыслу хранящая Login или Email пользователя
+     */
     public void restorePassword(String login) {
-        User user = authorize(login);
-        generateToken(user);
+        User user = findUser(login);
+        userService.generateToken(user);
         mailService.sendRestorePasswordMail(user);
     }
 
     public void sendActiveCodeToMail (User user) {
         if(!user.isApproved()) {
-            generateToken(user);
+            userService.generateToken(user);
             mailService.sendActiveCodeToMail(user);
         }
     }
 
-    public void saveUser(User user) {
-        userService.saveUser(user);
-    }
-
     public void createNewUser(User user) {
         user.setPassword(passwordEncode(user.getPassword()));
-        user.setRole(getUserRole());
+        user.setRole(roleService.getUserRole());
         user.setEmail(user.getEmail().toLowerCase());
         user.setLogin(user.getLogin().toLowerCase());
-        saveUser(user);
+        userService.saveUser(user);
         sendActiveCodeToMail(user);
     }
 
@@ -123,7 +117,7 @@ public class UserServiceFacade implements UserDetailsService {
         user.setApproved(true);
         user.setToken(null);
         user.setDate_exp(null);
-        saveUser(user);
+        userService.saveUser(user);
     }
 
     public void updatePassword(User user, String password) {

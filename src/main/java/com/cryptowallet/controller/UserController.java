@@ -40,12 +40,26 @@ public class UserController {
         this.validError = new ValidateInputData();
     }
 
+    /**
+     *
+     * @param model
+     * @return - страница регистрации
+     */
     @GetMapping("/sign_up")
     public String signUp(Model model) {
         model.addAttribute("user", new User());
         return "registration";
     }
 
+    /**
+     *
+     * @param user
+     * @param model
+     * @param request - в данном случае служит исключительно для автоматического входа в учетную запись
+     *                после регистрауии пользователя
+     * @return - в случае успеха - возвращает на главную страницу,
+     * @return - в случае неудачи - возвращает на страницу регистрации с указанием причины
+     */
     @PostMapping("create_user")
     @Transactional
     public String createUser(@ModelAttribute(name = "user") User user, Model model, HttpServletRequest request) {
@@ -81,6 +95,12 @@ public class UserController {
         return "login";
     }
 
+    /**
+     *
+     * @param model
+     * @param code - ранее сгенерированный нами токен, необходимый для подтверждения почты пользователя
+     * @return - возвращает на главную страницу сайта
+     */
     @GetMapping("/activate/{code}")
     public String activateUser(Model model, @PathVariable String code) {
         User user = userServiceFacade.findByToken(code);
@@ -139,12 +159,20 @@ public class UserController {
         return "index";
     }
 
+    /**
+     *
+     * @param model
+     * @param password
+     * @param email
+     * @return - в случае успешной замены пароля перенаправляет на главную страницу
+     * @return - в случае ввода невалидных данных возвращает на форму ввода ного пароля
+     */
     @PostMapping("/newPassword")
     public String saveNewPassword(Model model,
                                   @RequestParam(name = "password") String password,
                                   @RequestParam(name = "email") String email) {
         if (userServiceFacade.isUserExist(email.toLowerCase())) {
-            User user = userServiceFacade.authorize(email);
+            User user = userServiceFacade.findUser(email);
             validError.clearValidate();
             if (!validError.isPasswordValid(password)) {
                 model.addAttribute("email", email);
@@ -163,6 +191,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Доступ к страничке профиля ограничен на уровне config-файла.
+     * @see com.cryptowallet.configuration.SecurityConfig
+     * @param model
+     * @param principal
+     * @return - возвращает страничку профиля пользователя
+     */
     @GetMapping("/userProfile")
     public String userProfile(Model model, Principal principal) {
         if (principal == null) {
@@ -173,6 +208,13 @@ public class UserController {
         return "userProfile";
     }
 
+    /**
+     * Метод повторной отправки токена вызывается при явном запросе от пользователя.
+     * При этом сам токен будет сгенерирован повторно.
+     * @param model
+     * @param principal
+     * @return - возвращает страничку профиля пользователя
+     */
     @GetMapping("/resendTokenToActivation")
     public String resendTokenToActivation(Model model, Principal principal) {
         User user = userServiceFacade.findByLogin(principal.getName());

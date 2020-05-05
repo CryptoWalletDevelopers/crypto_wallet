@@ -2,11 +2,16 @@ package com.cryptowallet.services;
 
 import com.cryptowallet.entities.User;
 import com.cryptowallet.repositories.UserRepository;
+import com.cryptowallet.utils.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class UserService {
+    public static final int TOKEN_LENGTH = 50;
+
     private UserRepository userRepository;
 
     @Autowired
@@ -28,7 +33,17 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void removeUser(User user) {
+        userRepository.delete(user);
+    }
+
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public void generateToken (User user) {
+        user.setToken(PasswordGenerator.generateToken(TOKEN_LENGTH));
+        user.setDate_exp(new Date());
+        saveUser(user);
     }
 }

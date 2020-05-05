@@ -26,8 +26,12 @@ public class RoleService {
         return roleRepository.findById(id);
     }
 
-    public Collection<Role> getAuthorities(int roleID) {
-        authorities.add(getRoleById(roleID).get());
+    public Collection<Role> getRolesCollection(Role role) {
+        authorities.add(role);
         return authorities;
+    }
+
+    public Role getUserRole() {
+        return getRoleById(UsersRoles.ROLE_USER.getRole()).get();
     }
 }
