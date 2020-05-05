@@ -2,22 +2,38 @@ package com.cryptowallet.utils;
 
 import com.cryptowallet.crypto.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import io.github.novacrypto.bip44.*;
 import io.github.novacrypto.bip32.ExtendedPrivateKey;
 import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip32.networks.Bitcoin;
+
+import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 
 @Component
 @Data
+@PropertySource("classpath:application.properties")
 public  class SeedGenerator {
-//    @Value(value = "${secret}")
-//    public static  String secret;
+    public static String secret;
 
+    @Autowired
+    private Environment env;
 
+    @PostConstruct
+    public  void setSecret() {
+        this.secret = env.getProperty("secret");
+    }
+    public String getSecret() {
+        this.secret = env.getProperty("secret");
+        return secret;
+    }
 
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
     public static String bytesToHex(byte[] bytes) {
@@ -30,36 +46,61 @@ public  class SeedGenerator {
         return new String(hexChars);
     }
 
-    public static void main(String[] args) {
-        System.out.println();
-        String secret = "almost vacuum antenna inside easily chuckle photo damp comfort immense predict pattern";
-        byte[] seed = new SeedCalculator().calculateSeed(secret, "");
+    public void getInfo(){
+        byte[] seed = (new SeedCalculator()).calculateSeed(secret, "");
+       // secret = "almost vacuum antenna inside easily chuckle photo damp comfort immense predict pattern";
         ExtendedPrivateKey rootKey = ExtendedPrivateKey.fromSeed(seed, Bitcoin.TEST_NET);
         AddressIndex addressIndex = BIP44
                 .m()
                 .purpose44()
-                .coinType(0)
-                .account(0)
+                .coinType(195)
+                .account(1)
                 .external()
-                .address(0);
+                .address(3);
+
+        ExtendedPrivateKey accountPrivate = rootKey.derive(addressIndex.toString());
+        BigInteger pk = new BigInteger(bytesToHex(accountPrivate.extendedBase58().getBytes()).substring(0,64), 16);
+        ECKey key = ECKey.fromPrivate(pk);
+        System.out.println(tronString(key.getAddress()));
+    }
+
+    public static void main(String[] args) {
+
+        SeedGenerator sd = new SeedGenerator();
+
+        sd.setSecret();
+        System.out.println(sd.secret);
+
+        String v = sd.secret;
+        String secret = "almost vacuum antenna inside easily chuckle photo damp comfort immense predict pattern";
+        byte[] seed = (new SeedCalculator()).calculateSeed(secret, "");
+        ExtendedPrivateKey rootKey = ExtendedPrivateKey.fromSeed(seed, Bitcoin.TEST_NET);
+        AddressIndex addressIndex = BIP44
+                .m()
+                .purpose44()
+                .coinType(195)
+                .account(3)
+                .external()
+                .address(2);
 
         ExtendedPrivateKey accountPrivate = rootKey.derive(addressIndex.toString());
         BigInteger pk = new BigInteger(bytesToHex(accountPrivate.extendedBase58().getBytes()).substring(0,64), 16);
         ECKey key = ECKey.fromPrivate(pk);
 
+        System.out.println(key.toString());
         System.out.println(bytesToHex(key.getPrivKeyBytes()));
         System.out.println(bytesToHex(key.getAddress()));
         System.out.println(tronString(key.getAddress()));
 
 
-
+//
 //        Account account = BIP44
 //                .m()
 //                .purpose44()
 //                .coinType(0)
 //                .account(0);
 //        ExtendedPrivateKey addressKey = rootKey.derive(account, Account.DERIVATION);
-//      //  System.out.println(addressKey.extendedBase58());
+//        System.out.println(addressKey.extendedBase58());
     }
 
     public static String tronHex(String base58) {
@@ -85,7 +126,6 @@ public  class SeedGenerator {
         }
         return null;
     }
-
 
     private static String tronString(byte[] input){
         byte[] hash0 = Sha256Hash.hash(input);

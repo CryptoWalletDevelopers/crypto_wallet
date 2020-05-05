@@ -3,7 +3,9 @@ package com.cryptowallet.entities;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
@@ -13,33 +15,44 @@ import java.util.Collection;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @Column
+    private Integer id;
 
-    @Column(name = "login")
+    @Column
     private String login;
 
-    @Column(name = "password")
+    @Column
     private String password;
 
-    @Column(name = "email")
+    @Column
     private String email;
 
-    @Column(name = "token")
+    @Column
     private String token;
 
-    @Column(name = "approved")
+    @Column
     private boolean approved;
 
-    @Column(name = "date_exp")
+    @Column
     private String date_exp;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    public User(String login, String password, String email, boolean approved) {
+        this.id = id;
+        this.login = login;
+        this.password = password;
+        this.email = email;
+        this.approved = approved;
+    }
+
+    @PostConstruct
+    public void init(){
+        addresses = new ArrayList<>();
+    }
+
+    @OneToMany(mappedBy =  "user", fetch = FetchType.EAGER)
     private Collection<Address> addresses;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="id_role")
     private Role role;
-
-
 }

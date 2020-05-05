@@ -28,5 +28,5 @@ public abstract class Wallet {
 
     public abstract String getAddressBytes(ECKey key);
 
-    public abstract String getAddress(ECKey key);
+    public abstract String getStringAddress(ECKey key);
 }

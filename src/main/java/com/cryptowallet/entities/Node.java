@@ -13,13 +13,13 @@ public class Node {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column
     private Long id;
 
-    @Column(name = "ip")
+    @Column
     private String ip;
 
-    @Column(name = "port")
+    @Column
     private String port;
 
     @ManyToOne(cascade = CascadeType.ALL)

@@ -10,7 +10,7 @@ public class AddressService {
     private AddressRepository addressRepository;
 
     @Autowired
-    public void setAddressRepository(AddressRepository addressRepository){
+    public AddressService(AddressRepository addressRepository){
         this.addressRepository = addressRepository;
     }
 

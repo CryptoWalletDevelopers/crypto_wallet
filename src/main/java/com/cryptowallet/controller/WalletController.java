@@ -16,7 +16,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 
 
-@Controller("/wallet")
+@Controller()
 public class WalletController {
     private UserService userService;
     private AddressService addressService;
@@ -30,9 +30,9 @@ public class WalletController {
         this.currencyService = currencyService;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/wallet", method = RequestMethod.GET)
     public String wallet(Principal principal, Model model){
-        User user = userService.findByLogin(principal.getName());
+        User user = userService.findByEmail(principal.getName());
         ArrayList<Address> addresses = (ArrayList<Address>) user.getAddresses();
        if(!addresses.isEmpty()){
            for (int i= 0; i<addresses.size();i++){
@@ -42,12 +42,13 @@ public class WalletController {
        }
        model.addAttribute("wallet", tronWallet);
        model.addAttribute("currency", currency);
-        return "redirect:/";
+        return "redirect:/wallet";
     }
 
-    @RequestMapping(value = "/new", method = RequestMethod.POST)
+    @RequestMapping(value = "/wallet/new", method = RequestMethod.POST)
     public String getNewAddress(Principal principal, @ModelAttribute(name = "currency") Currency currency, Model model){
-        User user = userService.findByLogin(principal.getName());
+        User user = userService.findByEmail(principal.getName());
+        if (currency.getIndex()==195){
         int index = tronWallet.getMaxTronAddressIndex(user);
         String address = tronWallet.getNewAddress(user);
         Address newAddress = new Address();
@@ -57,7 +58,8 @@ public class WalletController {
         newAddress.setCurrency(currency);
         addressService.save(newAddress);
         model.addAttribute("address", address);
-        return "redirect:/";
+        }
+        return "redirect://wallet/new";
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.GET)
@@ -74,8 +76,5 @@ public class WalletController {
     public String getMoney(){
         return null;
     }
-
-
-
 
 }

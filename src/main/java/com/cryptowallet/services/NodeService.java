@@ -9,7 +9,8 @@ public class NodeService {
     private NodeRepository nodeRepository;
 
     @Autowired
-    public void setNodeRepository(NodeRepository nodeRepository){
+    public NodeService(NodeRepository nodeRepository){
+
         this.nodeRepository = nodeRepository;
     }
 }
