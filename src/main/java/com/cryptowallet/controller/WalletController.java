@@ -6,7 +6,7 @@ import com.cryptowallet.entities.User;
 import com.cryptowallet.services.AddressService;
 import com.cryptowallet.services.CurrencyService;
 import com.cryptowallet.services.UserService;
-import com.cryptowallet.utils.TronWallet;
+import com.cryptowallet.wallets.TronWallet;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -56,6 +56,7 @@ public class WalletController {
         newAddress.setIndex(index+1);
         newAddress.setAddress(address);
         newAddress.setCurrency(currency);
+        user.getAddresses().add(newAddress);
         addressService.save(newAddress);
         model.addAttribute("address", address);
         }

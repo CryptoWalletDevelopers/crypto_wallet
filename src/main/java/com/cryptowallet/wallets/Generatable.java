@@ -1,4 +1,4 @@
-package com.cryptowallet.utils;
+package com.cryptowallet.wallets;
 
 import io.github.novacrypto.bip39.SeedCalculator;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.cryptowallet.utils;
+package com.cryptowallet.wallets;
 
 import com.cryptowallet.crypto.Base58;
 import com.cryptowallet.crypto.ECKey;
@@ -10,7 +10,6 @@ import io.github.novacrypto.bip32.networks.Bitcoin;
 import io.github.novacrypto.bip44.AddressIndex;
 import io.github.novacrypto.bip44.BIP44;
 import lombok.Data;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -74,25 +73,22 @@ public class TronWallet extends Wallet implements Generatable {
     }
 
     public int getMaxTronAddressIndex(User user){
-        ArrayList<Address> userAddresses = (ArrayList<Address>) user.getAddresses();
-        if(!userAddresses.isEmpty()) {
+        if(!user.getAddresses().isEmpty()) {
+            int max_index= -1;
             ArrayList<Address> tmp = new ArrayList<Address>();
-
-            for (Address address : userAddresses) {
+            for (Address address : user.getAddresses()) {
                 if (address.getCurrency().getIndex() == COINTYPE) {
                     tmp.add(address);
                 }
             }
-            int max_index = 1;
             for (Address address : tmp) {
                 if (address.getIndex() > max_index) {
                     max_index = address.getIndex();
-                   return max_index;
                 }
             }
             return max_index;
         }
-        else return 0;
+        else return -1;
     }
 
     public static String bytesToHex(byte[] bytes) {
