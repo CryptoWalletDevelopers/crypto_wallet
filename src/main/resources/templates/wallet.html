@@ -1,10 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+
+    <link th:href="@{/bootstrap/css/bootstrap.css}"
+          rel="stylesheet" media="screen"/>
+    <link th:href="@{/css/wallet.css}"
+          href="../static/css/wallet.css"
+          rel="stylesheet"/>
+
+    <script th:src="@{/jquery/jquery.min.js}"></script>
+    <script th:src="@{/popper/popper.min.js}"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
     <title>Wallet</title>
 </head>
 <body>
+
+<div class="page">
+    <div class="header">
+        <h1>Wallet</h1>
+    </div>
+    <div class="body">
+        <div class="wallets">
+            <div class="user-wallets">
+                <table class="table table-striped table-dark">
+                    <thead>
+                    <tr>
+                        <th scope="col">Currency</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Token</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+<!--                    <tr th:each="user : ${user}">-->
+<!--                        <td th:text="${user.currency}"/>-->
+<!--                        <td th:text="${user.address}"/>-->
+<!--                        <td th:text="${user.token}"/>-->
+<!--                    </tr>-->
+                        <tr>
+                            <td>Currency1</td>
+                            <td>Address1</td>
+                            <td>Token1</td>
+                        </tr>
+                        <tr>
+                            <td>Currency2</td>
+                            <td>Address2</td>
+                            <td>Token2</td>
+                        </tr>
+                        <tr>
+                            <td>Currency3</td>
+                            <td>Address3</td>
+                            <td>Token3</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="operation">
+                <a th:text="GET" th:href="@{'/wallet/get'}" class="btn btn-secondary"/>
+                <a th:text="SEND" th:href="@{'/wallet/send'}" class="btn btn-secondary"/>
+            </div>
+        </div>
+        <div>
+            <form th:action="@{/}" method="get" class="generation-new-wallet">
+                <select class="custom-select gen-new-wallet-with" id="inputGroupSelect01">
+                    <option th:text="'Choose...'" th:value="null"/>
+                    <option th:each="c : ${currency}" th:text="${c.title}" th:selected="${param.cat_id != null && c.id.toString() == param.cat_id.toString()}"
+                            th:value="${c.id}"/>
+                </select>
+                <button type="submit" class="btn btn-secondary gen-new-wallet-with">Generation</button>
+                <input type="text" id="disabledTextInput" class="form-control gen-new-wallet-with" placeholder="New address...">
+            </form>
+        </div>
+    </div>
+    <div class="footer">&copy;2020</div>
+</div>
 
 </body>
 </html>
