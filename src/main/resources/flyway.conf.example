@@ -1,4 +1,0 @@
-flyway.url=jdbc:postgresql://localhost:5432/wallet
-flyway.schemas=wallet
-flyway.user=user
-flyway.password=password
