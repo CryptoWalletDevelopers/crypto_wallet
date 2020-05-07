@@ -121,13 +121,20 @@
 			<version>1.10.6</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
-<!--		<dependency>-->
-<!--			<groupId>org.mockito</groupId>-->
-<!--			<artifactId>mockito-core</artifactId>-->
-<!--			<version>2.24.0</version>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+			<version>1.4.194</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.icegreen/greenmail -->
+		<dependency>
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail</artifactId>
+			<version>1.5.13</version>
+			<scope>test</scope>
+		</dependency>
+
 <!--		<dependency>-->
 <!--			<groupId>org.mongodb</groupId>-->
 <!--			<artifactId>mongo-java-driver</artifactId>-->
@@ -148,63 +155,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-<!--						<plugin>-->
-<!--							<groupId>org.flywaydb</groupId>-->
-<!--							<artifactId>flyway-maven-plugin</artifactId>-->
-<!--							<version>6.0.1</version>-->
-<!--							<configuration>-->
-<!--								<configFiles>src/main/resources/flyway.conf</configFiles>-->
-<!--							</configuration>-->
-<!--						</plugin>-->
 			<plugin>
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>6.0.1</version>
-				<executions>
-					<execution>
-						<id>development</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>migrate</goal>
-						</goals>
-						<configuration>
-							<driver>org.postgresql.Driver</driver>
-<!--							jdbc:postgresql://<host>:<port>/<database>?user=myUsername&password=myPassword&<key1>=<value1>&<key2>=<value2>...-->
-<!--							<url>jdbc:postgresql://localhost:5432/?createDatabaseIfNotExist=true</url>-->
-							<url>jdbc:postgresql://localhost:5432/wallet</url>
-							<user>postgres</user>
-							<password>124818</password>
-							<connectRetries>10</connectRetries>
-							<schemas>
-								<schema>wallet</schema>
-							</schemas>
-							<locations>
-								<location>classpath:db.migration.production</location>
-							</locations>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>migrate</goal>
-						</goals>
-						<configuration>
-							<driver>org.postgresql.Driver</driver>
-							<url>jdbc:postgresql://localhost:5432/wallet_test</url>
-<!--							<url>jdbc:postgresql://localhost:5432/?createDatabaseIfNotExist=true</url>-->
-							<user>postgres</user>
-							<password>124818</password>
-							<connectRetries>10</connectRetries>
-							<schemas>
-								<schema>wallet_test</schema>
-							</schemas>
-							<locations>
-								<location>classpath:db.migration.test</location>
-							</locations>
-						</configuration>
-					</execution>
-				</executions>
+				<configuration>
+					<configFiles>src/main/resources/flyway.conf</configFiles>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
