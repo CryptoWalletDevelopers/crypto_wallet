@@ -22,7 +22,7 @@ import java.util.ArrayList;
 @Data
 @PropertySource("classpath:application.properties")
 public class TronWallet extends Wallet implements Generatable {
-    public static String secret;
+    private static String secret;
     private static final int COINTYPE = 195;
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 
@@ -46,8 +46,7 @@ public class TronWallet extends Wallet implements Generatable {
                 .address(index);
         ExtendedPrivateKey accountPrivate = rootKey.derive(addressIndex.toString());
         BigInteger pk = new BigInteger(bytesToHex(accountPrivate.extendedBase58().getBytes()).substring(0,64), 16);
-        ECKey key = ECKey.fromPrivate(pk);
-        return key;
+        return  ECKey.fromPrivate(pk);
     }
 
     @Override
@@ -66,27 +65,30 @@ public class TronWallet extends Wallet implements Generatable {
     }
 
     public String getNewAddress(User user){
-            int index = getMaxTronAddressIndex(user);
+            int index = getMaxAddressIndex(user);
             ECKey newKey = getECkey(user.getId() ,index+1);
-            String address = getStringAddress(newKey);
-            return address;
+            return getStringAddress(newKey);
     }
 
-    public int getMaxTronAddressIndex(User user){
+    public int getMaxAddressIndex(User user){
         if(!user.getAddresses().isEmpty()) {
-            int max_index= -1;
             ArrayList<Address> tmp = new ArrayList<Address>();
-            for (Address address : user.getAddresses()) {
-                if (address.getCurrency().getIndex() == COINTYPE) {
-                    tmp.add(address);
+            user.getAddresses().stream()
+                    .forEach(address -> {
+                        if(address.getCurrency().getIndex()==COINTYPE){
+                            tmp.add(address);
+                        }
+                    });
+            if (!tmp.isEmpty()){
+                int max_index= -1;
+                for (Address address : tmp) {
+                    if (address.getIndex() > max_index) {
+                        max_index = address.getIndex();
+                    }
                 }
-            }
-            for (Address address : tmp) {
-                if (address.getIndex() > max_index) {
-                    max_index = address.getIndex();
-                }
-            }
             return max_index;
+            }
+            else return -1;
         }
         else return -1;
     }

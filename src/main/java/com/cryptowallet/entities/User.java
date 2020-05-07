@@ -18,13 +18,13 @@ public class User {
     @Column
     private Integer id;
 
-    @Column
+    @Column(nullable = false)
     private String login;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(nullable = false)
     private String email;
 
     @Column

@@ -16,10 +16,10 @@ public class Node {
     @Column
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String ip;
 
-    @Column
+    @Column(nullable = false)
     private String port;
 
     @ManyToOne(cascade = CascadeType.ALL)

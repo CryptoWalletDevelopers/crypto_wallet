@@ -16,6 +16,6 @@ public class Role {
     @Column
     private int id;
 
-    @Column
+    @Column(nullable = false)
     private String title;
 }

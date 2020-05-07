@@ -9,10 +9,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@TestPropertySource("classpath:application-test.properties")
 public class RepositoryTest {
     @Autowired
     private UserRepository userRepository;
@@ -25,7 +27,7 @@ public class RepositoryTest {
         User user = new User("login","pass","email",true);
         User out = entityManager.persist(user);
         entityManager.flush();
-        User res = userRepository.findUserByEmail("email");
+        User res = userRepository.findUserByEmail("email").get();
         Assert.assertSame(user,res);
     }
 
@@ -33,7 +35,7 @@ public class RepositoryTest {
     public void userRepositorySaveTest(){
         User user = new User("login","pass","email",true);
         userRepository.save(user);
-        User res = userRepository.findUserByEmail("email");
+        User res = userRepository.findUserByEmail("email").get();
         Assert.assertTrue(res.getEmail().equals(user.getEmail()));
     }
 }

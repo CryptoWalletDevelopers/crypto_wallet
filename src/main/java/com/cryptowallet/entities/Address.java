@@ -16,11 +16,18 @@ public class Address {
     @Column
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private int index;
 
-    @Column
+    @Column(nullable = false)
     private String address;
+
+    public Address (User user, Currency currency, int index, String address) {
+        this.user = user;
+        this.currency = currency;
+        this.index = index;
+        this.address = address;
+    }
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "id_user")

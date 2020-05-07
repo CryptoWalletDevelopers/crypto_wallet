@@ -28,7 +28,7 @@ public class Currency {
     @Column
     private int precision;
 
-    @Column
+    @Column(nullable = false)
     private int index;
 
     @Column

@@ -1,20 +1,19 @@
 package com.cryptowallet.wallets;
 
 import com.cryptowallet.crypto.ECKey;
-import lombok.Data;
+import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
-@Data
 public abstract class Wallet {
 
     public Wallet(){}
 
-    public abstract ECKey getECkey(int account, int index);
+    public abstract ECKey getECkey(@NonNull int account, @NonNull int index);
 
-    public abstract String getPrivateKeyBytes(ECKey key);
+    public abstract String getPrivateKeyBytes(@NonNull ECKey key);
 
-    public abstract String getAddressBytes(ECKey key);
+    public abstract String getAddressBytes(@NonNull ECKey key);
 
-    public abstract String getStringAddress(ECKey key);
+    public abstract String getStringAddress(@NonNull ECKey key);
 }
