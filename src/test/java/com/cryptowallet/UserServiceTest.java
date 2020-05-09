@@ -30,9 +30,9 @@ public class UserServiceTest {
 
         Mockito.doReturn(userFromDB)
                 .when(userRepository)
-                .findByLogin("89380000000");
+                .findByLogin("89380000000").get();
 
-        User userJohn = userService.findByLogin("89380000000");
+        User userJohn = userService.findByLogin("89380000000").get();
         Assert.assertNotNull(userJohn);
         Mockito.verify(userRepository, Mockito.times(1)).findByLogin(ArgumentMatchers.eq("89380000000"));
     }
