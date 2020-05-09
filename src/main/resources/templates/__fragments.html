@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <link rel="stylesheet" href="css/fragments.css">
     <title>Document</title>
 </head>
@@ -17,8 +17,8 @@
             <li style="padding: 20px; font-size: 18px; background-color: rgba(30,27,210,0.12);">
                 <form sec:authorize="isAnonymous()" th:action="@{/authenticate}" method="POST">
                     <div>
-                        <input type="text" name="username" placeholder="login">
-                        <input type="password" name="password" placeholder="Password">
+                        <input type="text" name="username" placeholder="login" />
+                        <input type="password" name="password" placeholder="Password" />
                         <button type="submit">Log In</button>
                     </div>
                 </form>

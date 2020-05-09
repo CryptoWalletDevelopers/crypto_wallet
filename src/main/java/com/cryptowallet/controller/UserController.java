@@ -192,7 +192,7 @@ public class UserController {
     @GetMapping("/userProfile")
     public String userProfile(Model model, Principal principal) {
         if (principal == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
         User user = userServiceFacade.findByLogin(principal.getName());
         model.addAttribute("user", user);
