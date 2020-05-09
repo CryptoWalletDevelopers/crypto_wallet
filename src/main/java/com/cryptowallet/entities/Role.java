@@ -10,7 +10,7 @@ import java.util.Objects;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "role")
+@Table(name = "role_tbl")
 public class Role {
 
     @Id
