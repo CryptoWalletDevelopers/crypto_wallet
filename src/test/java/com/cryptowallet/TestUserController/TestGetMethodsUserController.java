@@ -1,11 +1,8 @@
-package com.cryptowallet;
+package com.cryptowallet.TestUserController;
 
-import com.cryptowallet.controller.UserController;
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.RoleService;
-
 import com.cryptowallet.services.facades.UserServiceFacade;
-import com.cryptowallet.utils.ValidateInputData;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,9 +18,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -32,16 +30,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class TestUserController {
+public class TestGetMethodsUserController {
     @Autowired
     private MockMvc mvc;
 
     @MockBean
     private UserServiceFacade userServiceFacade;
-    @MockBean
-    private ValidateInputData validError;
-    @MockBean
-    private RoleService roleService;
+    private User user;
+
+    @Before
+    public void initTest () {
+        user = new User ();
+        user.setLogin("test");
+        user.setEmail("test@localhost.com");
+    }
+
 
     @Test
     public void testGetSignUp () throws Exception {
@@ -75,9 +78,6 @@ public class TestUserController {
     @Test
     @WithMockUser(username = "test")
     public void testGetUserProfileIsApproved () throws Exception {
-        User user = new User ();
-        user.setLogin("test");
-        user.setEmail("test@localhost.com");
         user.setApproved(true);
         given(userServiceFacade.findByLogin("test")).willReturn(user);
         mvc.perform(get("/userProfile"))
@@ -93,9 +93,6 @@ public class TestUserController {
     @Test
     @WithMockUser(username = "test")
     public void testGetUserProfileIsNotApproved () throws Exception {
-        User user = new User ();
-        user.setLogin("test");
-        user.setEmail("test@localhost.com");
         user.setApproved(false);
         given(userServiceFacade.findByLogin("test")).willReturn(user);
         mvc.perform(get("/userProfile"))
@@ -114,7 +111,23 @@ public class TestUserController {
     public void testGetUserProfileWithAnonymousUser () throws Exception {
         mvc.perform(get("/userProfile"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("http://localhost/login"));
+                .andExpect(redirectedUrl("http://localhost/login"));//почему-то не воспринимает "/login"
+    }
+
+    @Test
+    @WithMockUser(username = "test")
+    public void testGetResendTokenToActivation () throws Exception {
+        user.setApproved(false);
+        given(userServiceFacade.findByLogin("test")).willReturn(user);
+        mvc.perform(get("/resendTokenToActivation"))
+                .andExpect(authenticated())
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(model().size(1))
+                .andExpect(model().attribute("user", user))
+                .andExpect(xpath("/html/body/div[2]").nodeCount(1))
+                .andExpect(content().string(containsString("Your account is not activated")));
+        verify(userServiceFacade, times(1)).sendActiveCodeToMail(user);
     }
 
 }
