@@ -1,7 +1,6 @@
 package com.cryptowallet.configuration;
 
-import com.cryptowallet.services.UserService;
-import com.cryptowallet.services.facades.UserServiceFacade;
+import com.cryptowallet.services.SecurityUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,11 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private UserServiceFacade UserServiceFacade;
+    private SecurityUserService securityUserService;
 
     @Autowired
-    public void setUserService(UserServiceFacade UserServiceFacade) {
-        this.UserServiceFacade = UserServiceFacade;
+    public void setUserService(SecurityUserService securityUserService) {
+        this.securityUserService = securityUserService;
     }
 
     @Override
@@ -49,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-        auth.setUserDetailsService(UserServiceFacade);
+        auth.setUserDetailsService(securityUserService);
         auth.setPasswordEncoder(passwordEncoder());
         return auth;
     }

@@ -1,29 +1,19 @@
 package com.cryptowallet.services.facades;
 
-import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.MailService;
 import com.cryptowallet.services.RoleService;
 import com.cryptowallet.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
-public class UserServiceFacade implements UserDetailsService {
-    private UserService userService;
-    private MailService mailService;
-    private RoleService roleService;
-    private PasswordEncoder passwordEncoder;
+public class UserServiceFacade {
+    private final UserService userService;
+    private final MailService mailService;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceFacade(UserService userService, MailService mailService, RoleService roleService, PasswordEncoder passwordEncoder) {
@@ -33,18 +23,6 @@ public class UserServiceFacade implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = findUser(login);
-        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
-                mapRolesToAuthorises(roleService.getRolesCollection(user.getRole())));
-    }
-
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorises(Collection<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getTitle())).collect(Collectors.toList());
-    }
-
     /**
      * Вспомогательный метод, находящий пользователя либо по login, либо по email, которые ввел пользователь в общее поле
      *
@@ -52,15 +30,7 @@ public class UserServiceFacade implements UserDetailsService {
      * @return - Возвращает конкретного пользователя или  null
      */
     public User findUser(String loginOrEmail) {
-        User user;
-        for (char ch : loginOrEmail.toCharArray()) {
-            if (ch == '@'){
-                user = userService.findByEmail(loginOrEmail.toLowerCase());
-                if (user != null) return user;
-            }
-        }
-        user = userService.findByLogin(loginOrEmail.toLowerCase());
-        return user;
+        return userService.findByLoginOrEmail(loginOrEmail.toLowerCase()).orElse(null);
     }
 
     public String passwordEncode (String password) {
@@ -77,11 +47,11 @@ public class UserServiceFacade implements UserDetailsService {
     }
 
     public User findByLogin(String login) {
-        return userService.findByLogin(login);
+        return userService.findByLogin(login).orElse(null);
     }
 
     public User findByToken(String token) {
-        return userService.findByToken(token);
+        return userService.findByToken(token).orElse(null);
     }
 
     /**

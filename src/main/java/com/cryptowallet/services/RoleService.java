@@ -15,10 +15,10 @@ import java.util.Set;
 public class RoleService {
     private final Set<Role> authorities = new HashSet<>();
 
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public void setRoleRepository(RoleRepository roleRepository) {
+    public RoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 

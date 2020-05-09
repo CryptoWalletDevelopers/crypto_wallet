@@ -7,38 +7,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class UserService {
     public static final int TOKEN_LENGTH = 50;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public User findByToken (String token) {return userRepository.findByToken(token);}
+    public Optional<User> findByToken (String token) {
+        return userRepository.findByToken(token);
+    }
 
-    public User findByLogin(String login) {
-        return userRepository.findByLogin(login.toLowerCase());
+    public Optional<User> findByLogin(String login) {
+        return userRepository.findByLogin(login.toLowerCase().trim());
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email.toLowerCase().trim());
+    }
+
+    public Optional<User> findByLoginOrEmail(String loginOrEmail) {
+        return userRepository.findByLoginOrEmail(loginOrEmail.toLowerCase().trim(), loginOrEmail.toLowerCase().trim());
     }
 
     public boolean isUserExist(String loginOrEmail) {
-        return userRepository.existsByLogin(loginOrEmail.toLowerCase()) || userRepository.existsByEmail(loginOrEmail.toLowerCase());
+        return userRepository.existsByLoginOrEmail(loginOrEmail.toLowerCase(), loginOrEmail.toLowerCase());
     }
 
     public void saveUser(User user) {
+        user.setLogin(user.getLogin().toLowerCase().trim());
+        user.setEmail(user.getEmail().toLowerCase().trim());
         userRepository.save(user);
     }
 
     public void removeUser(User user) {
         userRepository.delete(user);
-    }
-
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
     }
 
     public void generateToken (User user) {

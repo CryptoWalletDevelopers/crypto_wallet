@@ -1,7 +1,7 @@
 package com.cryptowallet.validation;
 
-public class EmailValidatior {
-    private EmailValidatior(){}
+public class EmailValidator {
+    private EmailValidator(){}
 
     public static boolean isNotValid(String text) {
         char[] textArr = text.toCharArray();

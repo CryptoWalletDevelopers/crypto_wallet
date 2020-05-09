@@ -186,7 +186,7 @@ public class UserController {
      * Доступ к страничке профиля ограничен на уровне config-файла.
      * @see com.cryptowallet.configuration.SecurityConfig
      * @param model
-     * @param principal
+     * @param principal - авторизванный пользователь
      * @return - возвращает страничку профиля пользователя
      */
     @GetMapping("/userProfile")
@@ -203,7 +203,7 @@ public class UserController {
      * Метод повторной отправки токена вызывается при явном запросе от пользователя.
      * При этом сам токен будет сгенерирован повторно.
      * @param model
-     * @param principal
+     * @param principal - авторизванный пользователь
      * @return - возвращает страничку профиля пользователя
      */
     @GetMapping("/resendTokenToActivation")
