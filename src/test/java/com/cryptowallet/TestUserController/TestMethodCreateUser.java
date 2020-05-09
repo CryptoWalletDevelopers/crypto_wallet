@@ -1,6 +1,8 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
+import com.cryptowallet.services.RoleService;
+import com.cryptowallet.services.SecurityUserService;
 import com.cryptowallet.services.facades.UserServiceFacade;
 import com.cryptowallet.utils.ValidateInputData;
 
@@ -31,12 +33,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestMethodCreateUser {
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private RoleService roleService;
     @MockBean
     private UserServiceFacade userServiceFacade;
     @MockBean
     private ValidateInputData validError;
     @MockBean
     private HttpServletRequest httpServletRequest;
+    @MockBean
+    private SecurityUserService securityUserService;
+
     private User user;
     private Map<String,String> error;
 
@@ -46,6 +53,7 @@ public class TestMethodCreateUser {
         user.setLogin("test");
         user.setEmail("test@localhost.com");
         user.setPassword("1234567");
+        user.setRole(roleService.getUserRole());
         error = new HashMap<>();
         error.put("not_valid","Incorrect input data");
 //        mvc = MockMvcBuilders
