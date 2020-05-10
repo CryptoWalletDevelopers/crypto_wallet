@@ -1,4 +1,4 @@
-package com.cryptowallet.services;
+package com.cryptowallet.services.implementations;
 
 import com.cryptowallet.entities.Address;
 import com.cryptowallet.entities.Currency;
