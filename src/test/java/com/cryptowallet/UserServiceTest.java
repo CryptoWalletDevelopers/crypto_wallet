@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserServiceTest {
@@ -27,12 +29,12 @@ public class UserServiceTest {
         User userFromDB = new User();
         userFromDB.setLogin("89380000000");
         userFromDB.setEmail("admin@mail.ru");
-
-        Mockito.doReturn(userFromDB)
+        Optional<User> userOptional = Optional.of(userFromDB);
+        Mockito.doReturn(userOptional)
                 .when(userRepository)
-                .findByLogin("89380000000").get();
+                .findByLogin("89380000000");
 
-        User userJohn = userService.findByLogin("89380000000").get();
+        Optional<User> userJohn = userService.findByLogin("89380000000");
         Assert.assertNotNull(userJohn);
         Mockito.verify(userRepository, Mockito.times(1)).findByLogin(ArgumentMatchers.eq("89380000000"));
     }
