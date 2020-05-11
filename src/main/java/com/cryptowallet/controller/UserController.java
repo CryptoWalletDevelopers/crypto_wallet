@@ -31,8 +31,8 @@ public class UserController {
     private final String ERROR_ATTRIBUTE = "not_valid";
     private final String USER_EXIST = "User already exists";
     private final String USER_DONT_EXIST = "User dont exist";
-    private UserServiceFacade userServiceFacade;
-    private ValidateInputData validError;
+    private final UserServiceFacade userServiceFacade;
+    private final ValidateInputData validError;
 
     @Autowired
     public UserController(UserServiceFacade userServiceFacade) {
@@ -42,7 +42,7 @@ public class UserController {
 
     /**
      *
-     * @param model
+     * @param model - набор данных передаваемых на фронт
      * @return - страница регистрации
      */
     @GetMapping("/sign_up")
@@ -53,8 +53,9 @@ public class UserController {
 
     /**
      *
-     * @param user
-     * @param model
+     * @param user - набор данных принимаемый от фронта, содержащий логин, пароль, email и др.
+     *      @see User
+     * @param model - набор данных передаваемых на фронт
      * @param request - в данном случае служит исключительно для автоматического входа в учетную запись
      *                после регистрауии пользователя
      * @return - в случае успеха - возвращает на главную страницу,
@@ -88,7 +89,7 @@ public class UserController {
 
     /**
      *
-     * @param model
+     * @param model - набор данных передаваемых на фронт
      * @param code - ранее сгенерированный нами токен, необходимый для подтверждения почты пользователя
      * @return - возвращает на главную страницу сайта
      */
@@ -152,9 +153,9 @@ public class UserController {
 
     /**
      *
-     * @param model
-     * @param password
-     * @param email
+     * @param model - набор данных передаваемых на фронт
+     * @param password - принимаемый с фронта пароль пользователя
+     * @param email - принимаемый с фронта Email пользователя
      * @return - в случае успешной замены пароля перенаправляет на главную страницу
      * @return - в случае ввода невалидных данных возвращает на форму ввода ного пароля
      */
@@ -185,7 +186,7 @@ public class UserController {
     /**
      * Доступ к страничке профиля ограничен на уровне config-файла.
      * @see com.cryptowallet.configuration.SecurityConfig
-     * @param model
+     * @param model - набор данных передаваемых на фронт
      * @param principal - авторизванный пользователь
      * @return - возвращает страничку профиля пользователя
      */
@@ -202,7 +203,7 @@ public class UserController {
     /**
      * Метод повторной отправки токена вызывается при явном запросе от пользователя.
      * При этом сам токен будет сгенерирован повторно.
-     * @param model
+     * @param model - набор данных передаваемых на фронт
      * @param principal - авторизванный пользователь
      * @return - возвращает страничку профиля пользователя
      */

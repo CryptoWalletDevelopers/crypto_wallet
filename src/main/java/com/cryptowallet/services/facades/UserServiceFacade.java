@@ -23,16 +23,6 @@ public class UserServiceFacade {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Вспомогательный метод, находящий пользователя либо по login, либо по email, которые ввел пользователь в общее поле
-     *
-     * @param loginOrEmail - Строка, по замыслу хранящая Login или Email пользователя
-     * @return - Возвращает конкретного пользователя или  null
-     */
-    public User findUser(String loginOrEmail) {
-        return userService.findByLoginOrEmail(loginOrEmail.toLowerCase()).orElse(null);
-    }
-
     public String passwordEncode (String password) {
         return passwordEncoder.encode(password);
     }
@@ -46,12 +36,38 @@ public class UserServiceFacade {
         return userService.isUserExist(login);
     }
 
+    /**
+     * Вспомогательный метод, находящий пользователя либо по login, либо по email, которые ввел пользователь в общее поле
+     *
+     * @param loginOrEmail - Строка, по замыслу хранящая Login или Email пользователя
+     * @return - Возвращает конкретного пользователя или  null
+     */
+    public User findUser(String loginOrEmail) {
+        return userService.findByLoginOrEmail(loginOrEmail.toLowerCase()).orElse(null);
+    }
+
     public User findByLogin(String login) {
         return userService.findByLogin(login).orElse(null);
     }
 
     public User findByToken(String token) {
         return userService.findByToken(token).orElse(null);
+    }
+
+    public void createNewUser(User user) {
+        user.setPassword(passwordEncode(user.getPassword()));
+        user.setRole(roleService.getUserRole());
+        user.setEmail(user.getEmail().toLowerCase());
+        user.setLogin(user.getLogin().toLowerCase());
+        userService.saveUser(user);
+        sendActiveCodeToMail(user);
+    }
+
+    public void sendActiveCodeToMail (User user) {
+        if(!user.isApproved()) {
+            userService.generateToken(user);
+            mailService.sendActiveCodeToMail(user);
+        }
     }
 
     /**
@@ -67,20 +83,9 @@ public class UserServiceFacade {
         mailService.sendRestorePasswordMail(user);
     }
 
-    public void sendActiveCodeToMail (User user) {
-        if(!user.isApproved()) {
-            userService.generateToken(user);
-            mailService.sendActiveCodeToMail(user);
-        }
-    }
-
-    public void createNewUser(User user) {
-        user.setPassword(passwordEncode(user.getPassword()));
-        user.setRole(roleService.getUserRole());
-        user.setEmail(user.getEmail().toLowerCase());
-        user.setLogin(user.getLogin().toLowerCase());
-        userService.saveUser(user);
-        sendActiveCodeToMail(user);
+    public void updatePassword(User user, String password) {
+        user.setPassword(passwordEncode(password));
+        activateUser(user);
     }
 
     public void activateUser(User user) {
@@ -88,11 +93,6 @@ public class UserServiceFacade {
         user.setToken(null);
         user.setDate_exp(null);
         userService.saveUser(user);
-    }
-
-    public void updatePassword(User user, String password) {
-        user.setPassword(passwordEncode(password));
-        activateUser(user);
     }
 
     public void clearFields(User user) {
