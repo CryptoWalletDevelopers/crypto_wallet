@@ -4,8 +4,7 @@ import com.cryptowallet.services.TempService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/wallet")
@@ -18,9 +17,24 @@ public class WalletController {
     }
 
     @GetMapping("/")
-    public String wallet(Model model) {
-        model.addAttribute("users", tempService.getAllUsers());
+    public String showWallet(Model model) {
+        model.addAttribute("wallets", tempService.getAllWallets());
+        model.addAttribute("currencies", tempService.getAllCurrencies());
         return "wallet";
+    }
+
+    @GetMapping("/w")
+    public String showNewWallet(Model model, @RequestParam(defaultValue = "") String address) {
+        model.addAttribute("wallets", tempService.getAllWallets());
+        model.addAttribute("currencies", tempService.getAllCurrencies());
+        model.addAttribute("address", address);
+        return "wallet";
+    }
+
+    @PostMapping("/add")
+    public String addWallet(Model model, @RequestParam(name="currencyId") Long currencyId) {
+        TempService.TempWallet newWallet = tempService.addWallet(currencyId - 1);
+        return "redirect:/wallet/w?address=" + newWallet.getAddress();
     }
 
     @GetMapping("/get")
@@ -32,4 +46,5 @@ public class WalletController {
     public String send(Model model) {
         return "send";
     }
+
 }

@@ -33,10 +33,10 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="user : ${users}">
-                        <td th:text="${user.currency}"/>
-                        <td th:text="${user.address}"/>
-                        <td th:text="${user.token}"/>
+                    <tr th:each="w : ${wallets}">
+                        <td th:text="${w.currency}"/>
+                        <td th:text="${w.address}"/>
+                        <td th:text="${w.token}"/>
                     </tr>
                     </tbody>
                 </table>
@@ -47,14 +47,14 @@
             </div>
         </div>
         <div>
-            <form th:action="@{/}" method="get" class="generation-new-wallet">
-                <select class="custom-select gen-new-wallet-with" id="inputGroupSelect01">
+            <form th:action="@{/wallet/add}" method="post" class="generation-new-wallet">
+                <select class="custom-select gen-new-wallet-with" id="inputGroupSelect01" th:name="currencyId">
                     <option th:text="'Choose...'" th:value="null"/>
-                    <option th:each="c : ${currency}" th:text="${c.title}" th:selected="${param.cat_id != null && c.id.toString() == param.cat_id.toString()}"
-                            th:value="${c.id}"/>
+                    <option th:each="c : ${currencies}" th:text="${c.title}" th:value="${c.id}"/>
                 </select>
                 <button type="submit" class="btn btn-secondary gen-new-wallet-with">Generation</button>
-                <input type="text" id="disabledTextInput" class="form-control gen-new-wallet-with" placeholder="New address...">
+                <input type="text" id="disabledTextInput" class="form-control gen-new-wallet-with"
+                       th:value="${address}" placeholder="New address..." disabled>
             </form>
         </div>
     </div>
