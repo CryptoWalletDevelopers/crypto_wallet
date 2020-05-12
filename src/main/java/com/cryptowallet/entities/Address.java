@@ -10,22 +10,30 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "address")
 public class Address {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column
     private Long id;
 
-    @Column(name = "index")
+    @Column(nullable = false)
     private int index;
 
-    @Column(name = "address")
+    @Column(nullable = false)
     private String address;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_client")
+    public Address (User user, Currency currency, int index, String address) {
+        this.user = user;
+        this.currency = currency;
+        this.index = index;
+        this.address = address;
+    }
+
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "id_user")
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "id_currency")
     private Currency currency;
 }
