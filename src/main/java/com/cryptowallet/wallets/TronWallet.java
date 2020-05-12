@@ -5,6 +5,7 @@ import com.cryptowallet.crypto.ECKey;
 import com.cryptowallet.crypto.Sha256Hash;
 import com.cryptowallet.entities.Address;
 import com.cryptowallet.entities.User;
+import com.cryptowallet.tronModels.Transaction;
 import io.github.novacrypto.bip32.ExtendedPrivateKey;
 import io.github.novacrypto.bip32.networks.Bitcoin;
 import io.github.novacrypto.bip44.AddressIndex;
@@ -91,6 +92,26 @@ public class TronWallet extends Wallet implements Generatable {
             else return -1;
         }
         else return -1;
+    }
+
+    private static byte[] signTransaction2Byte(byte[] transaction, byte[] privateKey)
+            throws InvalidProtocolBufferException {
+        ECKey ecKey = ECKey.fromPrivate(privateKey);
+        Transaction transaction1 = Transaction.parseFrom(transaction);
+        byte[] rawdata = transaction1.getRawData().toByteArray();
+        byte[] hash = Sha256Hash.hash(rawdata);
+        byte[] sign = ecKey.sign(hash).toByteArray();
+        return transaction1.toBuilder().addSignature(ByteString.copyFrom(sign)).build().toByteArray();
+    }
+
+    private static Transaction signTransaction2Object(byte[] transaction, byte[] privateKey)
+            throws InvalidProtocolBufferException {
+        ECKey ecKey = ECKey.fromPrivate(privateKey);
+        Transaction transaction1 = Transaction.parseFrom(transaction);
+        byte[] rawdata = transaction1.getRawData().toByteArray();
+        byte[] hash = Sha256Hash.hash(rawdata);
+        byte[] sign = ecKey.sign(hash).toByteArray();
+        return transaction1.toBuilder().addSignature(ByteString.copyFrom(sign)).build();
     }
 
     public static String bytesToHex(byte[] bytes) {
