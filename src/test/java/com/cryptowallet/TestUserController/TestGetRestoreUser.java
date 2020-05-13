@@ -1,7 +1,7 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacade;
+import com.cryptowallet.services.facades.UserServiceFacadeImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.Date;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("/application-test.properties")
 public class TestGetRestoreUser {
     private final long EXPIRED_TIME = 60 * 60 * 1000 * 3;
     private final String token = "TEST-TOKEN-1234567890";
@@ -29,7 +31,7 @@ public class TestGetRestoreUser {
     private MockMvc mvc;
 
     @MockBean
-    private UserServiceFacade userServiceFacade;
+    private UserServiceFacadeImpl userServiceFacadeImpl;
     private User user;
 
     @Before
@@ -37,12 +39,12 @@ public class TestGetRestoreUser {
         user = new User ();
         user.setLogin("test");
         user.setToken(token);
-        user.setDate_exp(new Date());
+        user.setDateExpired(new Date());
     }
 
     @Test
     public void testGetRestoreUserValid () throws Exception {
-        given(userServiceFacade.findByToken(token)).willReturn(user);
+        given(userServiceFacadeImpl.findByToken(token)).willReturn(user);
         mvc.perform(get("/restore/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -57,8 +59,8 @@ public class TestGetRestoreUser {
         long date = new Date().getTime() - EXPIRED_TIME;
         Date userDate = new Date();
         userDate.setTime(date);
-        user.setDate_exp(userDate);
-        given(userServiceFacade.findByToken(token)).willReturn(user);
+        user.setDateExpired(userDate);
+        given(userServiceFacadeImpl.findByToken(token)).willReturn(user);
         mvc.perform(get("/restore/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -69,7 +71,7 @@ public class TestGetRestoreUser {
 
     @Test
     public void testGetRestoreUserDontExist () throws Exception {
-        given(userServiceFacade.findByToken(token)).willReturn(null);
+        given(userServiceFacadeImpl.findByToken(token)).willReturn(null);
         mvc.perform(get("/restore/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())

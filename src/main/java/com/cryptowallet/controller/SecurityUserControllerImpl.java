@@ -1,10 +1,11 @@
 package com.cryptowallet.controller;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacade;
+import com.cryptowallet.services.facades.UserServiceFacadeImpl;
 import com.cryptowallet.utils.ValidateInputData;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -17,7 +18,7 @@ import java.util.Date;
 
 @Log4j2
 @Controller
-public class UserController {
+public class SecurityUserControllerImpl implements SecurityUserController {
     private final int HOURS = 2;
     private final long EXPIRED_TIME = 60 * 60 * 1000 * HOURS;
 
@@ -31,78 +32,54 @@ public class UserController {
     private final String ERROR_ATTRIBUTE = "not_valid";
     private final String USER_EXIST = "User already exists";
     private final String USER_DONT_EXIST = "User dont exist";
-    private final UserServiceFacade userServiceFacade;
+
+    private final UserServiceFacadeImpl userServiceFacadeImpl;
     private final ValidateInputData validError;
 
     @Autowired
-    public UserController(UserServiceFacade userServiceFacade) {
-        this.userServiceFacade = userServiceFacade;
+    public SecurityUserControllerImpl(UserServiceFacadeImpl userServiceFacadeImpl) {
+        this.userServiceFacadeImpl = userServiceFacadeImpl;
         this.validError = new ValidateInputData();
     }
 
-    /**
-     *
-     * @param model - набор данных передаваемых на фронт
-     * @return - страница регистрации
-     */
+    @Override
     @GetMapping("/sign_up")
-    public String signUp(Model model) {
+    public String signUp(@NonNull Model model) {
         model.addAttribute("user", new User());
         return "registration";
     }
 
-    /**
-     *
-     * @param user - набор данных принимаемый от фронта, содержащий логин, пароль, email и др.
-     *      @see User
-     * @param model - набор данных передаваемых на фронт
-     * @param request - в данном случае служит исключительно для автоматического входа в учетную запись
-     *                после регистрауии пользователя
-     * @return - в случае успеха - возвращает на главную страницу,
-     * @return - в случае неудачи - возвращает на страницу регистрации с указанием причины
-     */
+    @Override
     @PostMapping("create_user")
     @Transactional
-    public String createUser(@ModelAttribute(name = "user") User user, Model model, HttpServletRequest request) {
+    public String createUser(@ModelAttribute(name = "user") @NonNull User user, Model model, HttpServletRequest request) {
         String password = user.getPassword();
-        validError.validate(user, userServiceFacade);
+        validError.verifyUserCorrectness(user, userServiceFacadeImpl);
         if (!validError.isEmpty()){
             model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
             return "registration";
         }
-        userServiceFacade.createNewUser(user);
-
-        try {
-            request.login(user.getLogin(), password);
-        } catch (ServletException e) {
-            log.info("Cant authority new User with login = " + user.getLogin());
-            e.printStackTrace();
-        }
-
+        userServiceFacadeImpl.createNewUser(user, password, request);
         return "redirect:/";
     }
 
+    @Override
     @GetMapping("/login")
     public String getLoginPage() {
         return "login";
     }
 
-    /**
-     *
-     * @param model - набор данных передаваемых на фронт
-     * @param code - ранее сгенерированный нами токен, необходимый для подтверждения почты пользователя
-     * @return - возвращает на главную страницу сайта
-     */
+    @Override
     @GetMapping("/activate/{code}")
     public String activateUser(Model model, @PathVariable String code) {
-        User user = userServiceFacade.findByToken(code);
+        final User user = userServiceFacadeImpl.findByToken(code);
         if (user != null) {
-            if (user.getDate_exp().getTime() + EXPIRED_TIME > new Date().getTime()) {
-                userServiceFacade.activateUser(user);
+            if (user.getDateExpired().getTime() + EXPIRED_TIME > new Date().getTime()) {
+                userServiceFacadeImpl.activateUser(user);
                 model.addAttribute(MODEL_ATTRIBUTE, VERIFIED);
             } else {
                 model.addAttribute(MODEL_ATTRIBUTE, TOKEN_EXPIRED);
-                userServiceFacade.sendActiveCodeToMail(user);
+                userServiceFacadeImpl.sendActiveCodeToMail(user);
             }
         } else {
             model.addAttribute(MODEL_ATTRIBUTE, NOT_VERIFIED);
@@ -110,17 +87,19 @@ public class UserController {
         return "index";
     }
 
+    @Override
     @GetMapping("/restorePassword")
     public String getRestorePassword() {
         return "restorePassword";
     }
 
+    @Override
     @PostMapping("/restorePassword")
     public String sendMailRestorePassword(Model model, @RequestParam(name = "login") String login) {
         validError.clearValidate();
         if (validError.isLoginValid(login)) {
-            if (userServiceFacade.isUserExist(login.toLowerCase())) {
-                userServiceFacade.restorePassword(login);
+            if (userServiceFacadeImpl.isUserExist(login.toLowerCase())) {
+                userServiceFacadeImpl.restorePassword(login);
                 model.addAttribute(MODEL_ATTRIBUTE, ACTIVATION_MESSAGE);
                 return "index";
             } else {
@@ -134,11 +113,12 @@ public class UserController {
         }
     }
 
+    @Override
     @GetMapping("/restore/{code}")
     public String restoreUser(Model model, @PathVariable String code) {
-        User user = userServiceFacade.findByToken(code);
+        User user = userServiceFacadeImpl.findByToken(code);
         if (user != null) {
-            if (user.getDate_exp().getTime() + EXPIRED_TIME > new Date().getTime()) {
+            if (user.getDateExpired().getTime() + EXPIRED_TIME > new Date().getTime()) {
                 model.addAttribute("email", user.getEmail());
                 return "newPassword";
             } else {
@@ -151,27 +131,20 @@ public class UserController {
         return "index";
     }
 
-    /**
-     *
-     * @param model - набор данных передаваемых на фронт
-     * @param password - принимаемый с фронта пароль пользователя
-     * @param email - принимаемый с фронта Email пользователя
-     * @return - в случае успешной замены пароля перенаправляет на главную страницу
-     * @return - в случае ввода невалидных данных возвращает на форму ввода ного пароля
-     */
+    @Override
     @PostMapping("/newPassword")
     public String saveNewPassword(Model model,
-                                  @RequestParam(name = "password") String password,
-                                  @RequestParam(name = "email") String email) {
-        if (userServiceFacade.isUserExist(email.toLowerCase())) {
-            User user = userServiceFacade.findUser(email);
+                                  @RequestParam(name = "password") @NonNull String password,
+                                  @RequestParam(name = "email") @NonNull String email) {
+        if (userServiceFacadeImpl.isUserExist(email.toLowerCase())) {
+            User user = userServiceFacadeImpl.findUser(email);
             validError.clearValidate();
             if (!validError.isPasswordValid(password)) {
                 model.addAttribute("email", email);
                 model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors().values());
                 return "newPassword";
             } else {
-                userServiceFacade.updatePassword(user, password);
+                userServiceFacadeImpl.updatePassword(user, password);
                 model.addAttribute(MODEL_ATTRIBUTE, PASSWORD_SAVED);
                 return "index";
             }
@@ -183,34 +156,22 @@ public class UserController {
         }
     }
 
-    /**
-     * Доступ к страничке профиля ограничен на уровне config-файла.
-     * @see com.cryptowallet.configuration.SecurityConfig
-     * @param model - набор данных передаваемых на фронт
-     * @param principal - авторизванный пользователь
-     * @return - возвращает страничку профиля пользователя
-     */
+    @Override
     @GetMapping("/userProfile")
     public String userProfile(Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }
-        User user = userServiceFacade.findByLogin(principal.getName());
+        User user = userServiceFacadeImpl.findByLogin(principal.getName());
         model.addAttribute("user", user);
         return "userProfile";
     }
 
-    /**
-     * Метод повторной отправки токена вызывается при явном запросе от пользователя.
-     * При этом сам токен будет сгенерирован повторно.
-     * @param model - набор данных передаваемых на фронт
-     * @param principal - авторизванный пользователь
-     * @return - возвращает страничку профиля пользователя
-     */
+    @Override
     @GetMapping("/resendTokenToActivation")
-    public String resendTokenToActivation(Model model, Principal principal) {
-        User user = userServiceFacade.findByLogin(principal.getName());
-        userServiceFacade.sendActiveCodeToMail(user);
+    public String resendTokenToActivation(@NonNull Model model, @NonNull Principal principal) {
+        User user = userServiceFacadeImpl.findByLogin(principal.getName());
+        userServiceFacadeImpl.sendActiveCodeToMail(user);
         model.addAttribute("user", user);
         return "userProfile";
     }

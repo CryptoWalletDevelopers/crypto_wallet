@@ -1,7 +1,7 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacade;
+import com.cryptowallet.services.facades.UserServiceFacadeImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,12 +31,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class TestGetMethodsUserController {
+@TestPropertySource("/application-test.properties")
+public class TestGetMethodsSecurityUserControllerImpl {
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private UserServiceFacade userServiceFacade;
+    private UserServiceFacadeImpl userServiceFacadeImpl;
     private User user;
 
     @Before
@@ -79,7 +81,7 @@ public class TestGetMethodsUserController {
     @WithMockUser(username = "test")
     public void testGetUserProfileIsApproved () throws Exception {
         user.setApproved(true);
-        given(userServiceFacade.findByLogin("test")).willReturn(user);
+        given(userServiceFacadeImpl.findByLogin("test")).willReturn(user);
         mvc.perform(get("/userProfile"))
                 .andExpect(authenticated())
                 .andDo(print())
@@ -94,7 +96,7 @@ public class TestGetMethodsUserController {
     @WithMockUser(username = "test")
     public void testGetUserProfileIsNotApproved () throws Exception {
         user.setApproved(false);
-        given(userServiceFacade.findByLogin("test")).willReturn(user);
+        given(userServiceFacadeImpl.findByLogin("test")).willReturn(user);
         mvc.perform(get("/userProfile"))
                 .andExpect(authenticated())
                 .andDo(print())
@@ -118,7 +120,7 @@ public class TestGetMethodsUserController {
     @WithMockUser(username = "test")
     public void testGetResendTokenToActivation () throws Exception {
         user.setApproved(false);
-        given(userServiceFacade.findByLogin("test")).willReturn(user);
+        given(userServiceFacadeImpl.findByLogin("test")).willReturn(user);
         mvc.perform(get("/resendTokenToActivation"))
                 .andExpect(authenticated())
                 .andDo(print())
@@ -127,7 +129,7 @@ public class TestGetMethodsUserController {
                 .andExpect(model().attribute("user", user))
                 .andExpect(xpath("/html/body/div[2]").nodeCount(1))
                 .andExpect(content().string(containsString("Your account is not activated")));
-        verify(userServiceFacade, times(1)).sendActiveCodeToMail(user);
+        verify(userServiceFacadeImpl, times(1)).sendActiveCodeToMail(user);
     }
 
 }

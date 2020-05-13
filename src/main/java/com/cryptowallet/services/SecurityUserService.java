@@ -2,8 +2,8 @@ package com.cryptowallet.services;
 
 import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,21 +17,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class SecurityUserService implements UserDetailsService {
-    private final UserService userService;
-    private final RoleService roleService;
+    private final UserServiceDefault userServiceDefault;
+    private final RoleServiceImpl roleServiceImpl;
 
     @Autowired
-    public SecurityUserService(UserService userService, RoleService roleService) {
-        this.userService = userService;
-        this.roleService = roleService;
+    public SecurityUserService(UserServiceDefault userServiceDefault, RoleServiceImpl roleServiceImpl) {
+        this.userServiceDefault = userServiceDefault;
+        this.roleServiceImpl = roleServiceImpl;
     }
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = userService.findByLoginOrEmail(login).get();
+    public UserDetails loadUserByUsername(@NonNull String login) throws UsernameNotFoundException {
+        User user = userServiceDefault.findByLoginOrEmail(login).get();
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
-                mapRolesToAuthorises(roleService.getRolesCollection(user.getRole())));
+                mapRolesToAuthorises(roleServiceImpl.addToCollection(user.getRole())));
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorises(Collection<Role> roles) {

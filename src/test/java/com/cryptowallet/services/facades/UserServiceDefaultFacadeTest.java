@@ -1,38 +1,44 @@
 package com.cryptowallet.services.facades;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.MailService;
-import com.cryptowallet.services.RoleService;
-import com.cryptowallet.services.UserService;
+import com.cryptowallet.services.MailServiceDefault;
+import com.cryptowallet.services.RoleServiceImpl;
+import com.cryptowallet.services.UserServiceDefault;
 import lombok.extern.log4j.Log4j2;
 import org.junit.Assert;
 import org.junit.jupiter.api.*;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 @Log4j2
 @SpringBootTest
-@RunWith(SpringRunner.class)
+@AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
 @Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/create-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-class UserServiceFacadeTest {
+public class UserServiceDefaultFacadeTest {
     @MockBean
-    private MailService mailService;
+    private MailServiceDefault mailServiceDefault;
+    @MockBean
+    private HttpServletRequest request;
 
     @Autowired
-    private UserServiceFacade facade;
+    private UserServiceFacadeImpl facade;
     @Autowired
-    private RoleService roleService;
+    private RoleServiceImpl roleServiceImpl;
     @Autowired
-    private UserService userService;
+    private UserServiceDefault userServiceDefault;
 
     @Test
     void isUserExist() {
@@ -94,6 +100,8 @@ class UserServiceFacadeTest {
         Assert.assertNotEquals("PWAPLZvFTXf02", user.getToken());
         Assert.assertNotEquals("", user.getToken());
         Assert.assertNotNull(user.getToken());
+
+        verify(mailServiceDefault, (times(1))).sendActiveCodeToMail(user);
     }
 
     @Test
@@ -102,42 +110,46 @@ class UserServiceFacadeTest {
 
         Assert.assertNull(facade.findUser(user.getLogin()));
 
-        facade.createNewUser(user);
+        facade.createNewUser(user, "test-password", request);
         Assert.assertEquals("testuser", facade.findUser(user.getLogin()).getLogin());
+
+        verify(mailServiceDefault, (times(1))).sendActiveCodeToMail(user);
     }
 
     @Test
     void activateUser() {
         User user = createTestUser("activate-user");
-        facade.createNewUser(user);
+        facade.createNewUser(user, "test-password", request);
 
         Assert.assertFalse(facade.findUser("activate-user").isApproved());
         Assert.assertNotNull(facade.findUser("activate-user").getToken());
-        Assert.assertNotNull(facade.findUser("activate-user").getDate_exp());
+        Assert.assertNotNull(facade.findUser("activate-user").getDateExpired());
 
         facade.activateUser(user);
         Assert.assertTrue(facade.findUser("activate-user").isApproved());
         Assert.assertNull(facade.findUser("activate-user").getToken());
-        Assert.assertNull(facade.findUser("activate-user").getDate_exp());
+        Assert.assertNull(facade.findUser("activate-user").getDateExpired());
+
+        verify(mailServiceDefault, (times(1))).sendActiveCodeToMail(user);
     }
 
     @Test
     void updatePassword() {
         User user = facade.findUser("first");
         user.setApproved(false);
-        user.setDate_exp(new Date());
-        userService.saveUser(user);
+        user.setDateExpired(new Date());
+        userServiceDefault.saveUser(user);
 
         Assert.assertEquals("123", facade.findUser("first").getPassword());
         Assert.assertFalse(facade.findUser("first").isApproved());
         Assert.assertNotNull(facade.findUser("first").getToken());
-        Assert.assertNotNull(facade.findUser("first").getDate_exp());
+        Assert.assertNotNull(facade.findUser("first").getDateExpired());
 
         facade.updatePassword(user, "333");
         Assert.assertNotEquals("123", facade.findUser("first").getPassword());
         Assert.assertTrue(facade.findUser("first").isApproved());
         Assert.assertNull(facade.findUser("first").getToken());
-        Assert.assertNull(facade.findUser("first").getDate_exp());
+        Assert.assertNull(facade.findUser("first").getDateExpired());
     }
 
     @Test
@@ -160,7 +172,7 @@ class UserServiceFacadeTest {
     private User createTestUser(String name) {
         User user = new User();
         user.setPassword("test-password");
-        user.setRole(roleService.getUserRole());
+        user.setRole(roleServiceImpl.getUserRole());
         user.setEmail(name + "_mail@test.test");
         user.setLogin(name);
         return user;

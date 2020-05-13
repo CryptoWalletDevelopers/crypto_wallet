@@ -16,6 +16,7 @@ class CharSetValidatorTest {
 
         Assert.assertFalse(CharSetValidator.isNotValid(test1));
         Assert.assertFalse(CharSetValidator.isNotValid(test2));
+
         Assert.assertTrue(CharSetValidator.isNotValid(test3));
         Assert.assertTrue(CharSetValidator.isNotValid(test4));
     }

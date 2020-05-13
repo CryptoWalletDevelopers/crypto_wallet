@@ -1,7 +1,6 @@
 package com.cryptowallet.services;
 
 import com.cryptowallet.entities.Role;
-import com.cryptowallet.utils.UsersRoles;
 import lombok.extern.log4j.Log4j2;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -14,34 +13,32 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @Log4j2
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @TestPropertySource("/application-test.properties")
-class RoleServiceTest {
+class RoleServiceImplTest {
     @Autowired
-    private RoleService roleService;
+    private RoleServiceImpl roleServiceImpl;
 
     @Test
     void getRoleById() {
-        Assert.assertEquals("ROLE_USER", roleService.getRoleById(1).get().getTitle());
+        Assert.assertEquals("ROLE_USER", roleServiceImpl.getRoleById(1).get().getTitle());
     }
 
     @Test
     void getRolesCollection() {
         Collection<Role> roles = new HashSet<>();
-        roles.add(roleService.getRoleById(1).get());
+        roles.add(roleServiceImpl.getRoleById(1).get());
 
         Assert.assertArrayEquals(
                 roles.toArray(),
-                roleService.getRolesCollection(roleService.getRoleById(1).get()).toArray()
+                roleServiceImpl.addToCollection(roleServiceImpl.getRoleById(1).get()).toArray()
         );
     }
 
     @Test
     void getUserRole() {
-        Assert.assertEquals("ROLE_USER", roleService.getUserRole().getTitle());
+        Assert.assertEquals("ROLE_USER", roleServiceImpl.getUserRole().getTitle());
     }
 }

@@ -1,74 +1,58 @@
 package com.cryptowallet.services.facades;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.MailService;
-import com.cryptowallet.services.RoleService;
-import com.cryptowallet.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
-@Service
-public class UserServiceFacade {
-    private final UserService userService;
-    private final MailService mailService;
-    private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
+import javax.servlet.http.HttpServletRequest;
 
-    @Autowired
-    public UserServiceFacade(UserService userService, MailService mailService, RoleService roleService, PasswordEncoder passwordEncoder) {
-        this.userService = userService;
-        this.mailService = mailService;
-        this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    public String passwordEncode (String password) {
-        return passwordEncoder.encode(password);
-    }
+public interface UserServiceFacade {
 
     /**
+     *  Проверяет существуют ли данные в полях lohin или Email в базе данных Пользователей.
      *
      * @param login - Строка, по замыслу хранящая Login или Email пользователя
      * @return - возвращает булиевое значение о существовании пользователя с данной записью в БД
      */
-    public boolean isUserExist(String login) {
-        return userService.isUserExist(login);
-    }
+    boolean isUserExist(String login);
 
     /**
-     * Вспомогательный метод, находящий пользователя либо по login, либо по email, которые ввел пользователь в общее поле
+     * Находит пользователя по login, либо по email, которые ввел пользователь в общее поле
      *
      * @param loginOrEmail - Строка, по замыслу хранящая Login или Email пользователя
      * @return - Возвращает конкретного пользователя или  null
      */
-    public User findUser(String loginOrEmail) {
-        return userService.findByLoginOrEmail(loginOrEmail.toLowerCase()).orElse(null);
-    }
+    User findUser(String loginOrEmail);
 
-    public User findByLogin(String login) {
-        return userService.findByLogin(login).orElse(null);
-    }
+    /**
+     *  Находит пользователя по полю login
+     *
+     * @param login строка, хранящая login пользователя.
+     * @return Возвращает конкретного пользователя или  null
+     */
+    User findByLogin(String login);
 
-    public User findByToken(String token) {
-        return userService.findByToken(token).orElse(null);
-    }
+    /**
+     *  Находит пользователя по сгенерированному токену
+     *
+     * @param token сгенерированный токен
+     * @return Возвращает конкретного пользователя или  null
+     */
+    User findByToken(String token);
 
-    public void createNewUser(User user) {
-        user.setPassword(passwordEncode(user.getPassword()));
-        user.setRole(roleService.getUserRole());
-        user.setEmail(user.getEmail().toLowerCase());
-        user.setLogin(user.getLogin().toLowerCase());
-        userService.saveUser(user);
-        sendActiveCodeToMail(user);
-    }
+    /**
+     *  Метод сохраняет пользователя в базу и передает управление методу loginToSite для входа на сайт.
+     *
+     * @param user набор данных нового пользователя
+     * @param password декодированный пароль, по которому произойдет автовход
+     * @param request - пробрасываемый запрос страницы. Позволит произвести вход на сайт
+     */
+    void createNewUser(User user, String password, HttpServletRequest request);
 
-    public void sendActiveCodeToMail (User user) {
-        if(!user.isApproved()) {
-            userService.generateToken(user);
-            mailService.sendActiveCodeToMail(user);
-        }
-    }
+    /**
+     *  Если пользователь еще не подтвержден - отправляет письмо с просьбой подтвердить почтовый ящик
+     *
+     * @param user набор данных пользователя
+     */
+    void sendActiveCodeToMail (User user);
 
     /**
      * Метод находит пользователя,
@@ -77,27 +61,28 @@ public class UserServiceFacade {
      *
      * @param login - Строка, по замыслу хранящая Login или Email пользователя
      */
-    public void restorePassword(String login) {
-        User user = findUser(login);
-        userService.generateToken(user);
-        mailService.sendRestorePasswordMail(user);
-    }
+    void restorePassword(String login);
 
-    public void updatePassword(User user, String password) {
-        user.setPassword(passwordEncode(password));
-        activateUser(user);
-    }
+    /**
+     *  Сохраняет пользователю новый пароль и производит подтверждение почты.
+     *
+     * @param user набор данных пользователя
+     * @param password новый пароль в декодированном формате
+     */
+    void updatePassword(User user, String password);
 
-    public void activateUser(User user) {
-        user.setApproved(true);
-        user.setToken(null);
-        user.setDate_exp(null);
-        userService.saveUser(user);
-    }
+    /**
+     *  Производит подтверждение пользователя и обнуление токена
+     * @param user набор данных пользователя
+     */
+    void activateUser(User user);
 
-    public void clearFields(User user) {
-        user.setEmail("");
-        user.setLogin("");
-        user.setPassword("");
-    }
+    /**
+     * Производит вход на сайт по связке login-password конкретного пользователя.
+     *
+     * @param login логин пользователя
+     * @param password декодированный пароль пользователя
+     * @param request пробрасывает данные к security для входи на сайт
+     */
+    void loginToSite(String login, String password, HttpServletRequest request);
 }

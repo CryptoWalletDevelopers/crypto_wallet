@@ -1,6 +1,7 @@
 package com.cryptowallet.services;
 
 import com.cryptowallet.entities.User;
+import com.cryptowallet.services.interfaces.MailService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +15,7 @@ import javax.mail.internet.MimeMessage;
 
 @Log4j2
 @Service
-public class MailService {
+public class MailServiceDefault implements MailService {
     @Value("${wallet.url}")
     private String url;
 
@@ -29,15 +30,18 @@ public class MailService {
         this.sender = sender;
     }
 
+    @Override
     public void sendActiveCodeToMail(User user){
-        sendMessageTodMail(user, ACTIVE_MESSAGE, ACTIVE_TITLE);
+        sendMessageToMail(user, ACTIVE_MESSAGE, ACTIVE_TITLE);
     }
 
+    @Override
     public void sendRestorePasswordMail(User user) {
-        sendMessageTodMail(user, RESTORE_MESSAGE, RESTORE_TITLE);
+        sendMessageToMail(user, RESTORE_MESSAGE, RESTORE_TITLE);
     }
 
-    public void sendMessageTodMail(User user, String messageType, String title) {
+    @Override
+    public void sendMessageToMail(User user, String messageType, String title) {
         try {
             String message = String.format(
                     "Hello, %s! \n" + messageType + "%s",
@@ -51,7 +55,7 @@ public class MailService {
         }
     }
 
-    private void sendMail(String email, String subject, String text) throws MessagingException {
+    public void sendMail(String email, String subject, String text) throws MessagingException {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
         helper.setTo(email);

@@ -14,7 +14,7 @@ public enum CharSets {
             '-'
     });
 
-    private char[] chars;
+    private final char[] chars;
 
     CharSets(char[] chars) {
         this.chars = chars;

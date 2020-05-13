@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "user_tbl")
+@Table(name = "\"user\"")
 
 public class User {
     @Id
@@ -34,7 +34,7 @@ public class User {
     private boolean approved;
 
     @Column(name = "date_exp")
-    private Date date_exp;
+    private Date dateExpired;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Collection<Address> addresses;

@@ -1,7 +1,7 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacade;
+import com.cryptowallet.services.facades.UserServiceFacadeImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.Date;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("/application-test.properties")
 public class TestGetActivateUser {
     private final long EXPIRED_TIME = 60 * 60 * 1000 * 3;
     private final String token = "TEST-TOKEN-1234567890";
@@ -30,7 +32,7 @@ public class TestGetActivateUser {
     private MockMvc mvc;
 
     @MockBean
-    private UserServiceFacade userServiceFacade;
+    private UserServiceFacadeImpl userServiceFacadeImpl;
     private User user;
 
     @Before
@@ -38,18 +40,18 @@ public class TestGetActivateUser {
         user = new User ();
         user.setLogin("test");
         user.setToken(token);
-        user.setDate_exp(new Date());
+        user.setDateExpired(new Date());
     }
 
     @Test
     public void testGetActivateUserValid () throws Exception {
-        given(userServiceFacade.findByToken(token)).willReturn(user);
+        given(userServiceFacadeImpl.findByToken(token)).willReturn(user);
         mvc.perform(get("/activate/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().size(1))
                 .andExpect(model().attribute("activeMessage", "Your account is verified!"));
-        verify(userServiceFacade, times(1)).activateUser(user);
+        verify(userServiceFacadeImpl, times(1)).activateUser(user);
     }
 
     @Test
@@ -57,19 +59,19 @@ public class TestGetActivateUser {
         long date = new Date().getTime() - EXPIRED_TIME;
         Date userDate = new Date();
         userDate.setTime(date);
-        user.setDate_exp(userDate);
-        given(userServiceFacade.findByToken(token)).willReturn(user);
+        user.setDateExpired(userDate);
+        given(userServiceFacadeImpl.findByToken(token)).willReturn(user);
         mvc.perform(get("/activate/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().size(1))
                 .andExpect(model().attribute("activeMessage", "Your token is expired! We have sent you an email with a new token."));
-        verify(userServiceFacade, times(1)).sendActiveCodeToMail(user);
+        verify(userServiceFacadeImpl, times(1)).sendActiveCodeToMail(user);
     }
 
     @Test
     public void testGetActivateUserDontExist () throws Exception {
-        given(userServiceFacade.findByToken(token)).willReturn(null);
+        given(userServiceFacadeImpl.findByToken(token)).willReturn(null);
         mvc.perform(get("/activate/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
