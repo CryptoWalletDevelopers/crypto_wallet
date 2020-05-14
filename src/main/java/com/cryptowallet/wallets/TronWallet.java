@@ -5,7 +5,8 @@ import com.cryptowallet.crypto.ECKey;
 import com.cryptowallet.crypto.Sha256Hash;
 import com.cryptowallet.entities.Address;
 import com.cryptowallet.entities.User;
-import com.cryptowallet.tronModels.Transaction;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.github.novacrypto.bip32.ExtendedPrivateKey;
 import io.github.novacrypto.bip32.networks.Bitcoin;
 import io.github.novacrypto.bip44.AddressIndex;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import com.cryptowallet.crypto.Protocol.Transaction;
 
 @Component
 @Data
