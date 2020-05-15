@@ -5,6 +5,7 @@ import com.cryptowallet.crypto.ECKey;
 import com.cryptowallet.crypto.Sha256Hash;
 import com.cryptowallet.entities.Address;
 import com.cryptowallet.entities.User;
+import com.cryptowallet.services.implementations.AddressServiceImpl;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.github.novacrypto.bip32.ExtendedPrivateKey;
@@ -28,6 +29,7 @@ public class TronWallet extends Wallet implements Generatable {
     private static String secret;
     private static final int COINTYPE = 195;
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
+    private AddressServiceImpl addressService;
 
     @Autowired
     private Environment env;
@@ -96,7 +98,7 @@ public class TronWallet extends Wallet implements Generatable {
         else return -1;
     }
 
-    private static byte[] signTransaction2Byte(byte[] transaction, byte[] privateKey)
+    public static byte[] signTransaction2Byte(byte[] transaction, byte[] privateKey)
             throws InvalidProtocolBufferException {
         ECKey ecKey = ECKey.fromPrivate(privateKey);
         Transaction transaction1 = Transaction.parseFrom(transaction);
@@ -106,7 +108,7 @@ public class TronWallet extends Wallet implements Generatable {
         return transaction1.toBuilder().addSignature(ByteString.copyFrom(sign)).build().toByteArray();
     }
 
-    private static Transaction signTransaction2Object(byte[] transaction, byte[] privateKey)
+    public static Transaction signTransaction2Object(byte[] transaction, byte[] privateKey)
             throws InvalidProtocolBufferException {
         ECKey ecKey = ECKey.fromPrivate(privateKey);
         Transaction transaction1 = Transaction.parseFrom(transaction);
@@ -114,6 +116,12 @@ public class TronWallet extends Wallet implements Generatable {
         byte[] hash = Sha256Hash.hash(rawdata);
         byte[] sign = ecKey.sign(hash).toByteArray();
         return transaction1.toBuilder().addSignature(ByteString.copyFrom(sign)).build();
+    }
+
+    public byte[] getPrivateKeyFromAddress(String address){
+        Address address1 = addressService.findAddressesByAddress(address).get();
+        getECkey(address1.getUser().getId(),address1.getIndex());
+        return decode58(getPrivateKeyBytes(getECkey(address1.getUser().getId(),address1.getIndex())));
     }
 
     public static String bytesToHex(byte[] bytes) {
