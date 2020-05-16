@@ -12,7 +12,6 @@ import io.github.novacrypto.bip32.ExtendedPrivateKey;
 import io.github.novacrypto.bip32.networks.Bitcoin;
 import io.github.novacrypto.bip44.AddressIndex;
 import io.github.novacrypto.bip44.BIP44;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import com.cryptowallet.crypto.Protocol.Transaction;
 
 @Component
-@Data
 @PropertySource("classpath:application.properties")
 public class TronWallet extends Wallet implements Generatable {
     private static String secret;
@@ -98,7 +96,7 @@ public class TronWallet extends Wallet implements Generatable {
         else return -1;
     }
 
-    public static byte[] signTransaction2Byte(byte[] transaction, byte[] privateKey)
+    public byte[] signTransaction2Byte(byte[] transaction, byte[] privateKey)
             throws InvalidProtocolBufferException {
         ECKey ecKey = ECKey.fromPrivate(privateKey);
         Transaction transaction1 = Transaction.parseFrom(transaction);
@@ -108,7 +106,7 @@ public class TronWallet extends Wallet implements Generatable {
         return transaction1.toBuilder().addSignature(ByteString.copyFrom(sign)).build().toByteArray();
     }
 
-    public static Transaction signTransaction2Object(byte[] transaction, byte[] privateKey)
+    public Transaction signTransaction2Object(byte[] transaction, byte[] privateKey)
             throws InvalidProtocolBufferException {
         ECKey ecKey = ECKey.fromPrivate(privateKey);
         Transaction transaction1 = Transaction.parseFrom(transaction);
@@ -124,7 +122,7 @@ public class TronWallet extends Wallet implements Generatable {
         return decode58(getPrivateKeyBytes(getECkey(address1.getUser().getId(),address1.getIndex())));
     }
 
-    public static String bytesToHex(byte[] bytes) {
+    public String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;

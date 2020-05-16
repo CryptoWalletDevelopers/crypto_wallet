@@ -16,4 +16,5 @@ public class Account {
     private AccountResource accountResource;
     private Asset[] assetV2;
     private Asset[] freeAssetNetUsageV2;
+
 }

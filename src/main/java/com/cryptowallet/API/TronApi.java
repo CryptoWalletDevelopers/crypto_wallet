@@ -1,9 +1,6 @@
 package com.cryptowallet.API;
 
-import com.cryptowallet.tronModels.Account;
-import com.cryptowallet.tronModels.Block;
-import com.cryptowallet.tronModels.Result;
-import com.cryptowallet.tronModels.Transaction;
+import com.cryptowallet.tronModels.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -16,9 +13,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
-@Data
-@Component
 @EnableWebMvc
+@Component
 public class TronApi extends ApiClient {
     private final RestTemplate restTemplate;
 
@@ -157,7 +153,14 @@ public class TronApi extends ApiClient {
     }
 
     @Override
-    public void transactionIfoByAccountAddress() {
-
+    public AccountInfo getAccountInfoByAddress(String address){
+        String url = "https://api.trongrid.io/v1/accounts/";
+        String urlRes = url.concat(address);
+        ResponseEntity<AccountInfo> response = this.restTemplate.getForEntity(urlRes, AccountInfo.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            return null;
+        }
     }
 }
