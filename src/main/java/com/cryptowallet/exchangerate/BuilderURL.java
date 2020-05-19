@@ -3,6 +3,7 @@ package com.cryptowallet.exchangerate;
 import com.cryptowallet.exchangerate.model.enumpack.CoinID;
 import com.cryptowallet.exchangerate.model.enumpack.Interval;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -12,6 +13,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Log4j2
+@NoArgsConstructor
 public class BuilderURL {
     private final String URL = "https://api.coinpaprika.com/v1/";
     private final String GLOBAL = "global";

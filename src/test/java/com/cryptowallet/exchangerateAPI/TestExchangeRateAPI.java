@@ -1,7 +1,7 @@
 package com.cryptowallet.exchangerateAPI;
 
-import com.cryptowallet.exchangerate.API.ExchangeRateAPI;
-import com.cryptowallet.exchangerate.ExchangeRateAPIService;
+import com.cryptowallet.exchangerate.API.ExchangeRateAPIImpl;
+import com.cryptowallet.exchangerate.service.ExchangeRateAPIServiceImpl;
 import com.cryptowallet.exchangerate.model.enumpack.CoinID;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
 import org.junit.Test;
@@ -18,38 +18,38 @@ import java.time.ZonedDateTime;
 @SpringBootTest
 public class TestExchangeRateAPI {
     @Autowired
-    private ExchangeRateAPI exchangeRateAPI;
+    private ExchangeRateAPIImpl exchangeRateAPIImpl;
     @Autowired
-    private ExchangeRateAPIService exchangeRateAPIService;
+    private ExchangeRateAPIServiceImpl exchangeRateAPIService;
 
     @Test
     public void testGlobalInfo () {
-        System.out.println(exchangeRateAPI.getGlobalInfo());
+        System.out.println(exchangeRateAPIImpl.getGlobalInfo());
     }
 
     @Test
     public void testListTickers () {
-        System.out.println(exchangeRateAPI.getHistoryTickerList(CoinID.BITCOIN, Period.TODAY));
+        System.out.println(exchangeRateAPIImpl.getHistoryTickerList(CoinID.BITCOIN, Period.TODAY));
     }
 
     @Test
     public void testCoinInfo () {
-        System.out.println(exchangeRateAPI.getCurrentCoinInfoById(CoinID.BITCOIN));
+        System.out.println(exchangeRateAPIImpl.getCurrentCoinInfoById(CoinID.BITCOIN));
     }
 
     @Test
     public void testOHLCLastDay () {
-        System.out.println(exchangeRateAPI.getCoinOHLCInfoLastDay(CoinID.BITCOIN));
+        System.out.println(exchangeRateAPIImpl.getCoinOHLCInfoLastDay(CoinID.BITCOIN));
     }
 
     @Test
     public void testOHLCToday () {
-        System.out.println(exchangeRateAPI.getCoinOHLCInfoToday(CoinID.BITCOIN));
+        System.out.println(exchangeRateAPIImpl.getCoinOHLCInfoToday(CoinID.BITCOIN));
     }
 
     @Test
     public void testOHLCPeriod () {
-        System.out.println(exchangeRateAPI.getCoinOHLCHistoryInfo(CoinID.BITCOIN, Period.WEEK));
+        System.out.println(exchangeRateAPIImpl.getCoinOHLCHistoryInfo(CoinID.BITCOIN, Period.WEEK));
     }
 
     @Test
