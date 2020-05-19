@@ -1,46 +1,44 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
-
 <head th:replace="fragments/header :: header"></head>
-
 <body>
-
 <header>
     <nav th:replace="fragments/navbar :: navbar"/>
 </header>
-
 <div class="container">
     <h1>DEMO</h1>
     <table class="table table-dark table-striped">
         <thead>
         <tr>
-            <th>Валюта</th>
-            <th>Текущая цена</th>
-            <th>
-                за час
-            </th>
-            <th>
-                за день
-            </th>
-            <th>
-                за месяц
-            </th>
+            <th th:text="'Название'"></th>
+            <th></th>
+            <th th:text="'Текущая цена'"></th>
+            <th th:text="'за 1 час, %'"></th>
+            <th th:text="'за 24 часа, %'"></th>
+            <th th:text="'за 7 дней, %'"></th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>TRX</td>
-            <td>13.0</td>
-            <td><i class="fas fa-caret-up"></i>13.85</td>
-            <td><i class="fas fa-caret-up"></i>13.05</td>
-            <td><i class="fas fa-caret-down"></i>12.75</td>
-        </tr>
-        <tr>
-            <td>BTC</td>
-            <td>1002.00</td>
-            <td><i class="fas fa-caret-up"></i>1004.00</td>
-            <td><i class="fas fa-caret-up"></i>1180.00</td>
-            <td><i class="fas fa-caret-down"></i>985.00</td>
+        <!--/*@thymesVar id="coin" type="com.cryptowallet.entities.CryptoCoin"*/-->
+        <tr th:each="coin : ${coins}">
+            <td th:text="${coin.getName()}"/>
+            <td th:text="${coin.getSymbol()}"/>
+            <td th:text="${coin.getPrice()}"/>
+            <td>
+                <span th:if="${coin.getPercentChang1h() > 0}"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
+                <span th:unless="${coin.getPercentChang1h() > 0}"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                <span th:text="${coin.getPercentChang1h()}"/>
+            </td>
+            <td>
+                <span th:if="${coin.getPercentChang24h() > 0}"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
+                <span th:unless="${coin.getPercentChang24h() > 0}"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                <span th:text="${coin.getPercentChang24h()}"/>
+            </td>
+            <td>
+                <span th:if="${coin.getPercentChang7d() > 0}"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
+                <span th:unless="${coin.getPercentChang7d() > 0}"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                <span th:text="${coin.getPercentChang7d()}"/>
+            </td>
         </tr>
         </tbody>
     </table>
