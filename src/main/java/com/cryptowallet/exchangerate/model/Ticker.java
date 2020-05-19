@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @AllArgsConstructor
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
  * price - цена на момент времени timestamp в USD
  */
 public class Ticker {
-	private LocalDateTime timestamp;
+	private ZonedDateTime timestamp;
 	private Double price;
 	@JsonProperty("volume_24h")
 	private Long volume24h;

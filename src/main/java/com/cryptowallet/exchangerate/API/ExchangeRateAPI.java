@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Component
@@ -33,8 +36,14 @@ public class ExchangeRateAPI {
     }
 
     public List<Ticker> getHistoryTickerList(CoinID idCoin, Period period) {
-        return restTemplate.exchange(builderURL.getHistoricalTickersURL(idCoin, period), HttpMethod.GET,
+        List<Ticker> list = restTemplate.exchange(builderURL.getHistoricalTickersURL(idCoin, period), HttpMethod.GET,
                 null, new ParameterizedTypeReference<List<Ticker>>(){}).getBody();
+        if(period.equals(Period.TODAY)){        //приходится городить, чтобы получить статистику за 24 ч
+            ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Z")).minusHours(24L);
+            list.removeIf(n ->(n.getTimestamp().isBefore(time)));
+        }
+        return list;
+
     }
 
     public Coin getCurrentCoinInfoById (CoinID idCoin) {

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @AllArgsConstructor
@@ -18,9 +19,9 @@ import java.time.LocalDateTime;
  */
 public class CoinOHLC {
     @JsonProperty("time_open")
-    private LocalDateTime timeOpen;
+    private ZonedDateTime timeOpen;
     @JsonProperty("time_close")
-    private LocalDateTime timeClose;
+    private ZonedDateTime timeClose;
     private Double open;
     private Double high;
     private Double low;

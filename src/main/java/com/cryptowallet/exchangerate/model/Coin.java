@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 ;
@@ -32,6 +33,6 @@ public class Coin {
 //    @JsonProperty("beta_value")
 //    private Double betaValue;
     @JsonProperty("last_updated")
-    private LocalDateTime lastUpdated;
+    private ZonedDateTime lastUpdated;
     private Map<String, CoinChangeInfo> quotes;
 }

@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,11 +30,11 @@ public class GlobalInfo {
 	@JsonProperty("market_cap_ath_value")
 	private Double marketCapAthValue;
 	@JsonProperty("market_cap_ath_date")
-	private String marketCapAthDate;
+	private ZonedDateTime marketCapAthDate;
 	@JsonProperty("volume_24h_ath_value")
 	private Double volume24hAthValue;
-	@JsonProperty("volume_24h_ath_date;")
-	private String volume24hAthDate;
+	@JsonProperty("volume_24h_ath_date")
+	private ZonedDateTime volume24hAthDate;
 	@JsonProperty("market_cap_change_24h")
 	private Double marketCapChange24h;
 	@JsonProperty("volume_24h_change_24h")
