@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
-    Optional<Address> findAddressesByAddress(@NonNull String address);
+    Address findAddressesByAddress  (@NonNull String address);
 }

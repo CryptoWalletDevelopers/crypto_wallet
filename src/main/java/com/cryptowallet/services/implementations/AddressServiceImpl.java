@@ -16,7 +16,7 @@ public class AddressServiceImpl implements AddressService {
     private AddressRepository addressRepository;
 
     @Autowired
-    public AddressServiceImpl(@NonNull AddressRepository addressRepository){
+    public AddressServiceImpl( AddressRepository addressRepository){
         this.addressRepository = addressRepository;
     }
 
@@ -26,7 +26,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Optional<Address> findAddressesByAddress(@NonNull String address) {
+    public Address findAddressesByAddress(@NonNull String address) {
         return addressRepository.findAddressesByAddress(address);
     }
 }

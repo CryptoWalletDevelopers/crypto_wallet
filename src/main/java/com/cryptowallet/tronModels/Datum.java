@@ -2,8 +2,10 @@ package com.cryptowallet.tronModels;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class Datum {
+public class Datum implements Serializable {
     private String accountName;
     private AccountResource accountResource;
     private String address;

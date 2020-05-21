@@ -1,8 +1,9 @@
 package com.cryptowallet.tronModels;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public enum ContractRet {
+public enum ContractRet implements Serializable {
     SUCCESS;
 
     public String toValue() {

@@ -1,12 +1,16 @@
 package com.cryptowallet.tronModels;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Transaction implements Serializable{
+    @JsonProperty("Error")
+    private String error;
     private String id;
     private long fee;
     private long blockNumber;
@@ -21,7 +25,6 @@ public class Transaction implements Serializable{
     private RawData rawData;
     @JsonProperty("raw_data_hex")
     private String rawDataHex;
-
     private boolean visible;
 
 }

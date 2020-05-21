@@ -22,8 +22,8 @@ public class Currency {
     @Column
     private String title;
 
-    @Column
-    private String short_title;
+    @Column(name = "short_title")
+    private String shortTitle;
 
     @Column
     private int precision;
@@ -34,6 +34,11 @@ public class Currency {
     @Column
     private String logo;
 
+    public Currency(String title, String shortTitle, int index) {
+        this.title = title;
+        this.shortTitle = shortTitle;
+        this.index = index;
+    }
     @PostConstruct
     public void init(){
         nodes = new ArrayList<>();

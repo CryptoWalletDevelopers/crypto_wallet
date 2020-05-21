@@ -1,38 +1,35 @@
 package com.cryptowallet.services.implementations;
 
 import com.cryptowallet.API.TronApi;
-import com.cryptowallet.crypto.Hash;
 import com.cryptowallet.entities.*;
+import com.cryptowallet.entities.Currency;
 import com.cryptowallet.repositories.UserRepository;
 import com.cryptowallet.services.interfaces.UserService;
 import com.cryptowallet.wallets.TronWallet;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService  {
     private UserRepository userRepository;
-    @Autowired
-    private TronWallet tronWallet;
-    @Autowired
     private AddressServiceImpl addressService;
-    private final int tronIndex = 195;
-    @Autowired
+    private TronWallet tronWallet;
     private TronApi tronApi;
 
+    private final int tronIndex = 195;
+
     @Autowired
-    UserServiceImpl(UserRepository userRepository){
+    public UserServiceImpl(UserRepository userRepository, AddressServiceImpl addressService, TronWallet tronWallet, TronApi tronApi) {
         this.userRepository = userRepository;
+        this.addressService = addressService;
+        this.tronWallet = tronWallet;
+        this.tronApi = tronApi;
     }
 
     @Override
-    public Optional<User> findUserByEmail(@NonNull String email) {
+    public User findUserByEmail(@NonNull String email) {
         return userRepository.findUserByEmail(email);
     }
 
@@ -56,7 +53,8 @@ public class UserServiceImpl implements UserService  {
      }
 
      public HashMap<String, Integer> getAddressAndCurrency(@NonNull User user){
-         ArrayList<Address> addresses = (ArrayList<Address>) user.getAddresses();
+         System.out.println(user.getEmail());
+         Collection<Address> addresses =  user.getAddresses();
          HashMap<String, Integer> map = new HashMap<>();
          addresses.stream().forEach(address -> {
              map.put(address.getAddress(), address.getCurrency().getIndex());
@@ -65,7 +63,7 @@ public class UserServiceImpl implements UserService  {
      }
 
      @Override
-     public ArrayList<WalletItem> getWalletItems(@NonNull  User user){
+     public ArrayList<WalletItem> getWalletItems(@NonNull User user){
          ArrayList<WalletItem> walletItems= new ArrayList<>();
          HashMap<String, Integer> pairs = getAddressAndCurrency(user);
          for (Map.Entry<String, Integer> entry : pairs.entrySet()) {

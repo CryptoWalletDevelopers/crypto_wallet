@@ -12,5 +12,5 @@ import java.util.Optional;
 @Component
 public interface AddressService {
     void save(@NonNull Address address);
-    Optional<Address> findAddressesByAddress(@NonNull String address);
+    Address findAddressesByAddress(@NonNull String address);
 }

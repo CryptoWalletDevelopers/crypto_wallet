@@ -1,25 +1,33 @@
 package com.cryptowallet.wallets;
 
-import com.cryptowallet.crypto.Base58;
-import com.cryptowallet.crypto.ECKey;
-import com.cryptowallet.crypto.Sha256Hash;
+import com.cryptowallet.crypto.*;
 import com.cryptowallet.entities.Address;
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.implementations.AddressServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.github.novacrypto.bip32.ExtendedPrivateKey;
 import io.github.novacrypto.bip32.networks.Bitcoin;
 import io.github.novacrypto.bip44.AddressIndex;
 import io.github.novacrypto.bip44.BIP44;
+import org.apache.commons.lang3.SerializationUtils;
+import org.spongycastle.asn1.ASN1InputStream;
+import org.spongycastle.asn1.ASN1Integer;
+import org.spongycastle.asn1.DLSequence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import com.cryptowallet.crypto.Protocol.Transaction;
+import com.cryptowallet.crypto.Protocol.TransactionSign;
 
 @Component
 @PropertySource("classpath:application.properties")
@@ -28,6 +36,63 @@ public class TronWallet extends Wallet implements Generatable {
     private static final int COINTYPE = 195;
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
     private AddressServiceImpl addressService;
+
+    @Autowired
+    public TronWallet(AddressServiceImpl addressService, Environment env){
+        this.addressService = addressService;
+        this.env = env;
+    }
+
+//    public final BigInteger r, s;
+//    public byte v;
+//    public ECDSASignature(BigInteger r, BigInteger s) {
+//        this.r = r;
+//        this.s = s;
+//    }
+
+    public static ECKey.ECDSASignature decodeFromDER(byte[] bytes) {
+        ASN1InputStream decoder = null;
+        try {
+            decoder = new ASN1InputStream(bytes);
+            DLSequence seq = (DLSequence) decoder.readObject();
+            if (seq == null) {
+                throw new RuntimeException("Reached past end of ASN.1 " +
+                        "stream.");
+            }
+            ASN1Integer r, s;
+            try {
+                r = (ASN1Integer) seq.getObjectAt(0);
+                s = (ASN1Integer) seq.getObjectAt(1);
+            } catch (ClassCastException e) {
+                throw new IllegalArgumentException(e);
+            }
+            return new ECKey.ECDSASignature(r.getPositiveValue(), s
+                    .getPositiveValue());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (decoder != null) {
+                try {
+                    decoder.close();
+                } catch (IOException x) {
+                }
+            }
+        }
+    }
+
+
+    private static ECKey.ECDSASignature fromComponents(byte[] r, byte[] s) {
+        return new ECKey.ECDSASignature(new BigInteger(1, r), new BigInteger(1,
+                s));
+    }
+
+
+    public static ECKey.ECDSASignature fromComponents(byte[] r, byte[] s, byte
+            v) {
+        ECKey.ECDSASignature signature = fromComponents(r, s);
+        signature.v = v;
+        return signature;
+    }
 
     @Autowired
     private Environment env;
@@ -96,30 +161,106 @@ public class TronWallet extends Wallet implements Generatable {
         else return -1;
     }
 
-    public byte[] signTransaction2Byte(byte[] transaction, byte[] privateKey)
-            throws InvalidProtocolBufferException {
+//    public byte[] signTransaction2Byte(Transaction transaction, byte[] privateKey) {
+//        ECKey ecKey = ECKey.fromPrivate(privateKey);
+//        String jsonRawData = "";
+//        try {
+//            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//            jsonRawData = ow.writeValueAsString(transaction.getRawData());
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//        byte[] rawdata = SerializationUtils.serialize(jsonRawData);
+//        byte[] hash = Sha256Hash.hash(rawdata);
+//        byte[] sign = ecKey.sign(hash).toByteArray();
+//        String[] signature = new String[1];
+//        signature[0] = bytesToHex(sign);
+//        transaction.setSignature(signature);
+//
+//        String json = "";
+//        try {
+//            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//            json = ow.writeValueAsString(transaction);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(json);
+//        json = json.replaceAll("\\s+","");
+//        json = json.replaceAll("\\n",",");
+//        System.out.println(json);
+//        return SerializationUtils.serialize(json);
+//    }
+    public com.cryptowallet.tronModels.Transaction signTransaction2Byte(com.cryptowallet.tronModels.Transaction transaction, byte[] privateKey) throws Exception {
         ECKey ecKey = ECKey.fromPrivate(privateKey);
-        Transaction transaction1 = Transaction.parseFrom(transaction);
-        byte[] rawdata = transaction1.getRawData().toByteArray();
-        byte[] hash = Sha256Hash.hash(rawdata);
-        byte[] sign = ecKey.sign(hash).toByteArray();
-        return transaction1.toBuilder().addSignature(ByteString.copyFrom(sign)).build().toByteArray();
+//        Transaction transaction1 = Transaction.parseFrom(transaction);
+//        byte[] rawdata = transaction1.getRawData().toByteArray();
+//        byte[] hash = Sha256Hash.hash(rawdata);
+        byte[] hash = hexStr2byteArray(transaction.getTxID(), 32);
+//        byte[] sign = hexStr2byteArray(ecKey.sign(hash).toHex(), 65);
+        byte[] sign = hexStr2byteArray(ecKey.sign(hash).toHex(), 65);
+        System.out.println("!!! " + bytesToHex(hash));
+        System.out.println("!!! " + bytesToHex(sign));
+        String[] signatureObject = new String[1];
+        signatureObject[0] = bytesToHex(sign);
+        transaction.setSignature(signatureObject);
+        return transaction;
     }
 
-    public Transaction signTransaction2Object(byte[] transaction, byte[] privateKey)
-            throws InvalidProtocolBufferException {
-        ECKey ecKey = ECKey.fromPrivate(privateKey);
-        Transaction transaction1 = Transaction.parseFrom(transaction);
-        byte[] rawdata = transaction1.getRawData().toByteArray();
-        byte[] hash = Sha256Hash.hash(rawdata);
-        byte[] sign = ecKey.sign(hash).toByteArray();
-        return transaction1.toBuilder().addSignature(ByteString.copyFrom(sign)).build();
+    public byte[] hexStr2byteArray(String str, int n) throws Exception {
+        byte[] byteArray = new byte[n];
+        int d = 0;
+        int j = 0;
+        int k = 0;
+
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+
+            if (isHexChar(c)) {
+                d <<= 4;
+                d += hexChar2byte(c);
+                j++;
+
+                if (0 == (j % 2)) {
+
+                    byteArray[k++] = (byte)d;
+                    d = 0;
+                }
+            } else
+                throw new Exception("The passed hex char is not a valid hex string");
+        }
+
+        return byteArray;
+    }
+
+    public int hexChar2byte(char c) throws Exception {
+        int d = -1;
+
+        if (c >= 'A' && c <= 'F')
+            d = Character.toString(c).charAt(0) - Character.toString('A').charAt(0) + 10;
+        else if (c >= 'a' && c <= 'f')
+            d = Character.toString(c).charAt(0) - Character.toString('a').charAt(0) + 10;
+        else if (c >= '0' && c <= '9')
+            d = Character.toString(c).charAt(0) - Character.toString('0').charAt(0);
+
+        if(d == -1){
+            throw new Exception("hexChar2byte incorrect char");
+        }
+        return d;
+    }
+
+    public Boolean isHexChar(char c) {
+        if ((c >= 'A' && c <= 'F') ||
+                (c >= 'a' && c <= 'f') ||
+                (c >= '0' && c <= '9')) {
+            return true;
+        }
+
+        return false;
     }
 
     public byte[] getPrivateKeyFromAddress(String address){
-        Address address1 = addressService.findAddressesByAddress(address).get();
-        getECkey(address1.getUser().getId(),address1.getIndex());
-        return decode58(getPrivateKeyBytes(getECkey(address1.getUser().getId(),address1.getIndex())));
+        Address address1 = addressService.findAddressesByAddress(address);
+        return ByteUtil.hexToBytes(getPrivateKeyBytes(getECkey(address1.getUser().getId(),address1.getIndex())));
     }
 
     public String bytesToHex(byte[] bytes) {
@@ -148,6 +289,7 @@ public class TronWallet extends Wallet implements Generatable {
     }
 
     private byte[] decode58(String input){
+        System.out.println(input);
         byte[] decodeCheck = Base58.decode(input);
         if (decodeCheck.length <= 4) {
             return null;
@@ -164,4 +306,14 @@ public class TronWallet extends Wallet implements Generatable {
         }
         return null;
     }
+//    public byte[] toByteArray() {
+//        final byte fixedV = this.v >= 27
+//                ? (byte) (this.v - 27)
+//                : this.v;
+//
+//        return ByteUtil.merge(
+//                ByteUtil.bigIntegerToBytes(this.r, 32),
+//                ByteUtil.bigIntegerToBytes(this.s, 32),
+//                new byte[]{fixedV});
+//    }
 }

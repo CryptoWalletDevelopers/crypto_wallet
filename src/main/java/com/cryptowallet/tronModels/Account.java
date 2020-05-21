@@ -3,8 +3,10 @@ package com.cryptowallet.tronModels;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class Account {
+public class Account implements Serializable {
     @JsonProperty("account_name")
     private String accountname;
     private String address;
