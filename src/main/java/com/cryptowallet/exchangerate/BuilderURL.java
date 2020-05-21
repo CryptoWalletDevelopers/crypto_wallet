@@ -1,13 +1,10 @@
 package com.cryptowallet.exchangerate;
-
-import com.cryptowallet.exchangerate.model.enumpack.CoinID;
 import com.cryptowallet.exchangerate.model.enumpack.Interval;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -32,37 +29,40 @@ public class BuilderURL {
     private final String TIME_ZONE = "Z";
     private final String LOG_MSG = "Invalid Period!";
 
+    //https://api.coinpaprika.com/v1/coins
+    public String getCoinIdURL () {return URL+COINS;}
+
     //https://api.coinpaprika.com/v1/global
     public String getGlobalURL() {
         return URL + GLOBAL;
     }
 
     //https://api.coinpaprika.com/v1/tickers/btc-bitcoin
-    public String getTickersURL(CoinID idCoin) {
-        return URL + TICKERS + idCoin.getValue();
+    public String getTickersURL(String idCoin) {
+        return URL + TICKERS + idCoin;
     }
 
     //вчера
     //https://api.coinpaprika.com/v1/coins/{coin_id}/ohlcv/latest/
-    public String getCoinOHLCInfoLastDay (CoinID idCoin) {
-        return URL + COINS + idCoin.getValue() + OHLCV_LATEST;
+    public String getCoinOHLCInfoLastDay (String idCoin) {
+        return URL + COINS + idCoin + OHLCV_LATEST;
     }
 
     //сегодня
     //https://api.coinpaprika.com/v1/coins/{coin_id}/ohlcv/today/
-    public String getCoinOHLCInfoToday (CoinID idCoin) {
-        return URL + COINS + idCoin.getValue() + OHLCV_TODAY;
+    public String getCoinOHLCInfoToday (String idCoin) {
+        return URL + COINS + idCoin + OHLCV_TODAY;
     }
 
-    //https://api.coinpaprika.com/v1/coins/btc-bitcoin/ohlcv/historical?start=2019-01-01&end=2020-01-01
-    public String getCoinOHLCInfoPeriod (CoinID idCoin, Period period) {
-        String url = URL + COINS + idCoin.getValue() + OHLCV_HISTORY;
+    //https://api.coinpaprika.com/v1/coins/btc-bitcoin/ohlcv/historical?start=2019-01-01&end=2020-01-01&limit=366
+    public String getCoinOHLCInfoPeriod (String idCoin, Period period) {
+        String url = URL + COINS + idCoin + OHLCV_HISTORY;
         return setPathVariable(url, period, COINS);
     }
 
     //https://api.coinpaprika.com/v1/tickers/btc-bitcoin/historical?start=2015-09-01&end=2020-05-13&limit=5000&interval=12h
-    public String getHistoricalTickersURL (CoinID idCoin, Period period) {
-        String url = URL + TICKERS + idCoin.getValue() + HISTORICAL;
+    public String getHistoricalTickersURL (String idCoin, Period period) {
+        String url = URL + TICKERS + idCoin + HISTORICAL;
         return setPathVariable(url, period, TICKERS);
     }
 
@@ -83,26 +83,23 @@ public class BuilderURL {
     // иначе я буду получать информацию в 366 строки с даты START, но не до текущей даты
     private UriComponentsBuilder getPathVariableCoinOHLCInfoPeriod (UriComponentsBuilder builder, Period period) {
         ZonedDateTime time = ZonedDateTime.now(ZoneId.of(TIME_ZONE));//установка нулевого часового пояса
+        long value = period.getValue();
         switch (period){
             case TODAY:
                 builder.queryParam(START, time.toLocalDate());
                 return builder;
             case WEEK:
-                builder.queryParam(START, time.minusDays(7L).toLocalDate());
+                builder.queryParam(START, time.minusWeeks(value).toLocalDate());
                 return builder;
             case MONTH:
-                builder.queryParam(START, time.minusMonths(1L).toLocalDate());
-                return builder;
             case MONTH_3:
-                builder.queryParam(START, time.minusMonths(3L).toLocalDate());
-                return builder;
             case MONTH_6:
-                builder.queryParam(START, time.minusMonths(6L).toLocalDate());
+                builder.queryParam(START, time.minusMonths(value).toLocalDate());
                 return builder;
             case YEAR:
             case YEAR_2:
             case YEAR_3:
-                builder.queryParam(START, LocalDateTime.now().minusYears(1L).toLocalDate());
+                builder.queryParam(START, LocalDateTime.now().minusYears(value).toLocalDate());
                 return builder;
             default: log.warn(LOG_MSG);
         }
@@ -111,38 +108,39 @@ public class BuilderURL {
 
     private UriComponentsBuilder getPathVariableHistoricalTickers (UriComponentsBuilder builder, Period period) {
         ZonedDateTime time = ZonedDateTime.now(ZoneId.of(TIME_ZONE));
+        long value = period.getValue();
         switch (period){
             case TODAY:
-                builder.queryParam(START, time.minusHours(24L).toLocalDate());
+                builder.queryParam(START, time.minusHours(value).toLocalDate());
                 builder.queryParam(INTERVAL, Interval.M5.getValue());
                 return builder;
             case WEEK:
-                builder.queryParam(START, time.minusDays(7L).toLocalDate());
+                builder.queryParam(START, time.minusWeeks(value).toLocalDate());
                 builder.queryParam(INTERVAL, Interval.H1.getValue());
                 return builder;
             case MONTH:
-                builder.queryParam(START, time.minusMonths(1L).toLocalDate());
+                builder.queryParam(START, time.minusMonths(value).toLocalDate());
                 builder.queryParam(INTERVAL, Interval.H6.getValue());
                 return builder;
             case MONTH_3:
-                builder.queryParam(START, time.minusMonths(3L).toLocalDate());
+                builder.queryParam(START, time.minusMonths(value).toLocalDate());
                 builder.queryParam(INTERVAL, Interval.H12.getValue());
                 return builder;
             case MONTH_6:
-                builder.queryParam(START, time.minusMonths(6L).toLocalDate());
+                builder.queryParam(START, time.minusMonths(value).toLocalDate());
                 builder.queryParam(INTERVAL, Interval.H24.getValue());
                 return builder;
             case YEAR:
-                builder.queryParam(START, time.minusYears(1L).toLocalDate());
+                builder.queryParam(START, time.minusYears(value).toLocalDate());
                 builder.queryParam(INTERVAL, Interval.D1.getValue());
                 return builder;
             case YEAR_2:
-                builder.queryParam(START, time.minusYears(2L).toLocalDate());
-                builder.queryParam(INTERVAL, Interval.D1.getValue());
+                builder.queryParam(START, time.minusYears(value).toLocalDate());
+                builder.queryParam(INTERVAL, Interval.D7.getValue());
                 return builder;
             case YEAR_3:
-                builder.queryParam(START, time.minusYears(3L).toLocalDate());
-                builder.queryParam(INTERVAL, Interval.D7.getValue());
+                builder.queryParam(START, time.minusYears(value).toLocalDate());
+                builder.queryParam(INTERVAL, Interval.D14.getValue());
                 return builder;
             default: log.warn(LOG_MSG);
         }

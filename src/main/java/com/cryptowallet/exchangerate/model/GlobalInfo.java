@@ -13,8 +13,6 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonPropertyOrder({ "market_cap_usd", "volume_24h_usd", "bitcoin_dominance_percentage", "cryptocurrencies_number",
-//		"last_updated" })
 public class GlobalInfo {
 
 	@JsonProperty("market_cap_usd")

@@ -33,10 +33,4 @@ public class CoinChangeInfo {
     private Double percentChange30d;
     @JsonProperty("percent_change_1y")
     private Double percentChange1y;
-//    @JsonProperty("ath_price")
-//    private Double athPrice;
-//@JsonProperty("ath_date")
-//    private ZonedDateTime athDate;
-//    @JsonProperty("percent_from_price_ath")
-//    private Double percentFromPriceAth;
 }

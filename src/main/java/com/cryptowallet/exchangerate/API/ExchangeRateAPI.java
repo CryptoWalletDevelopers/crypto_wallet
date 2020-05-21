@@ -1,25 +1,23 @@
 package com.cryptowallet.exchangerate.API;
 
-import com.cryptowallet.exchangerate.model.Coin;
-import com.cryptowallet.exchangerate.model.CoinOHLC;
-import com.cryptowallet.exchangerate.model.GlobalInfo;
-import com.cryptowallet.exchangerate.model.Ticker;
-import com.cryptowallet.exchangerate.model.enumpack.CoinID;
+import com.cryptowallet.exchangerate.model.*;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
 
 import java.util.List;
 
 public interface ExchangeRateAPI {
 
+    List<CoinID> getCoinIdList ();
+
     GlobalInfo getGlobalInfo();
 
-    List<Ticker> getHistoryTickerList(CoinID idCoin, Period period);
+    List<Ticker> getHistoryTickerList(String idCoin, Period period);
 
-    Coin getCurrentCoinInfoById (CoinID idCoin);
+    Coin getCurrentCoinInfoById (String idCoin);
 
-    List<CoinOHLC> getCoinOHLCInfoLastDay (CoinID idCoin);
+    List<CoinOHLC> getCoinOHLCInfoLastDay (String idCoin);
 
-    List<CoinOHLC> getCoinOHLCInfoToday (CoinID idCoin);
+    List<CoinOHLC> getCoinOHLCInfoToday (String idCoin);
 
-    List<CoinOHLC> getCoinOHLCHistoryInfo (CoinID idCoin, Period period);
+    List<CoinOHLC> getCoinOHLCHistoryInfo (String idCoin, Period period);
 }
