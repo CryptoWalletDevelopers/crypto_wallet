@@ -29,38 +29,29 @@ public class BuilderURL {
     private final String TIME_ZONE = "Z";
     private final String LOG_MSG = "Invalid Period!";
 
-    //https://api.coinpaprika.com/v1/coins
     public String getCoinIdURL () {return URL+COINS;}
 
-    //https://api.coinpaprika.com/v1/global
     public String getGlobalURL() {
         return URL + GLOBAL;
     }
 
-    //https://api.coinpaprika.com/v1/tickers/btc-bitcoin
     public String getTickersURL(String idCoin) {
         return URL + TICKERS + idCoin;
     }
 
-    //вчера
-    //https://api.coinpaprika.com/v1/coins/{coin_id}/ohlcv/latest/
     public String getCoinOHLCInfoLastDay (String idCoin) {
         return URL + COINS + idCoin + OHLCV_LATEST;
     }
 
-    //сегодня
-    //https://api.coinpaprika.com/v1/coins/{coin_id}/ohlcv/today/
     public String getCoinOHLCInfoToday (String idCoin) {
         return URL + COINS + idCoin + OHLCV_TODAY;
     }
 
-    //https://api.coinpaprika.com/v1/coins/btc-bitcoin/ohlcv/historical?start=2019-01-01&end=2020-01-01&limit=366
     public String getCoinOHLCInfoPeriod (String idCoin, Period period) {
         String url = URL + COINS + idCoin + OHLCV_HISTORY;
         return setPathVariable(url, period, COINS);
     }
 
-    //https://api.coinpaprika.com/v1/tickers/btc-bitcoin/historical?start=2015-09-01&end=2020-05-13&limit=5000&interval=12h
     public String getHistoricalTickersURL (String idCoin, Period period) {
         String url = URL + TICKERS + idCoin + HISTORICAL;
         return setPathVariable(url, period, TICKERS);
@@ -79,8 +70,6 @@ public class BuilderURL {
         return builder.toUriString();
     }
 
-    // максимальное количество строк в ответе 366, поэтому YEAR_2 и YEAR_3 будут возвращать информацию за год
-    // иначе я буду получать информацию в 366 строки с даты START, но не до текущей даты
     private UriComponentsBuilder getPathVariableCoinOHLCInfoPeriod (UriComponentsBuilder builder, Period period) {
         ZonedDateTime time = ZonedDateTime.now(ZoneId.of(TIME_ZONE));//установка нулевого часового пояса
         long value = period.getValue();
