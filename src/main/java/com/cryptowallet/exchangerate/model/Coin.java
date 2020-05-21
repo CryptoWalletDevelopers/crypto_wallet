@@ -18,16 +18,16 @@ import java.util.Map;
  */
 public class Coin {
     private String id;
-//    private String name;
-//    private String symbol;
+    private String name;
+    private String symbol;
     private Long rank;
-//    @JsonProperty("circulating_supply")
-//    private Long circulatingSupply;
-//    @JsonProperty("total_supply")
-//    private Long totalSupply;
-//    @JsonProperty("max_supply")
-//    private Long maxSupply;
-//    @JsonProperty("last_updated")
-//    private ZonedDateTime lastUpdated;
-//    private Map<String, CoinChangeInfo> quotes;
+    @JsonProperty("circulating_supply")
+    private Long circulatingSupply;
+    @JsonProperty("total_supply")
+    private Long totalSupply;
+    @JsonProperty("max_supply")
+    private Long maxSupply;
+    @JsonProperty("last_updated")
+    private ZonedDateTime lastUpdated;
+    private Map<String, CoinChangeInfo> quotes;
 }
