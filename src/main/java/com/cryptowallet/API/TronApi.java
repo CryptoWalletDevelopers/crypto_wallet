@@ -10,10 +10,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import top.jfunc.json.JsonObject;
-import top.jfunc.json.impl.JSONArray;
 import top.jfunc.json.impl.JSONObject;
-
 import javax.annotation.PostConstruct;
 import java.util.*;
 
@@ -143,17 +140,13 @@ public class TronApi extends ApiClient {
         }
     }
 
-    public Result broadcastTransaction(String[] signature, String txID, JSONObject rawData, String raw_data_hex
-    ){
+    @Override
+    public Result broadcastTransaction(String[] signature, String txID, JSONObject rawData, String raw_data_hex){
         String url = "https://api.trongrid.io/wallet/broadcasttransaction";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         Map<String, Object> request = new HashMap<>();
-        System.out.println("send param: " + signature[0]);
-        System.out.println("send param: " + txID);
-        System.out.println("send param: " + rawData);
-        System.out.println("send param: " + raw_data_hex);
         request.put("visible", false);
         request.put("signature", signature);
         request.put("txID", txID);
@@ -161,10 +154,6 @@ public class TronApi extends ApiClient {
         request.put("raw_data_hex", raw_data_hex);
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
         ResponseEntity<Result> response = this.restTemplate.postForEntity(url, entity, Result.class);
-        System.out.println(entity);
-        System.out.println(response);
-        System.out.println(response.getStatusCode());
-        System.out.println(response.getBody());
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         } else {

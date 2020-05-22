@@ -30,7 +30,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public Currency findCurrencyByTitle(@NonNull String title) {
-        return currencyRepository.findCurrencyByTitle(title);
+        return currencyRepository.findCurrencyByTitle(title).get();
     }
 
     @Override

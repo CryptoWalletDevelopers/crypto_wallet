@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService  {
     }
 
     @Override
-    public User findUserByEmail(@NonNull String email) {
+    public Optional<User> findUserByEmail(@NonNull String email) {
         return userRepository.findUserByEmail(email);
     }
 
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService  {
     @Override
     public String getNewStringTronAddress(@NonNull User user, @NonNull Currency currency){
         String newAddress = tronWallet.getNewAddress(user);
-        Address address = new Address(user, currency ,getTronAddressIndex(user),newAddress);
+        Address address = new Address(user, currency ,getTronAddressIndex(user)+1,newAddress);
         user.getAddresses().add(address);
         addressService.save(address);
         return newAddress;
@@ -53,12 +53,13 @@ public class UserServiceImpl implements UserService  {
      }
 
      public HashMap<String, Integer> getAddressAndCurrency(@NonNull User user){
-         System.out.println(user.getEmail());
+        HashMap<String, Integer> map = new HashMap<>();
          Collection<Address> addresses =  user.getAddresses();
-         HashMap<String, Integer> map = new HashMap<>();
-         addresses.stream().forEach(address -> {
-             map.put(address.getAddress(), address.getCurrency().getIndex());
-         });
+         if(!addresses.isEmpty()){
+             addresses.stream().forEach(address -> {
+                 map.put(address.getAddress(), address.getCurrency().getIndex());
+             });
+         }
          return map;
      }
 
@@ -66,10 +67,16 @@ public class UserServiceImpl implements UserService  {
      public ArrayList<WalletItem> getWalletItems(@NonNull User user){
          ArrayList<WalletItem> walletItems= new ArrayList<>();
          HashMap<String, Integer> pairs = getAddressAndCurrency(user);
-         for (Map.Entry<String, Integer> entry : pairs.entrySet()) {
-             if(entry.getValue()== tronIndex){
-                 Long balance = tronApi.getAccountInfoByAddress(entry.getKey()).getData()[0].getBalance();
-                 walletItems.add(new WalletItem(entry.getKey(), entry.getValue() ,balance));
+         if(!pairs.isEmpty()){
+             for (Map.Entry<String, Integer> entry : pairs.entrySet()) {
+                 if (entry.getValue() == tronIndex) {
+                     if (tronApi.getAccountInfoByAddress(entry.getKey()).getData().length == 0) {
+                         walletItems.add(new WalletItem(entry.getKey(), entry.getValue(), 0L));
+                     } else {
+                         Long balance = tronApi.getAccountInfoByAddress(entry.getKey()).getData()[0].getBalance();
+                         walletItems.add(new WalletItem(entry.getKey(), entry.getValue(), balance));
+                     }
+                 }
              }
          }
          return walletItems;

@@ -39,17 +39,16 @@ public class WalletControllerTest {
         principal = new Principal() {
             @Override
             public String getName() {
-                return "email1";
+                return "email1@mail.ru";
             }
         };
     }
 
     @Test
-    public void startTest() throws Exception {
+    public void walletTest() throws Exception {
         mockMvc.perform(get("http://localhost:8189/wallet/").principal(principal))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("redirect:/wallet"));
+                .andExpect(status().isOk());
     }
 
     @Test

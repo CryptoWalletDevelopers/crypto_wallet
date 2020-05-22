@@ -4,12 +4,12 @@ import com.cryptowallet.entities.*;
 import com.cryptowallet.services.implementations.CurrencyServiceImpl;
 import com.cryptowallet.services.implementations.TronTransactionServiceImpl;
 import com.cryptowallet.services.implementations.UserServiceImpl;
-import com.cryptowallet.wallets.TronWallet;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/wallet")
@@ -18,31 +18,32 @@ public class WalletController {
     private TronTransactionServiceImpl tronTransactionService;
     private CurrencyServiceImpl currencyService;
     private TronApi tronApi;
-    private TronWallet tronWallet;
-    private final int TRONINDEX = 195;
+    private UserWallet userWallet;
+    private final int INDEX = 195;
 
     @Autowired
-    public WalletController(UserServiceImpl userService, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronApi tronApi, TronWallet tronWallet) {
+    public WalletController(UserServiceImpl userService, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronApi tronApi, UserWallet userWallet) {
         this.userService = userService;
         this.tronTransactionService = tronTransactionService;
         this.currencyService = currencyService;
         this.tronApi = tronApi;
-        this.tronWallet = tronWallet;
+        this.userWallet = userWallet;
     }
 
     @GetMapping(value = "/")
     public String wallet(Principal principal, Model model){
-        User user = userService.findUserByEmail(principal.getName());
-        model.addAttribute("userWallet", new UserWallet(userService.getWalletItems(user)));
+        User user = userService.findUserByEmail(principal.getName()).get();
+        userWallet.setWalletItems(userService.getWalletItems(user));
+        model.addAttribute("userWallet", userWallet);
         model.addAttribute("currency", currencyService.findAll());
         return "redirect:/wallet";
     }
 
     @PostMapping(value = "/new")
     public String getNewAddress(Principal principal, @RequestParam(name = "currencyTitle") String currencyTitle, Model model){
-        User user = userService.findUserByEmail(principal.getName());
+        User user = userService.findUserByEmail(principal.getName()).get();
         Currency currency = currencyService.findCurrencyByTitle(currencyTitle);
-        if (currency.getIndex()==TRONINDEX)
+        if (currency.getIndex()== INDEX)
         model.addAttribute("address", userService.getNewStringTronAddress(user,currency));
         return "redirect:/wallet/new";
     }

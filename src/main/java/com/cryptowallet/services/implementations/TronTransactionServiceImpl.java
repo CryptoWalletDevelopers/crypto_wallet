@@ -1,7 +1,6 @@
 package com.cryptowallet.services.implementations;
 
 import com.cryptowallet.API.TronApi;
-import com.cryptowallet.crypto.ECKey;
 import com.cryptowallet.services.interfaces.TransactionService;
 import com.cryptowallet.tronModels.Result;
 import com.cryptowallet.tronModels.Transaction;
@@ -11,16 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.SerializationUtils;
-import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sun.security.util.Length;
-import top.jfunc.json.impl.JSONArray;
 import top.jfunc.json.impl.JSONObject;
-
-import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
 
 @Component
 public class TronTransactionServiceImpl implements TransactionService {
@@ -51,9 +43,6 @@ public class TronTransactionServiceImpl implements TransactionService {
 
         signedTransactionStr = signedTransactionStr.replaceAll("\\s+","");
         signedTransactionStr = signedTransactionStr.replaceAll("\\n",",");
-
-        System.out.println(signedTransactionStr);
-        System.out.println(stringToHex(signedTransactionStr));
 
         String rawDataStr = "";
         try {
@@ -86,51 +75,4 @@ public class TronTransactionServiceImpl implements TransactionService {
         }
         return new String(chars);
     }
-
-//    public Transaction createTransaction(byte[] from, byte[] to, long amount) {
-//        Transaction.Builder transactionBuilder = Transaction.newBuilder();
-//       // Block newestBlock = WalletApi.getBlock(-1);
-//        Block newestBlock = tronApi.getNowBlock();
-//        /*set the contract data*/
-//        Transaction.Contract.Builder contractBuilder = Transaction.Contract.newBuilder();
-//        Contract.TransferContract.Builder transferContractBuilder =
-//                Contract.TransferContract.newBuilder();
-//        transferContractBuilder.setAmount(amount);
-//        ByteString bsTo = ByteString.copyFrom(to);
-//        ByteString bsOwner = ByteString.copyFrom(from);
-//        transferContractBuilder.setToAddress(bsTo);
-//        transferContractBuilder.setOwnerAddress(bsOwner);
-//        try {
-//            Any any = Any.pack(transferContractBuilder.build());
-//            contractBuilder.setParameter(any);
-//        } catch (Exception e) {
-//            return null;
-//        }
-//        /*set memo,etc*/
-//        contractBuilder.setType(Transaction.Contract.ContractType.TransferContract);
-//        transactionBuilder.getRawDataBuilder().addContract(contractBuilder)
-//                .setTimestamp(System.currentTimeMillis())
-//                .setExpiration(newestBlock.getBlockHeader().getRawData().getTimestamp() + 10 * 60 * 60 * 1000)
-//                .setData(ByteString.copyFromUtf8("memo"))
-//                .setScripts(ByteString.copyFromUtf8("scripts"));
-//        Transaction transaction = transactionBuilder.build();
-//        Transaction refTransaction = setReference(transaction, newestBlock);
-//        return refTransaction;
-//    }
-
-//    public static Transaction setReference(Transaction transaction, Block newestBlock) {
-//        long blockHeight = newestBlock.getBlockHeader().getRawData().getNumber();
-//        byte[] blockHash = getBlockHash(newestBlock).getBytes();
-//        byte[] refBlockNum = ByteArray.fromLong(blockHeight);
-//        Transaction.raw rawData = transaction.getRawData().toBuilder()
-//                .setRefBlockHash(ByteString.copyFrom(ByteArray.subArray(blockHash, 8, 16)))
-//                .setRefBlockBytes(ByteString.copyFrom(ByteArray.subArray(refBlockNum, 6, 8)))
-//                .setRefBlockNum(blockHeight)
-//                .build();
-//        return transaction.toBuilder().setRawData(rawData).build();
-//    }
-//
-//    public static Sha256Sm3Hash getBlockHash(Block block) {
-//        return Sha256Sm3Hash.of(block.getBlockHeader().getRawData().toByteArray());
-//    }
 }

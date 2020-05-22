@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Component
 public interface UserService {
-   User findUserByEmail(@NonNull String email);
+   Optional<User> findUserByEmail(@NonNull String email);
    void save (@NonNull User user);
    String getNewStringTronAddress(@NonNull User user, @NonNull Currency currency);
    int getTronAddressIndex(@NonNull User user);

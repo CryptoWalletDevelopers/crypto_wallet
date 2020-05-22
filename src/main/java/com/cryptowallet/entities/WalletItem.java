@@ -1,6 +1,7 @@
 package com.cryptowallet.entities;
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 @Data
 public class WalletItem {

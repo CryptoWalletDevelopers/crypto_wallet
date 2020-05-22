@@ -13,8 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CurrencyRepository extends JpaRepository<Currency, Long> {
     Optional<Currency> findCurrencyByIndex(@NonNull int index);
-    Currency findCurrencyByTitle(@NonNull String title);
+    Optional<Currency> findCurrencyByTitle(@NonNull String title);
     Optional<Currency> findCurrencyByShortTitle(@NonNull String shortTitle);
- //   @Query("select short_title from currency;")
-  //  List<String> findAllShortNames();
+
 }
