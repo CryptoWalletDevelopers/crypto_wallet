@@ -7,6 +7,8 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AddressServiceImpl implements AddressService {
     private AddressRepository addressRepository;
@@ -19,6 +21,11 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public void save(@NonNull Address address){
         addressRepository.save(address);
+    }
+
+    @Override
+    public Optional<Address> findAddressesByAddress(@NonNull String address) {
+        return addressRepository.findAddressesByAddress(address);
     }
 
 }
