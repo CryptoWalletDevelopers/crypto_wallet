@@ -1,14 +1,9 @@
 package com.cryptowallet.API;
 
-import com.cryptowallet.tronModels.Account;
-import com.cryptowallet.tronModels.Block;
-import com.cryptowallet.tronModels.Result;
-import com.cryptowallet.tronModels.Transaction;
-import org.springframework.stereotype.Component;
+import com.cryptowallet.tronModels.*;
+import top.jfunc.json.impl.JSONObject;
 
-@Component
 public abstract class ApiClient {
-   // public abstract void getNode();
 
     public abstract Block getNowBlock();
 
@@ -22,9 +17,12 @@ public abstract class ApiClient {
 
     public abstract Result broadcastTransactionHex(String transaction);
 
-    public abstract void transactionIfoByAccountAddress();
+    public abstract Result broadcastTransaction (String[] signature, String txID, JSONObject rawData, String raw_data_hex);
 
     public abstract Account accountInfoByAddress(String address);
+
+    public  abstract AccountInfo getAccountInfoByAddress(String address);
+
 }
 
 

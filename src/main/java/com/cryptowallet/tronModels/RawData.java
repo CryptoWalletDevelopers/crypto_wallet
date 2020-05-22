@@ -1,11 +1,15 @@
 package com.cryptowallet.tronModels;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class RawData {
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+public class RawData implements Serializable {
     private Long number;
     private String txTrieRoot;
     @JsonProperty("witness_address")

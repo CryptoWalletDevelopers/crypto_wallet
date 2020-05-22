@@ -2,7 +2,6 @@ package com.cryptowallet.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ public class User {
     private String date_exp;
 
     public User(String login, String password, String email, boolean approved) {
-        this.id = id;
         this.login = login;
         this.password = password;
         this.email = email;

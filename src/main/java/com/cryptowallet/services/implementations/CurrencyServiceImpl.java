@@ -6,7 +6,7 @@ import com.cryptowallet.services.interfaces.CurrencyService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,7 +29,13 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public Optional<Currency> findCurrencyByTitle(@NonNull String title) {
-        return currencyRepository.findCurrencyByTitle(title);
+    public Currency findCurrencyByTitle(@NonNull String title) {
+        return currencyRepository.findCurrencyByTitle(title).get();
     }
+
+    @Override
+    public List<Currency> findAll() {
+        return currencyRepository.findAll();
+    }
+
 }

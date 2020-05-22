@@ -2,9 +2,7 @@ package com.cryptowallet.wallets;
 
 import com.cryptowallet.crypto.ECKey;
 import lombok.NonNull;
-import org.springframework.stereotype.Component;
 
-@Component
 public abstract class Wallet {
 
     public Wallet(){}

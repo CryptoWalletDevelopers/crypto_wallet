@@ -1,76 +1,83 @@
 package com.cryptowallet.controller;
-
-import com.cryptowallet.entities.Address;
-import com.cryptowallet.entities.Currency;
-import com.cryptowallet.entities.User;
-import com.cryptowallet.services.implementations.AddressServiceImpl;
+import com.cryptowallet.API.TronApi;
+import com.cryptowallet.entities.*;
 import com.cryptowallet.services.implementations.CurrencyServiceImpl;
+import com.cryptowallet.services.implementations.TronTransactionServiceImpl;
 import com.cryptowallet.services.implementations.UserServiceImpl;
-import com.cryptowallet.wallets.TronWallet;
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Optional;
-
 
 @RestController
-@RequestMapping("wallet")
+@RequestMapping("/wallet")
 public class WalletController {
     private UserServiceImpl userService;
-    private AddressServiceImpl addressService;
+    private TronTransactionServiceImpl tronTransactionService;
     private CurrencyServiceImpl currencyService;
-    private Currency currency;
-    private TronWallet tronWallet;
+    private TronApi tronApi;
+    private UserWallet userWallet;
+    private final int INDEX = 195;
 
-    public WalletController(UserServiceImpl userService, AddressServiceImpl addressService, CurrencyServiceImpl currencyService){
+    @Autowired
+    public WalletController(UserServiceImpl userService, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronApi tronApi, UserWallet userWallet) {
         this.userService = userService;
-        this.addressService = addressService;
+        this.tronTransactionService = tronTransactionService;
         this.currencyService = currencyService;
+        this.tronApi = tronApi;
+        this.userWallet = userWallet;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/")
     public String wallet(Principal principal, Model model){
-        Optional<User> user = userService.findUserByEmail(principal.getName());
-        ArrayList<Address> addresses = (ArrayList<Address>) user.get().getAddresses();
-       if(!addresses.isEmpty()){
-           for (int i= 0; i<addresses.size();i++){
-               addresses.get(i).getCurrency();
-//               addresses.get(i).getBalance();
-           }
-       }
-       model.addAttribute("wallet", tronWallet);
-       model.addAttribute("currency", currency);
+        User user = userService.findUserByEmail(principal.getName()).get();
+        userWallet.setWalletItems(userService.getWalletItems(user));
+        model.addAttribute("userWallet", userWallet);
+        model.addAttribute("currency", currencyService.findAll());
         return "redirect:/wallet";
     }
 
-    @RequestMapping(value = "/new", method = RequestMethod.POST)
-    public String getNewAddress(Principal principal, @ModelAttribute(name = "currency") Currency currency, Model model){
+    @PostMapping(value = "/new")
+    public String getNewAddress(Principal principal, @RequestParam(name = "currencyTitle") String currencyTitle, Model model){
         User user = userService.findUserByEmail(principal.getName()).get();
-        if (currency.getIndex()==195){
-        String address = userService.getNewStringTronAddress(user,currency);
-        model.addAttribute("address", address);
-        }
-        return "redirect://wallet/new";
+        Currency currency = currencyService.findCurrencyByTitle(currencyTitle);
+        if (currency.getIndex()== INDEX)
+        model.addAttribute("address", userService.getNewStringTronAddress(user,currency));
+        return "redirect:/wallet/new";
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public String getInfo(){
-        return null;
+    @PostMapping(value = "/update")
+    public String getInfo(@RequestParam(name = "address") String address, Model model){
+        model.addAttribute("balance", tronApi.getAccountInfoByAddress(address).getData()[0].getBalance());
+        return "/wallet";
     }
 
-    @RequestMapping(value = "/send", method = RequestMethod.POST)
+    @GetMapping(value = "/send")
     public String send(){
-        return null;
+        return "send";
     }
 
-    @RequestMapping(value = "/get", method = RequestMethod.POST)
+    @PostMapping(value = "/transfer")
+    public String send(@RequestParam(name = "address_to") String address_to, @RequestParam(name = "address_from") String address_from, @RequestParam(name= "amount") int amount) throws InvalidProtocolBufferException {
+        if (tronTransactionService.TransferTransaction(address_to,address_from,amount).isResult()==true)
+        {return "redirect: /";}
+        else
+            return null;
+    }
+
+    @GetMapping(value = "/get")
     public String getMoney(){
-        return null;
+        return "get";
     }
 
+    @PostMapping(value = "/confirm")
+    public String confirmPurchase(@RequestParam(name = "address") String address, @RequestParam(name = "amount") int amount) throws InvalidProtocolBufferException {
+        String address_from ="TKmdnkRurAxJyd1VeE8BLGmY5oaH2UBfLn";
+        if (tronTransactionService.TransferTransaction(address,address_from,amount).isResult()==true){
+            return "redirect:/wallet/";}
+        else
+            return null;
+    }
 }

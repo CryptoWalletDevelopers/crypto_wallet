@@ -1,10 +1,7 @@
 package com.cryptowallet.API;
 
-import com.cryptowallet.tronModels.Account;
-import com.cryptowallet.tronModels.Block;
-import com.cryptowallet.tronModels.Result;
-import com.cryptowallet.tronModels.Transaction;
-import lombok.Data;
+import com.cryptowallet.tronModels.*;
+import com.cryptowallet.wallets.TronWallet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
@@ -13,18 +10,20 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import top.jfunc.json.impl.JSONObject;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
-@Data
-@Component
 @EnableWebMvc
+@Component
 public class TronApi extends ApiClient {
     private final RestTemplate restTemplate;
+    private TronWallet tronWallet;
 
     @Autowired
-    public TronApi(RestTemplateBuilder restTemplateBuilder){
+    public TronApi(RestTemplateBuilder restTemplateBuilder, TronWallet tronWallet){
         this.restTemplate = restTemplateBuilder.build();
+        this.tronWallet = tronWallet;
     }
 
     @PostConstruct
@@ -116,6 +115,7 @@ public class TronApi extends ApiClient {
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
         ResponseEntity<Transaction> response = this.restTemplate.postForEntity(url,entity,Transaction.class);
         if (response.getStatusCode() == HttpStatus.OK) {
+            System.out.println(response.getBody());
             return response.getBody();
         } else {
             return null;
@@ -130,6 +130,28 @@ public class TronApi extends ApiClient {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         Map<String, Object> request = new HashMap<>();
         request.put("transaction", transaction);
+        HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
+        ResponseEntity<Result> response = this.restTemplate.postForEntity(url, entity, Result.class);
+        System.out.println(response.getBody());
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Result broadcastTransaction(String[] signature, String txID, JSONObject rawData, String raw_data_hex){
+        String url = "https://api.trongrid.io/wallet/broadcasttransaction";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        Map<String, Object> request = new HashMap<>();
+        request.put("visible", false);
+        request.put("signature", signature);
+        request.put("txID", txID);
+        request.put("rawData", rawData);
+        request.put("raw_data_hex", raw_data_hex);
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
         ResponseEntity<Result> response = this.restTemplate.postForEntity(url, entity, Result.class);
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -157,7 +179,14 @@ public class TronApi extends ApiClient {
     }
 
     @Override
-    public void transactionIfoByAccountAddress() {
-
+    public AccountInfo getAccountInfoByAddress(String address){
+        String url = "https://api.trongrid.io/v1/accounts/";
+        String urlRes = url.concat(address);
+        ResponseEntity<AccountInfo> response = this.restTemplate.getForEntity(urlRes, AccountInfo.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            return null;
+        }
     }
 }

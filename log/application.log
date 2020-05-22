@@ -1,0 +1,16 @@
+2020-05-21 23:34:19 INFO  Starting TransactionServiceTest on MacBook-Pro-Irina.local with PID 50368 (started by irisha in /Users/irisha/Documents/crypto_wallet)
+2020-05-21 23:34:19 INFO  No active profile set, falling back to default profiles: default
+2020-05-21 23:34:25 INFO  [1;32m
+
+===========================
+╔═══╗╔════╗╔═══╗╔═══╗╔════╗
+║╔═╗║║╔╗╔╗║║╔═╗║║╔═╗║║╔╗╔╗║
+║╚══╗╚╝║║╚╝║║ ║║║╚═╝║╚╝║║╚╝
+╚══╗║  ║║  ║╚═╝║║╔╗╔╝  ║║
+║╚═╝║  ║║  ║╔═╗║║║║╚╗  ║║
+╚═══╝  ╚╝  ╚╝ ╚╝╚╝╚═╝  ╚╝
+===========================
+
+2020-05-21 23:34:25 INFO  [-ea, -Didea.test.cyclic.buffer.size=1048576, -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=57654:/Applications/IntelliJ IDEA.app/Contents/bin, -Dfile.encoding=UTF-8]
+2020-05-21 23:34:25 INFO  Application Has Started->
+2020-05-21 23:34:25 INFO  Started TransactionServiceTest in 6.978 seconds (JVM running for 8.969)
