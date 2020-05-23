@@ -22,7 +22,7 @@ public class BuilderURL {
     private final String COINS = "coins/";
     private final String START = "start";
     private final String END = "end";
-    private final String LIMIT = "limit";//amount row in response from 1000 to 5000
+    private final String LIMIT = "limit";
     private final String INTERVAL = "interval";
     private final Integer ROWS = 5000;
     private final Integer ROWS_OHLC = 366;
@@ -71,7 +71,7 @@ public class BuilderURL {
     }
 
     private UriComponentsBuilder getPathVariableCoinOHLCInfoPeriod (UriComponentsBuilder builder, Period period) {
-        ZonedDateTime time = ZonedDateTime.now(ZoneId.of(TIME_ZONE));//установка нулевого часового пояса
+        ZonedDateTime time = ZonedDateTime.now(ZoneId.of(TIME_ZONE));
         long value = period.getValue();
         switch (period){
             case TODAY:
@@ -88,7 +88,7 @@ public class BuilderURL {
             case YEAR:
             case YEAR_2:
             case YEAR_3:
-                builder.queryParam(START, LocalDateTime.now().minusYears(value).toLocalDate());
+                builder.queryParam(START, LocalDateTime.now().minusYears(1L).toLocalDate());//пока так
                 return builder;
             default: log.warn(LOG_MSG);
         }

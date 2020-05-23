@@ -24,11 +24,11 @@ public interface ExchangeRateAPIService {
      * Возвращает информацию по валюте на текущий момент,
      * процентное изменение цены за 1ч, 12ч, 24ч, 7 дней, 30 дней, 1 год
      */
-    Coin getCurrentCoinInfo(String idCoin);
+    Coin getCurrentCoinInfoById(String idCoin);
 
     /**
      * Возвращает лист валют c рангом от (start + 1) до (start + limit + 1) отсортированный по рангу
-     * отсчет массива начинается от 0
+     * отсчет массива start начинается от 0
      */
     List<Coin> getListCoinInfo(Integer start, Integer limit);
 

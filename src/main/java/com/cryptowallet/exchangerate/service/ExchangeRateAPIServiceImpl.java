@@ -6,14 +6,15 @@ import com.cryptowallet.exchangerate.model.CoinID;
 import com.cryptowallet.exchangerate.model.CoinOHLC;
 import com.cryptowallet.exchangerate.model.Ticker;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Log4j2
 @Service
 public class ExchangeRateAPIServiceImpl implements ExchangeRateAPIService {
-
     private ExchangeRateAPIImpl exchangeRateAPIImpl;
 
     @Autowired
@@ -30,27 +31,31 @@ public class ExchangeRateAPIServiceImpl implements ExchangeRateAPIService {
     }
 
     @Override
-    public Coin getCurrentCoinInfo(String idCoin) {
+    public Coin getCurrentCoinInfoById(String idCoin) {
         return exchangeRateAPIImpl.getCurrentCoinInfoById(idCoin);
     }
 
     @Override
-    public List<Ticker> getHistoryCoinInfoFoThePeriod(String idCoin, Period period) {
-        return exchangeRateAPIImpl.getHistoryTickerList(idCoin, period);
+    public List<Ticker> getHistoryCoinInfoFoThePeriod (String idCoin, Period period) {
+        try {
+            return exchangeRateAPIImpl.getHistoryCoinInfoFoThePeriod(idCoin, period);
+        }catch (IndexOutOfBoundsException e) {
+            throw e;
+        }
     }
 
     @Override
     public List<CoinOHLC> getCoinOHLCInfoLastFullDay (String idCoin) {
-        return exchangeRateAPIImpl.getCoinOHLCInfoLastDay(idCoin);
+        return exchangeRateAPIImpl.getCoinOHLCInfoLastFullDay(idCoin);
     }
 
     @Override
     public List<CoinOHLC> getCoinOHLCInfoForToday (String idCoin) {
-        return exchangeRateAPIImpl.getCoinOHLCInfoToday(idCoin);
+        return exchangeRateAPIImpl.getCoinOHLCInfoForToday(idCoin);
     }
 
     @Override
     public List<CoinOHLC> getHistoryCoinOHLCInfoForThePeriod (String idCoin, Period period) {
-        return exchangeRateAPIImpl.getCoinOHLCHistoryInfo(idCoin, period);
+        return exchangeRateAPIImpl.getHistoryCoinOHLCInfoForThePeriod(idCoin, period);
     }
 }

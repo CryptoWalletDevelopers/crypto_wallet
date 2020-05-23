@@ -23,6 +23,7 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
     private final String TIME_ZONE = "Z";
     private final long H24 = 24L;
     private final String LOG_MSG = "Request failed!";
+    private final String MSG_EXC = "Position start or limit dont correct!";
     private RestTemplate restTemplate;
     private BuilderURL builderURL;
     private List<CoinID> coinID;
@@ -61,7 +62,7 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
     }
 
     @Override
-    public List<Ticker> getHistoryTickerList(String idCoin, Period period) {
+    public List<Ticker> getHistoryCoinInfoFoThePeriod(String idCoin, Period period) {
         List<Ticker> list = new ArrayList<>();
         ResponseEntity <List<Ticker>> response = restTemplate.exchange(builderURL.getHistoricalTickersURL(idCoin, period), HttpMethod.GET,
                 null, new ParameterizedTypeReference<List<Ticker>>(){});
@@ -88,17 +89,26 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
         return new Coin();
     }
 
+    @Override
     public List<Coin> getListCoinInfo (Integer start, Integer limit) {
         if (start == 0) {getCoinIdList();}
-        List<Coin> list = new ArrayList<>();
-        for (int i = start; i < limit; i++) {
-            list.add(getCurrentCoinInfoById(coinID.get(i).getId()));
+        Integer size = coinID.size();
+        try {
+            if(start>=size || limit==0 || limit>=size){ throw new IndexOutOfBoundsException (MSG_EXC);}
+            List<Coin> list = new ArrayList<>();
+            for (int i = start; i < limit + start; i++) {
+                if(i==coinID.size()){break;}
+                list.add(getCurrentCoinInfoById(coinID.get(i).getId()));
+            }
+            return list;
+        } catch (IndexOutOfBoundsException e) {
+            log.warn(MSG_EXC);
+            throw e;
         }
-        return list;
     }
 
     @Override
-    public List<CoinOHLC> getCoinOHLCInfoLastDay (String idCoin) {
+    public List<CoinOHLC> getCoinOHLCInfoLastFullDay(String idCoin) {
         ResponseEntity<List<CoinOHLC>> response = restTemplate.exchange(builderURL.getCoinOHLCInfoLastDay(idCoin), HttpMethod.GET,
                 null, new ParameterizedTypeReference<List<CoinOHLC>>() {});
         if (response.getStatusCode().is2xxSuccessful()) {
@@ -108,7 +118,7 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
     }
 
     @Override
-    public List<CoinOHLC> getCoinOHLCInfoToday (String idCoin) {
+    public List<CoinOHLC> getCoinOHLCInfoForToday(String idCoin) {
         ResponseEntity<List<CoinOHLC>> response = restTemplate.exchange(builderURL.getCoinOHLCInfoToday(idCoin), HttpMethod.GET,
                 null, new ParameterizedTypeReference<List<CoinOHLC>>() {});
         if (response.getStatusCode().is2xxSuccessful()) {
@@ -118,7 +128,7 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
     }
 
     @Override
-    public List<CoinOHLC> getCoinOHLCHistoryInfo (String idCoin, Period period) {
+    public List<CoinOHLC> getHistoryCoinOHLCInfoForThePeriod(String idCoin, Period period) {
         ResponseEntity<List<CoinOHLC>> response = restTemplate.exchange(builderURL.getCoinOHLCInfoPeriod(idCoin, period), HttpMethod.GET,
                 null, new ParameterizedTypeReference<List<CoinOHLC>>() {});
         if (response.getStatusCode().is2xxSuccessful()) {

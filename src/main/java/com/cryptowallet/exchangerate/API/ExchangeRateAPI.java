@@ -11,13 +11,15 @@ public interface ExchangeRateAPI {
 
     GlobalInfo getGlobalInfo();
 
-    List<Ticker> getHistoryTickerList(String idCoin, Period period);
+    List<Ticker> getHistoryCoinInfoFoThePeriod(String idCoin, Period period);
 
     Coin getCurrentCoinInfoById (String idCoin);
 
-    List<CoinOHLC> getCoinOHLCInfoLastDay (String idCoin);
+    List<Coin> getListCoinInfo (Integer start, Integer limit);
 
-    List<CoinOHLC> getCoinOHLCInfoToday (String idCoin);
+    List<CoinOHLC> getCoinOHLCInfoLastFullDay(String idCoin);
 
-    List<CoinOHLC> getCoinOHLCHistoryInfo (String idCoin, Period period);
+    List<CoinOHLC> getCoinOHLCInfoForToday(String idCoin);
+
+    List<CoinOHLC> getHistoryCoinOHLCInfoForThePeriod(String idCoin, Period period);
 }
