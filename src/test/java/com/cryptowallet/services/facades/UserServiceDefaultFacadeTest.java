@@ -2,7 +2,7 @@ package com.cryptowallet.services.facades;
 
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.MailServiceDefault;
-import com.cryptowallet.services.RoleServiceImpl;
+import com.cryptowallet.services.RoleServiceDefault;
 import com.cryptowallet.services.UserServiceDefault;
 import lombok.extern.log4j.Log4j2;
 import org.junit.Assert;
@@ -36,7 +36,7 @@ public class UserServiceDefaultFacadeTest {
     @Autowired
     private UserServiceFacadeImpl facade;
     @Autowired
-    private RoleServiceImpl roleServiceImpl;
+    private RoleServiceDefault roleServiceDefault;
     @Autowired
     private UserServiceDefault userServiceDefault;
 
@@ -172,7 +172,7 @@ public class UserServiceDefaultFacadeTest {
     private User createTestUser(String name) {
         User user = new User();
         user.setPassword("test-password");
-        user.setRole(roleServiceImpl.getUserRole());
+        user.setRole(roleServiceDefault.getUserRole());
         user.setEmail(name + "_mail@test.test");
         user.setLogin(name);
         return user;

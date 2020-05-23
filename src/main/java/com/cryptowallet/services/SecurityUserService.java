@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 @Service
 public class SecurityUserService implements UserDetailsService {
     private final UserServiceDefault userServiceDefault;
-    private final RoleServiceImpl roleServiceImpl;
+    private final RoleServiceDefault roleServiceDefault;
 
     @Autowired
-    public SecurityUserService(UserServiceDefault userServiceDefault, RoleServiceImpl roleServiceImpl) {
+    public SecurityUserService(UserServiceDefault userServiceDefault, RoleServiceDefault roleServiceDefault) {
         this.userServiceDefault = userServiceDefault;
-        this.roleServiceImpl = roleServiceImpl;
+        this.roleServiceDefault = roleServiceDefault;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class SecurityUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(@NonNull String login) throws UsernameNotFoundException {
         User user = userServiceDefault.findByLoginOrEmail(login).get();
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
-                mapRolesToAuthorises(roleServiceImpl.addToCollection(user.getRole())));
+                mapRolesToAuthorises(roleServiceDefault.addToCollection(user.getRole())));
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorises(Collection<Role> roles) {

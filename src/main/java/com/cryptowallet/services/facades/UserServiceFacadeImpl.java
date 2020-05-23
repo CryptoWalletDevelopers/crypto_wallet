@@ -2,12 +2,13 @@ package com.cryptowallet.services.facades;
 
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.MailServiceDefault;
-import com.cryptowallet.services.RoleServiceImpl;
+import com.cryptowallet.services.RoleServiceDefault;
 import com.cryptowallet.services.UserServiceDefault;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,14 +18,14 @@ import javax.servlet.http.HttpServletRequest;
 public class UserServiceFacadeImpl implements UserServiceFacade {
     private final UserServiceDefault userServiceDefault;
     private final MailServiceDefault mailServiceDefault;
-    private final RoleServiceImpl roleServiceImpl;
+    private final RoleServiceDefault roleServiceDefault;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceFacadeImpl(UserServiceDefault userServiceDefault, MailServiceDefault mailServiceDefault, RoleServiceImpl roleServiceImpl, PasswordEncoder passwordEncoder) {
+    public UserServiceFacadeImpl(UserServiceDefault userServiceDefault, MailServiceDefault mailServiceDefault, RoleServiceDefault roleServiceDefault, PasswordEncoder passwordEncoder) {
         this.userServiceDefault = userServiceDefault;
         this.mailServiceDefault = mailServiceDefault;
-        this.roleServiceImpl = roleServiceImpl;
+        this.roleServiceDefault = roleServiceDefault;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -57,7 +58,7 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
         user.setLogin(user.getLogin().toLowerCase());
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(passwordEncode(user.getPassword()));
-        user.setRole(roleServiceImpl.getUserRole());
+        user.setRole(roleServiceDefault.getUserRole());
         userServiceDefault.saveUser(user);
         sendActiveCodeToMail(user);
         loginToSite(user.getLogin(), password, request);

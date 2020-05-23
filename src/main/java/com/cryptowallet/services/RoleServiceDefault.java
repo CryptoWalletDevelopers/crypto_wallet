@@ -13,13 +13,13 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class RoleServiceImpl implements RoleService {
+public class RoleServiceDefault implements RoleService {
     private final Set<Role> authorities = new HashSet<>();
 
     private final RoleRepository roleRepository;
 
     @Autowired
-    public RoleServiceImpl(RoleRepository roleRepository) {
+    public RoleServiceDefault(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
@@ -36,5 +36,9 @@ public class RoleServiceImpl implements RoleService {
 
     public Role getUserRole() {
         return getRoleById(UsersRoles.ROLE_USER.getRole()).get();
+    }
+
+    public void saveRole(Role role) {
+        roleRepository.save(role);
     }
 }

@@ -2,7 +2,7 @@ package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.MailServiceDefault;
-import com.cryptowallet.services.RoleServiceImpl;
+import com.cryptowallet.services.RoleServiceDefault;
 import com.cryptowallet.services.SecurityUserService;
 import com.cryptowallet.services.facades.UserServiceFacadeImpl;
 
@@ -37,13 +37,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/create-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class TestPostCreateUser {
     @Autowired
     private MockMvc mvc;
-    @Autowired
-    private RoleServiceImpl roleServiceImpl;
+    @MockBean
+    private RoleServiceDefault roleServiceDefault;
     @Autowired
     private UserServiceFacadeImpl userServiceFacadeImpl;
     @Autowired
@@ -64,7 +62,7 @@ public class TestPostCreateUser {
         user.setLogin("test");
         user.setEmail("test@localhost.com");
         user.setPassword("1234567");
-        user.setRole(roleServiceImpl.getUserRole());
+        user.setRole(roleServiceDefault.getUserRole());
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())

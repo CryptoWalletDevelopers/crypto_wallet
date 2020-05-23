@@ -1,13 +1,21 @@
 package com.cryptowallet.services;
 
+import com.cryptowallet.configuration.SecurityConfig;
+import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
 
+import com.cryptowallet.services.interfaces.RoleService;
 import lombok.extern.log4j.Log4j2;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -16,18 +24,33 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/create-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class UserServiceDefaultTest {
     @Autowired
     private UserServiceDefault userServiceDefault;
     @Autowired
-    private RoleServiceImpl roleServiceImpl;
+    private RoleServiceDefault roleServiceDefault;
+    @MockBean
+    private SecurityUserService securityUserService;
+
+
+    @BeforeEach
+    private void initTest() {
+        Role role = new Role();
+        role.setTitle("ROLE_USER");
+        roleServiceDefault.saveRole(role);
+        User user = createTestUser("second");
+        userServiceDefault.saveUser(user);
+    }
+
+    @AfterEach
+    private void clearTable() {
+        userServiceDefault.removeUser(userServiceDefault.findByLogin("second").get());
+    }
 
     @Test
     void isUserExist() {
-        Assert.assertTrue(userServiceDefault.isUserExist("seConD"));            // login
-        Assert.assertTrue(userServiceDefault.isUserExist("secOnd@maiL.Ru"));    // email
+        Assert.assertTrue(userServiceDefault.isUserExist("seConD"));                    // login
+        Assert.assertTrue(userServiceDefault.isUserExist("secOnd_mail@teSt.Test"));    // email
 
         Assert.assertFalse(userServiceDefault.isUserExist("unknown"));          // unknown or incorrect - not into db
         Assert.assertFalse(userServiceDefault.isUserExist("PWAPLZvFTXf02"));    // token
@@ -35,6 +58,10 @@ class UserServiceDefaultTest {
 
     @Test
     void findByToken() {
+        User user = userServiceDefault.findByLogin("second").get();
+        user.setToken("PWAPLZvFTXf02");
+        userServiceDefault.saveUser(user);
+
         Assert.assertEquals("second", userServiceDefault.findByToken("PWAPLZvFTXf02").get().getLogin());   // token
 
         Assert.assertFalse(userServiceDefault.findByToken("pWAPLZvFTXf02").isPresent());                           // bad token (another case)
@@ -54,7 +81,7 @@ class UserServiceDefaultTest {
 
     @Test
     void findByEmail() {
-        Assert.assertEquals("second", userServiceDefault.findByEmail("seCond@maiL.ru").get().getLogin());  // email
+        Assert.assertEquals("second", userServiceDefault.findByEmail("secOnd_mail@teSt.Test").get().getLogin());  // email
 
         Assert.assertFalse(userServiceDefault.findByEmail("seConD").isPresent());                                  // login
         Assert.assertFalse(userServiceDefault.findByEmail("unknown").isPresent());                                 // unknown or incorrect - not into db
@@ -64,7 +91,7 @@ class UserServiceDefaultTest {
     @Test
     void findByLoginOrEmail() {
         Assert.assertEquals("second", userServiceDefault.findByLoginOrEmail("seConD").get().getLogin());          // login
-        Assert.assertEquals("second", userServiceDefault.findByLoginOrEmail("seCond@maiL.ru").get().getLogin());  // email
+        Assert.assertEquals("second", userServiceDefault.findByLoginOrEmail("secOnd_mail@teSt.Test").get().getLogin());  // email
 
         Assert.assertFalse(userServiceDefault.findByLoginOrEmail("unknown").isPresent());                                 // unknown or incorrect - not into db
         Assert.assertFalse(userServiceDefault.findByLoginOrEmail("PWAPLZvFTXf02").isPresent());                           // token
@@ -111,7 +138,7 @@ class UserServiceDefaultTest {
     private User createTestUser(String name) {
         User user = new User();
         user.setPassword("test-password");
-        user.setRole(roleServiceImpl.getUserRole());
+        user.setRole(roleServiceDefault.getUserRole());
         user.setEmail(name + "_mail@test.test");
         user.setLogin(name);
         return user;
