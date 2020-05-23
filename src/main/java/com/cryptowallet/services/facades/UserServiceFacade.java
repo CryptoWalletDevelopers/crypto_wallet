@@ -1,8 +1,14 @@
 package com.cryptowallet.services.facades;
 
+import com.cryptowallet.entities.Currency;
 import com.cryptowallet.entities.User;
+import com.cryptowallet.entities.WalletItem;
+import lombok.NonNull;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
 
 public interface UserServiceFacade {
 
@@ -85,4 +91,16 @@ public interface UserServiceFacade {
      * @param request пробрасывает данные к security для входи на сайт
      */
     void loginToSite(String login, String password, HttpServletRequest request);
+
+    Optional<User> findUserByEmail(@NonNull String email);
+
+    String getNewStringTronAddress(@NonNull User user, @NonNull Currency currency);
+
+    int getTronAddressIndex(@NonNull User user);
+
+    HashMap<String, Integer> getAddressAndCurrency(@NonNull User user);
+
+    ArrayList<WalletItem> getWalletItems(@NonNull User user);
+
+    void saveUser(User user);
 }

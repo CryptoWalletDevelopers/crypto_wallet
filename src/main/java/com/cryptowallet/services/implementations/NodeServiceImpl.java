@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 public class NodeServiceImpl implements NodeService {
-    private NodeRepository nodeRepository;
+    private final NodeRepository nodeRepository;
 
     @Autowired
     public NodeServiceImpl(@NonNull NodeRepository nodeRepository){

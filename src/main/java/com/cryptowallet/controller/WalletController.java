@@ -1,29 +1,28 @@
 package com.cryptowallet.controller;
 import com.cryptowallet.API.TronApi;
 import com.cryptowallet.entities.*;
+import com.cryptowallet.services.facades.UserServiceFacadeImpl;
 import com.cryptowallet.services.implementations.CurrencyServiceImpl;
 import com.cryptowallet.services.implementations.TronTransactionServiceImpl;
-import com.cryptowallet.services.implementations.UserServiceImpl;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/wallet")
 public class WalletController {
-    private UserServiceImpl userService;
-    private TronTransactionServiceImpl tronTransactionService;
-    private CurrencyServiceImpl currencyService;
-    private TronApi tronApi;
-    private UserWallet userWallet;
+    private final UserServiceFacadeImpl userServiceFacade;
+    private final TronTransactionServiceImpl tronTransactionService;
+    private final CurrencyServiceImpl currencyService;
+    private final TronApi tronApi;
+    private final UserWallet userWallet;
     private final int INDEX = 195;
 
     @Autowired
-    public WalletController(UserServiceImpl userService, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronApi tronApi, UserWallet userWallet) {
-        this.userService = userService;
+    public WalletController(UserServiceFacadeImpl userServiceFacade, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronApi tronApi, UserWallet userWallet) {
+        this.userServiceFacade = userServiceFacade;
         this.tronTransactionService = tronTransactionService;
         this.currencyService = currencyService;
         this.tronApi = tronApi;
@@ -32,8 +31,8 @@ public class WalletController {
 
     @GetMapping(value = "/")
     public String wallet(Principal principal, Model model){
-        User user = userService.findUserByEmail(principal.getName()).get();
-        userWallet.setWalletItems(userService.getWalletItems(user));
+        User user = userServiceFacade.findUserByEmail(principal.getName()).get();
+        userWallet.setWalletItems(userServiceFacade.getWalletItems(user));
         model.addAttribute("userWallet", userWallet);
         model.addAttribute("currency", currencyService.findAll());
         return "redirect:/wallet";
@@ -41,10 +40,10 @@ public class WalletController {
 
     @PostMapping(value = "/new")
     public String getNewAddress(Principal principal, @RequestParam(name = "currencyTitle") String currencyTitle, Model model){
-        User user = userService.findUserByEmail(principal.getName()).get();
+        User user = userServiceFacade.findUserByEmail(principal.getName()).get();
         Currency currency = currencyService.findCurrencyByTitle(currencyTitle);
         if (currency.getIndex()== INDEX)
-        model.addAttribute("address", userService.getNewStringTronAddress(user,currency));
+        model.addAttribute("address", userServiceFacade.getNewStringTronAddress(user,currency));
         return "redirect:/wallet/new";
     }
 

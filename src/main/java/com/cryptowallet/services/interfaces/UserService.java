@@ -12,7 +12,7 @@ import java.util.Optional;
 @Component
 public interface UserService {
 
-    Optional<User> findByToken (@NonNull String token);
+    Optional<User> findByToken(@NonNull String token);
 
     Optional<User> findByLogin(@NonNull String login);
 
@@ -22,16 +22,19 @@ public interface UserService {
 
     boolean isUserExist(@NonNull String loginOrEmail);
 
-    void saveUser(@NonNull User user);
+    void save(@NonNull User user);
 
     void removeUser(@NonNull User user);
 
-    void generateToken (@NonNull User user);
+    void generateToken(@NonNull User user);
 
-    Optional<User> findUserByEmail(@NonNull String email);
-    void save (@NonNull User user);
+//    //////////////////// merge ////////////////////
+
+
     String getNewStringTronAddress(@NonNull User user, @NonNull Currency currency);
+
     int getTronAddressIndex(@NonNull User user);
+
     ArrayList<WalletItem> getWalletItems(@NonNull User user);
 
 }

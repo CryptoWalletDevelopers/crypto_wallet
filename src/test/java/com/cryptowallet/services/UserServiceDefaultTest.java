@@ -1,14 +1,16 @@
 package com.cryptowallet.services;
 
-import com.cryptowallet.configuration.SecurityConfig;
+import com.cryptowallet.entities.Address;
+import com.cryptowallet.entities.Currency;
 import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
 
-import com.cryptowallet.services.interfaces.RoleService;
+import com.cryptowallet.services.implementations.AddressServiceImpl;
+import com.cryptowallet.services.implementations.CurrencyServiceImpl;
+import com.cryptowallet.wallets.TronWallet;
 import lombok.extern.log4j.Log4j2;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.Assert;
@@ -17,8 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.ArrayList;
 
 @Log4j2
 @SpringBootTest
@@ -31,15 +34,21 @@ class UserServiceDefaultTest {
     private RoleServiceDefault roleServiceDefault;
     @MockBean
     private SecurityUserService securityUserService;
+    @Autowired
+    private TronWallet tronWallet;
+    @Autowired
+    private AddressServiceImpl addressService;
+    @Autowired
+    private CurrencyServiceImpl currencyService;
 
 
     @BeforeEach
     private void initTest() {
         Role role = new Role();
         role.setTitle("ROLE_USER");
-        roleServiceDefault.saveRole(role);
+        roleServiceDefault.save(role);
         User user = createTestUser("second");
-        userServiceDefault.saveUser(user);
+        userServiceDefault.save(user);
     }
 
     @AfterEach
@@ -60,7 +69,7 @@ class UserServiceDefaultTest {
     void findByToken() {
         User user = userServiceDefault.findByLogin("second").get();
         user.setToken("PWAPLZvFTXf02");
-        userServiceDefault.saveUser(user);
+        userServiceDefault.save(user);
 
         Assert.assertEquals("second", userServiceDefault.findByToken("PWAPLZvFTXf02").get().getLogin());   // token
 
@@ -102,7 +111,7 @@ class UserServiceDefaultTest {
         User user = createTestUser("test-save-user");
 
         Assert.assertFalse(userServiceDefault.findByLogin("test-save-user").isPresent());
-        userServiceDefault.saveUser(user);
+        userServiceDefault.save(user);
         Assert.assertTrue(userServiceDefault.findByLogin("test-save-user").isPresent());
     }
 
@@ -110,7 +119,7 @@ class UserServiceDefaultTest {
     void removeUser() {
         User user = createTestUser("test-rem-user");
 
-        userServiceDefault.saveUser(user);
+        userServiceDefault.save(user);
         Assert.assertTrue(userServiceDefault.isUserExist("test-rem-user"));
 
         userServiceDefault.removeUser(user);
@@ -131,6 +140,34 @@ class UserServiceDefaultTest {
         Assert.assertNotNull(user.getToken());
         Assert.assertTrue(userServiceDefault.findByLogin("test-gen-token").isPresent());
 
+    }
+
+//    //////////
+
+    private User user1;
+    private Currency currency;
+    private Address address_1;
+
+    @Before
+    public void init(){
+        user1 = new User("login1","pass1","email1",true);
+        user1.setAddresses(new ArrayList<>());
+        userServiceDefault.save(user1);
+        currency = new Currency();
+        currency.setIndex(195);
+        currencyService.save(currency);
+    }
+
+    @org.junit.Test
+    public void getNewStringTronAddressTest(){
+        String address = userServiceDefault.getNewStringTronAddress(user1, currency);
+        Assert.assertTrue(address.equals("TKmdnkRurAxJyd1VeE8BLGmY5oaH2UBfLn"));
+    }
+
+    @org.junit.Test
+    public void getTronAddressIndex(){
+        int index = userServiceDefault.getTronAddressIndex(user1);
+        Assert.assertTrue(index==-1);
     }
 
 //    ----------------- Create test user -----------------

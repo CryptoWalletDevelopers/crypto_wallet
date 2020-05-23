@@ -1,12 +1,16 @@
 package com.cryptowallet.services;
 
+import com.cryptowallet.entities.Currency;
 import com.cryptowallet.entities.User;
+import com.cryptowallet.entities.WalletItem;
 import com.cryptowallet.repositories.UserRepository;
 import com.cryptowallet.services.interfaces.UserService;
 import com.cryptowallet.utils.PasswordGenerator;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -47,7 +51,7 @@ public class UserServiceDefault implements UserService {
     }
 
     @Override
-    public void saveUser(User user) {
+    public void save(@NonNull User user) {
         user.setLogin(user.getLogin().toLowerCase().trim());
         user.setEmail(user.getEmail().toLowerCase().trim());
         userRepository.save(user);
@@ -62,6 +66,23 @@ public class UserServiceDefault implements UserService {
     public void generateToken (User user) {
         user.setToken(PasswordGenerator.generateToken(TOKEN_LENGTH));
         user.setDateExpired(new Date());
-        saveUser(user);
+        save(user);
+    }
+
+//    ////////////////// after merge ///////////////////
+
+    @Override
+    public String getNewStringTronAddress(@NonNull User user, @NonNull Currency currency) {
+        return null;
+    }
+
+    @Override
+    public int getTronAddressIndex(@NonNull User user) {
+        return 0;
+    }
+
+    @Override
+    public ArrayList<WalletItem> getWalletItems(@NonNull User user) {
+        return null;
     }
 }

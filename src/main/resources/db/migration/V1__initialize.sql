@@ -43,7 +43,7 @@ CREATE TABLE address_tbl (
 );
 
 DROP TABLE IF EXISTS node_tbl;
-CREATE TABLE nodes_tbl (
+CREATE TABLE node_tbl (
       id            BIGSERIAL,
       id_currency   BIGSERIAL,
       ip            varchar(16) NOT NULL,

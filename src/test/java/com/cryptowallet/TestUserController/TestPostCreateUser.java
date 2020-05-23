@@ -26,6 +26,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -53,6 +57,8 @@ public class TestPostCreateUser {
     private HttpServletRequest httpServletRequest;
     @MockBean
     private MailServiceDefault mailServiceDefault;
+    @MockBean
+    ValidateInputData validateInputData;
 
     private User user;
 
@@ -76,14 +82,12 @@ public class TestPostCreateUser {
                 .with(csrf()))
                 .andExpect(status().isFound())
                 .andDo(print())
-                .andExpect(model().size(0))
+                .andExpect(model().size(1))     // Attribute = user  ---  (User{id=1, login='test'})
                 .andExpect(redirectedUrl("/"))
                 .andExpect(authenticated());
+
         verify(mailServiceDefault, times(1)).sendActiveCodeToMail(user);
     }
-
-    @MockBean
-    ValidateInputData validateInputData;
 
     @Test
     public void testCreateUserValidator () throws Exception {
@@ -93,7 +97,7 @@ public class TestPostCreateUser {
                 .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(model().size(2));    // ловим ошибку { email format error , login is exists }
+                .andExpect(model().size(2));    // Attribute = user, not_valid  ---  ловим ошибку { email format error , login is exists }  User{id=null, login='test'}
         verify(mailServiceDefault, times(0)).sendActiveCodeToMail(user);
     }
 }

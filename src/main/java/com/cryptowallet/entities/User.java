@@ -53,7 +53,7 @@ public class User {
     private Collection<Address> addresses;
 
     @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_role")
+    @JoinColumn(name = "id_role_tbl")
     private Role role;
 
     @Override

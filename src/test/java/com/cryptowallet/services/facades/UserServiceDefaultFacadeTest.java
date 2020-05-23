@@ -1,5 +1,6 @@
 package com.cryptowallet.services.facades;
 
+import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.MailServiceDefault;
 import com.cryptowallet.services.RoleServiceDefault;
@@ -12,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -25,8 +25,6 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/create-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class UserServiceDefaultFacadeTest {
     @MockBean
     private MailServiceDefault mailServiceDefault;
@@ -40,10 +38,24 @@ public class UserServiceDefaultFacadeTest {
     @Autowired
     private UserServiceDefault userServiceDefault;
 
+    @BeforeEach
+    private void initTest() {
+        Role role = new Role();
+        role.setTitle("ROLE_USER");
+        roleServiceDefault.save(role);
+        User user = createTestUser("second");
+        userServiceDefault.save(user);
+    }
+
+    @AfterEach
+    private void clearTable() {
+        userServiceDefault.removeUser(userServiceDefault.findByLogin("second").get());
+    }
+
     @Test
     void isUserExist() {
         Assert.assertTrue(facade.isUserExist("seConD"));            // login
-        Assert.assertTrue(facade.isUserExist("secOnd@maiL.Ru"));    // email
+        Assert.assertTrue(facade.isUserExist("secOnd_mail@test.test"));    // email
 
         Assert.assertFalse(facade.isUserExist("unknown"));          // unknown or incorrect - not into db
         Assert.assertFalse(facade.isUserExist("PWAPLZvFTXf02"));    // token
@@ -51,39 +63,39 @@ public class UserServiceDefaultFacadeTest {
 
     @Test
     void findUser() {
-        Assert.assertEquals("second", facade.findUser("SeCoNd").getLogin());                  // login
-        Assert.assertEquals("second@mail.ru", facade.findUser("second@mail.ru").getEmail());  // email
+        Assert.assertEquals("second", facade.findUser("SeCoNd").getLogin());      // login
+        Assert.assertEquals("second_mail@test.test", facade.findUser("second_mail@test.test").getEmail());  // email
 
-        Assert.assertNull("PWAPLZvFTXf01", facade.findUser("PWAPLZvFTXf02"));                 // token
-        Assert.assertNull("second",facade.findByToken("unknown"));                          // unknown or incorrect - not into db
+        Assert.assertNull("PWAPLZvFTXf01", facade.findUser("PWAPLZvFTXf02"));     // token
+        Assert.assertNull("second", facade.findByToken("unknown"));                          // unknown or incorrect - not into db
     }
 
     @Test
     void findByLogin() {
         Assert.assertEquals("second", facade.findByLogin("seConD").getLogin());         // login
 
-        Assert.assertNull(facade.findByLogin("secOnd@maiL.Ru"));                                // email
+        Assert.assertNull(facade.findByLogin("secOnd_mail@test.test"));                         // email
         Assert.assertNull(facade.findByLogin("unknown"));                                       // unknown or incorrect - not into db
         Assert.assertNull(facade.findByLogin("PWAPLZvFTXf02"));                                 // token
     }
 
     @Test
     void findByToken() {
-        Assert.assertEquals("second",facade.findByToken("PWAPLZvFTXf02").getLogin());   // token
+        Assert.assertEquals("second", facade.findByToken("PWAPLZvFTXf02").getLogin());   // token
 
-        Assert.assertNull("second",facade.findByToken("pWAPLZvFTXf02"));                // bad token (another case)
-        Assert.assertNull("second", facade.findByToken("seConD"));                      // login
-        Assert.assertNull("second",facade.findByToken("secOnd@maiL.Ru"));               // email
-        Assert.assertNull("second",facade.findByToken("unknown"));                      // unknown or incorrect - not into db
+        Assert.assertNull("second", facade.findByToken("pWAPLZvFTXf02"));                // bad token (another case)
+        Assert.assertNull("second", facade.findByToken("seConD"));                       // login
+        Assert.assertNull("second", facade.findByToken("secOnd_mail@test.test"));        // email
+        Assert.assertNull("second", facade.findByToken("unknown"));                      // unknown or incorrect - not into db
     }
 
     @Test
     void restorePassword() {
-        Assert.assertEquals("PWAPLZvFTXf01", facade.findUser("first").getToken());
-        facade.restorePassword("first");
-        Assert.assertNotEquals("PWAPLZvFTXf01", facade.findUser("first").getToken());
-        Assert.assertNotEquals("", facade.findUser("first").getToken());
-        Assert.assertNotNull(facade.findUser("first").getToken());
+        Assert.assertEquals("PWAPLZvFTXf02", facade.findUser("seConD").getToken());
+        facade.restorePassword("seConD");
+        Assert.assertNotEquals("PWAPLZvFTXf02", facade.findUser("seConD").getToken());
+        Assert.assertNotEquals("", facade.findUser("seConD").getToken());
+        Assert.assertNotNull(facade.findUser("seConD").getToken());
     }
 
     @Test
@@ -135,21 +147,21 @@ public class UserServiceDefaultFacadeTest {
 
     @Test
     void updatePassword() {
-        User user = facade.findUser("first");
+        User user = facade.findUser("seConD");
         user.setApproved(false);
         user.setDateExpired(new Date());
-        userServiceDefault.saveUser(user);
+        userServiceDefault.save(user);
 
-        Assert.assertEquals("123", facade.findUser("first").getPassword());
-        Assert.assertFalse(facade.findUser("first").isApproved());
-        Assert.assertNotNull(facade.findUser("first").getToken());
-        Assert.assertNotNull(facade.findUser("first").getDateExpired());
+        Assert.assertEquals("test-password", facade.findUser("seConD").getPassword());
+        Assert.assertFalse(facade.findUser("seConD").isApproved());
+        Assert.assertNotNull(facade.findUser("seConD").getToken());
+        Assert.assertNotNull(facade.findUser("seConD").getDateExpired());
 
         facade.updatePassword(user, "333");
-        Assert.assertNotEquals("123", facade.findUser("first").getPassword());
-        Assert.assertTrue(facade.findUser("first").isApproved());
-        Assert.assertNull(facade.findUser("first").getToken());
-        Assert.assertNull(facade.findUser("first").getDateExpired());
+        Assert.assertNotEquals("test-password", facade.findUser("seConD").getPassword());
+        Assert.assertTrue(facade.findUser("seConD").isApproved());
+        Assert.assertNull(facade.findUser("seConD").getToken());
+        Assert.assertNull(facade.findUser("seConD").getDateExpired());
     }
 
     @Test
@@ -175,6 +187,8 @@ public class UserServiceDefaultFacadeTest {
         user.setRole(roleServiceDefault.getUserRole());
         user.setEmail(name + "_mail@test.test");
         user.setLogin(name);
+        user.setToken("PWAPLZvFTXf02");
+        user.setDateExpired(new Date());
         return user;
     }
 }

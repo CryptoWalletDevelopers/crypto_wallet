@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
-    private CurrencyRepository currencyRepository;
+    private final CurrencyRepository currencyRepository;
 
     @Autowired
     public CurrencyServiceImpl(CurrencyRepository currencyRepository){

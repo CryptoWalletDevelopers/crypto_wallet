@@ -5,6 +5,7 @@ import com.cryptowallet.services.interfaces.MailService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -31,17 +32,17 @@ public class MailServiceDefault implements MailService {
     }
 
     @Override
-    public void sendActiveCodeToMail(User user){
+    public void sendActiveCodeToMail(@NonNull User user){
         sendMessageToMail(user, ACTIVE_MESSAGE, ACTIVE_TITLE);
     }
 
     @Override
-    public void sendRestorePasswordMail(User user) {
+    public void sendRestorePasswordMail(@NonNull User user) {
         sendMessageToMail(user, RESTORE_MESSAGE, RESTORE_TITLE);
     }
 
     @Override
-    public void sendMessageToMail(User user, String messageType, String title) {
+    public void sendMessageToMail(@NonNull User user, String messageType, String title) {
         try {
             String message = String.format(
                     "Hello, %s! \n" + messageType + "%s",

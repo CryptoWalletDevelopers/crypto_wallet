@@ -16,8 +16,5 @@ class LengthValidatorTest {
 
         Assert.assertTrue(LengthValidator.isNotValid(18, 30, test1));
         Assert.assertTrue(LengthValidator.isNotValid(11, 12, test1));
-
-
-
     }
 }

@@ -1,9 +1,17 @@
 package com.cryptowallet.services.facades;
 
+import com.cryptowallet.API.TronApi;
+import com.cryptowallet.entities.Address;
+import com.cryptowallet.entities.Currency;
 import com.cryptowallet.entities.User;
+import com.cryptowallet.entities.WalletItem;
+import com.cryptowallet.repositories.UserRepository;
 import com.cryptowallet.services.MailServiceDefault;
 import com.cryptowallet.services.RoleServiceDefault;
 import com.cryptowallet.services.UserServiceDefault;
+import com.cryptowallet.services.implementations.AddressServiceImpl;
+import com.cryptowallet.wallets.TronWallet;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +20,7 @@ import org.springframework.util.Assert;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -21,12 +30,24 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
     private final RoleServiceDefault roleServiceDefault;
     private final PasswordEncoder passwordEncoder;
 
+    private final AddressServiceImpl addressService;
+    private final TronWallet tronWallet;
+    private final TronApi tronApi;
+
+    private final int tronIndex = 195;
+
     @Autowired
-    public UserServiceFacadeImpl(UserServiceDefault userServiceDefault, MailServiceDefault mailServiceDefault, RoleServiceDefault roleServiceDefault, PasswordEncoder passwordEncoder) {
+    public UserServiceFacadeImpl(UserServiceDefault userServiceDefault, MailServiceDefault mailServiceDefault, RoleServiceDefault roleServiceDefault, PasswordEncoder passwordEncoder
+    , AddressServiceImpl addressService, TronWallet tronWallet, TronApi tronApi) {
         this.userServiceDefault = userServiceDefault;
         this.mailServiceDefault = mailServiceDefault;
         this.roleServiceDefault = roleServiceDefault;
         this.passwordEncoder = passwordEncoder;
+
+
+        this.addressService = addressService;
+        this.tronWallet = tronWallet;
+        this.tronApi = tronApi;
     }
 
     public String passwordEncode (String password) {
@@ -59,7 +80,7 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(passwordEncode(user.getPassword()));
         user.setRole(roleServiceDefault.getUserRole());
-        userServiceDefault.saveUser(user);
+        userServiceDefault.save(user);
         sendActiveCodeToMail(user);
         loginToSite(user.getLogin(), password, request);
     }
@@ -89,7 +110,7 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
         user.setApproved(true);
         user.setToken(null);
         user.setDateExpired(null);
-        userServiceDefault.saveUser(user);
+        userServiceDefault.save(user);
     }
 
     public void clearFields(User user) {
@@ -106,5 +127,61 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
             log.info("Cant authority User with login = " + login);
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Optional<User> findUserByEmail(@NonNull String email) {
+        return userServiceDefault.findByEmail(email);
+    }
+
+    //    ////////////////////////////////////////////
+
+    @Override
+    public String getNewStringTronAddress(@NonNull User user, @NonNull Currency currency){
+        String newAddress = tronWallet.getNewAddress(user);
+        Address address = new Address(user, currency ,getTronAddressIndex(user)+1,newAddress);
+        user.getAddresses().add(address);
+        addressService.save(address);
+        return newAddress;
+    }
+
+    @Override
+    public int getTronAddressIndex(@NonNull User user){
+        return tronWallet.getMaxAddressIndex(user);
+    }
+
+    public HashMap<String, Integer> getAddressAndCurrency(@NonNull User user){
+        HashMap<String, Integer> map = new HashMap<>();
+        Collection<Address> addresses =  user.getAddresses();
+        if(!addresses.isEmpty()){
+            addresses.stream().forEach(address -> {
+                map.put(address.getAddress(), address.getCurrency().getIndex());
+            });
+        }
+        return map;
+    }
+
+    @Override
+    public ArrayList<WalletItem> getWalletItems(@NonNull User user){
+        ArrayList<WalletItem> walletItems= new ArrayList<>();
+        HashMap<String, Integer> pairs = getAddressAndCurrency(user);
+        if(!pairs.isEmpty()){
+            for (Map.Entry<String, Integer> entry : pairs.entrySet()) {
+                if (entry.getValue() == tronIndex) {
+                    if (tronApi.getAccountInfoByAddress(entry.getKey()).getData().length == 0) {
+                        walletItems.add(new WalletItem(entry.getKey(), entry.getValue(), 0L));
+                    } else {
+                        Long balance = tronApi.getAccountInfoByAddress(entry.getKey()).getData()[0].getBalance();
+                        walletItems.add(new WalletItem(entry.getKey(), entry.getValue(), balance));
+                    }
+                }
+            }
+        }
+        return walletItems;
+    }
+
+    @Override
+    public void saveUser(User user) {
+        userServiceDefault.save(user);
     }
 }

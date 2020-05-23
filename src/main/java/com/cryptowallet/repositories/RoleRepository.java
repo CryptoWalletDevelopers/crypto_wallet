@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {
-    List<Role> findAllById(@NonNull int id);
+    List<Role> findAllById(int id);
 }

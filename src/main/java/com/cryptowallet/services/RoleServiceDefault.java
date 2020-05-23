@@ -5,6 +5,7 @@ import com.cryptowallet.repositories.RoleRepository;
 import com.cryptowallet.services.interfaces.RoleService;
 import com.cryptowallet.utils.UsersRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -29,7 +30,7 @@ public class RoleServiceDefault implements RoleService {
     }
 
     @Override
-    public Collection<Role> addToCollection(Role role) {
+    public Collection<Role> addToCollection(@NonNull Role role) {
         authorities.add(role);
         return authorities;
     }
@@ -38,7 +39,11 @@ public class RoleServiceDefault implements RoleService {
         return getRoleById(UsersRoles.ROLE_USER.getRole()).get();
     }
 
-    public void saveRole(Role role) {
+    public void save(Role role) {
         roleRepository.save(role);
+    }
+
+    public void remove(Role role) {
+        roleRepository.delete(role);
     }
 }

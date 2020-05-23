@@ -27,7 +27,7 @@ public class RepositoryTest {
         User user = new User("login","pass","email",true);
         User out = entityManager.persist(user);
         entityManager.flush();
-        User res = userRepository.findUserByEmail("email").get();
+        User res = userRepository.findByEmail("email").get();
         Assert.assertSame(user,res);
     }
 
@@ -35,7 +35,7 @@ public class RepositoryTest {
     public void userRepositorySaveTest(){
         User user = new User("login","pass","email",true);
         userRepository.save(user);
-        User res = userRepository.findUserByEmail("email").get();
+        User res = userRepository.findByEmail("email").get();
         Assert.assertTrue(res.getEmail().equals(user.getEmail()));
     }
 }

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface RoleService {
 
-    Optional<Role> getRoleById(@NonNull int id);
+    Optional<Role> getRoleById(int id);
 
     Collection<Role> addToCollection(@NonNull Role role);
 }
