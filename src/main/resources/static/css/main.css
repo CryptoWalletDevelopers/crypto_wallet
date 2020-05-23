@@ -1,0 +1,19 @@
+html, body {
+ᅠᅠheight: 100%;
+}
+
+footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.copyright {
+    margin-left: 10px;
+}
+
+.btn-secondary{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

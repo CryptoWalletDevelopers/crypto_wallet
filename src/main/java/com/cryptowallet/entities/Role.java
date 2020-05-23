@@ -15,10 +15,10 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column
     private Integer id;
 
-    @Column(name = "title")
+    @Column
     private String title;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)

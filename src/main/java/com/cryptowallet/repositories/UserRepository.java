@@ -1,10 +1,9 @@
 package com.cryptowallet.repositories;
 
 import com.cryptowallet.entities.User;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 @Repository
@@ -22,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(@NonNull String email);
 
     Optional<User> findByLoginOrEmail(@NonNull String login, @NonNull String email);
+
+    Optional<User> findUserByEmail(@NonNull String email);
+
 }
