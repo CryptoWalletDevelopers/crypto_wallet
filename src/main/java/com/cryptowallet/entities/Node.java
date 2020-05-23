@@ -13,16 +13,17 @@ public class Node {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column
     private Long id;
 
-    @Column(name = "ip")
+    @Column(nullable = false)
     private String ip;
 
-    @Column(name = "port")
+    @Column(nullable = false)
     private String port;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_currency")
     private Currency currency;
+
 }

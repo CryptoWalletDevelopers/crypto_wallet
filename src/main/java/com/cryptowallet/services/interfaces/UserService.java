@@ -1,10 +1,15 @@
 package com.cryptowallet.services.interfaces;
 
+import com.cryptowallet.entities.Currency;
 import com.cryptowallet.entities.User;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
+import com.cryptowallet.entities.WalletItem;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
+@Component
 public interface UserService {
 
     Optional<User> findByToken (@NonNull String token);
@@ -22,4 +27,11 @@ public interface UserService {
     void removeUser(@NonNull User user);
 
     void generateToken (@NonNull User user);
+
+    Optional<User> findUserByEmail(@NonNull String email);
+    void save (@NonNull User user);
+    String getNewStringTronAddress(@NonNull User user, @NonNull Currency currency);
+    int getTronAddressIndex(@NonNull User user);
+    ArrayList<WalletItem> getWalletItems(@NonNull User user);
+
 }
