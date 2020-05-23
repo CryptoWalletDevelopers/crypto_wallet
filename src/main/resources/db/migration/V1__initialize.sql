@@ -35,7 +35,7 @@ CREATE TABLE address_tbl (
       id            BIGSERIAL,
       id_user       BIGINT,
       index         INT,
-      address       VARCHAR(30),
+      address       VARCHAR(70),
       id_currency   BIGINT,
       PRIMARY KEY (id),
       FOREIGN KEY (id_user) REFERENCES user_tbl (id),
@@ -52,5 +52,5 @@ CREATE TABLE node_tbl (
       FOREIGN KEY (id_currency) REFERENCES currency_tbl (id)
 );
 
-INSERT INTO role_tbl (id, title) VALUES (1, 'ROLE_tbl_USER');
-INSERT INTO role_tbl (id, title) VALUES (2, 'ROLE_tbl_ADMIN');
+INSERT INTO role_tbl (id, title) VALUES (1, 'ROLE_USER');
+INSERT INTO role_tbl (id, title) VALUES (2, 'ROLE_ADMIN');

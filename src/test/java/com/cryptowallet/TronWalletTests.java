@@ -46,6 +46,7 @@ public class TronWalletTests {
         currencyService.save(currency);
         address_1 = new Address();
         address_1.setCurrency(currency);
+        address_1.setAddress("");
         addressService.save(address_1);
         address_1.setUser(user1);
         user1.getAddresses().add(address_1);
