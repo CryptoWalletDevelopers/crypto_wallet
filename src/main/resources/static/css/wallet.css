@@ -1,43 +1,28 @@
-.page {
-  width: 1200px;
-  height:600px;
-  margin: 0 auto;
-}
-
-.header {
-  height: 10%;
-  border-bottom: 1px solid;
-}
-
 .body {
-  margin: 15px auto;
-  height: 90%;
+  margin: 2% auto;
+  min-height: 560px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.table {
-  width: 1000px;
-}
-
 .wallets {
-  padding: 10px;
+  padding: 1%;
   display: flex;
   justify-content: space-between;
 }
 
-.generation-new-wallet {
-  padding: 10px;
+.table {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.add-new-wallet {
+  padding: 1%;
   display: flex;
   justify-content: space-between;
 }
 
-.gen-new-wallet-with {
+.add-new-wallet-with {
   width: 30%
-}
-
-.footer {
-  height:10%;
-  border-top: 1px solid;
 }

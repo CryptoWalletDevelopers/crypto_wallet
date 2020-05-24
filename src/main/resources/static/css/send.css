@@ -1,0 +1,25 @@
+.body {
+  margin: 2% auto;
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.send {
+  margin: 2% 30%;
+  border: 1px solid #343a40;
+  border-radius: 15px;
+  padding: 5%;
+}
+
+.send-currency {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.element {
+  margin: 5% 0;
+  width: 100%;
+}
