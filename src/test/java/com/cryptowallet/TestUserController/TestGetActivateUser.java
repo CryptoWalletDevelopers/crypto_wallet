@@ -1,7 +1,7 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacadeImpl;
+import com.cryptowallet.services.facades.UserAuthAuthServiceFacadeImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +32,7 @@ public class TestGetActivateUser {
     private MockMvc mvc;
 
     @MockBean
-    private UserServiceFacadeImpl userServiceFacadeImpl;
+    private UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl;
     private User user;
 
     @Before
@@ -45,13 +45,13 @@ public class TestGetActivateUser {
 
     @Test
     public void testGetActivateUserValid () throws Exception {
-        given(userServiceFacadeImpl.findByToken(token)).willReturn(user);
+        given(userAuthServiceFacadeImpl.findByToken(token)).willReturn(user);
         mvc.perform(get("/activate/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().size(1))
                 .andExpect(model().attribute("activeMessage", "Your account is verified!"));
-        verify(userServiceFacadeImpl, times(1)).activateUser(user);
+        verify(userAuthServiceFacadeImpl, times(1)).activateUser(user);
     }
 
     @Test
@@ -60,18 +60,18 @@ public class TestGetActivateUser {
         Date userDate = new Date();
         userDate.setTime(date);
         user.setDateExpired(userDate);
-        given(userServiceFacadeImpl.findByToken(token)).willReturn(user);
+        given(userAuthServiceFacadeImpl.findByToken(token)).willReturn(user);
         mvc.perform(get("/activate/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().size(1))
                 .andExpect(model().attribute("activeMessage", "Your token is expired! We have sent you an email with a new token."));
-        verify(userServiceFacadeImpl, times(1)).sendActiveCodeToMail(user);
+        verify(userAuthServiceFacadeImpl, times(1)).sendActiveCodeToMail(user);
     }
 
     @Test
     public void testGetActivateUserDontExist () throws Exception {
-        given(userServiceFacadeImpl.findByToken(token)).willReturn(null);
+        given(userAuthServiceFacadeImpl.findByToken(token)).willReturn(null);
         mvc.perform(get("/activate/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())

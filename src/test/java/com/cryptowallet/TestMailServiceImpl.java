@@ -1,7 +1,7 @@
 package com.cryptowallet;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.MailServiceDefault;
+import com.cryptowallet.services.implementations.MailServiceImpl;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.After;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("/application-test.properties")
-public class TestMailServiceDefault {
+public class TestMailServiceImpl {
     private final String token = "TEST-TOKEN-1234567890";
     private final String loginUserTo = "test";
     private final String ACTIVE_TITLE = "Activation code";
@@ -37,7 +37,7 @@ public class TestMailServiceDefault {
     private String userMailTo;
 
     @Autowired
-    private MailServiceDefault mailServiceDefault;
+    private MailServiceImpl mailServiceImpl;
 
     private GreenMail greenMail;
     private User user;
@@ -56,13 +56,13 @@ public class TestMailServiceDefault {
 
     @Test
     public void testMailServiceActivationCode () throws MessagingException {
-        mailServiceDefault.sendActiveCodeToMail(user);
+        mailServiceImpl.sendActiveCodeToMail(user);
         checkMail(ACTIVE_TITLE);
     }
 
     @Test
     public void testMailServiceRestorePassword () throws MessagingException {
-        mailServiceDefault.sendRestorePasswordMail(user);
+        mailServiceImpl.sendRestorePasswordMail(user);
         checkMail(RESTORE_TITLE);
     }
 

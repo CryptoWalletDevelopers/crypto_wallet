@@ -1,9 +1,10 @@
 package com.cryptowallet.services.facades;
 
+import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.MailServiceDefault;
-import com.cryptowallet.services.RoleServiceImpl;
-import com.cryptowallet.services.UserServiceDefault;
+import com.cryptowallet.services.implementations.MailServiceImpl;
+import com.cryptowallet.services.implementations.RoleServiceImpl;
+import com.cryptowallet.services.implementations.UserServiceImpl;
 import lombok.extern.log4j.Log4j2;
 import org.junit.Assert;
 import org.junit.jupiter.api.*;
@@ -25,20 +26,33 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/create-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class UserServiceDefaultFacadeTest {
+public class UserServiceImplFacadeTest {
     @MockBean
-    private MailServiceDefault mailServiceDefault;
+    private MailServiceImpl mailServiceImpl;
     @MockBean
     private HttpServletRequest request;
-
     @Autowired
-    private UserServiceFacadeImpl facade;
+    private UserAuthAuthServiceFacadeImpl facade;
     @Autowired
     private RoleServiceImpl roleServiceImpl;
     @Autowired
-    private UserServiceDefault userServiceDefault;
+    private UserServiceImpl userServiceImpl;
+
+
+    @BeforeEach
+    private void initTest() {
+        Role role = new Role();
+        role.setTitle("ROLE_USER");
+        roleServiceImpl.save(role);
+        User user = createTestUser("second");
+        userServiceImpl.save(user);
+    }
+
+
+    @AfterEach
+    private void clearTable() {
+        userServiceImpl.removeUser(userServiceImpl.findByLogin("second").get());
+    }
 
     @Test
     void isUserExist() {
@@ -101,7 +115,7 @@ public class UserServiceDefaultFacadeTest {
         Assert.assertNotEquals("", user.getToken());
         Assert.assertNotNull(user.getToken());
 
-        verify(mailServiceDefault, (times(1))).sendActiveCodeToMail(user);
+        verify(mailServiceImpl, (times(1))).sendActiveCodeToMail(user);
     }
 
     @Test
@@ -113,7 +127,7 @@ public class UserServiceDefaultFacadeTest {
         facade.createNewUser(user, "test-password", request);
         Assert.assertEquals("testuser", facade.findUser(user.getLogin()).getLogin());
 
-        verify(mailServiceDefault, (times(1))).sendActiveCodeToMail(user);
+        verify(mailServiceImpl, (times(1))).sendActiveCodeToMail(user);
     }
 
     @Test
@@ -130,7 +144,7 @@ public class UserServiceDefaultFacadeTest {
         Assert.assertNull(facade.findUser("activate-user").getToken());
         Assert.assertNull(facade.findUser("activate-user").getDateExpired());
 
-        verify(mailServiceDefault, (times(1))).sendActiveCodeToMail(user);
+        verify(mailServiceImpl, (times(1))).sendActiveCodeToMail(user);
     }
 
     @Test
@@ -138,7 +152,7 @@ public class UserServiceDefaultFacadeTest {
         User user = facade.findUser("first");
         user.setApproved(false);
         user.setDateExpired(new Date());
-        userServiceDefault.saveUser(user);
+        userServiceImpl.saveUser(user);
 
         Assert.assertEquals("123", facade.findUser("first").getPassword());
         Assert.assertFalse(facade.findUser("first").isApproved());

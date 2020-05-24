@@ -1,7 +1,7 @@
 package com.cryptowallet.utils;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacadeImpl;
+import com.cryptowallet.services.facades.UserAuthAuthServiceFacadeImpl;
 import com.cryptowallet.validation.CharSetValidator;
 import com.cryptowallet.validation.EmailValidator;
 import com.cryptowallet.validation.LengthValidator;
@@ -84,12 +84,12 @@ public class ValidateInputData {
         validationErrors.put(key, text);
     }
 
-    public void verifyUserCorrectness(User user, UserServiceFacadeImpl userServiceFacadeImpl) {
+    public void verifyUserCorrectness(User user, UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl) {
         validationErrors.clear();
-        if (userServiceFacadeImpl.isUserExist(user.getLogin())) {
+        if (userAuthServiceFacadeImpl.isUserExist(user.getLogin())) {
             validationErrors.put("Login is already exist", LOGIN_EXIST);
         }
-        if (userServiceFacadeImpl.isUserExist(user.getEmail())) {
+        if (userAuthServiceFacadeImpl.isUserExist(user.getEmail())) {
             validationErrors.put("Email is already exist", EMAIL_EXIST);
         }
         isLoginValid(user.getLogin());

@@ -1,4 +1,4 @@
-package com.cryptowallet.controller;
+package com.cryptowallet.controller.interfaces;
 
 import com.cryptowallet.entities.User;
 import org.springframework.ui.Model;

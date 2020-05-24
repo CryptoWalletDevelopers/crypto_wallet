@@ -1,4 +1,4 @@
-package com.cryptowallet.services;
+package com.cryptowallet.services.implementations;
 
 import com.cryptowallet.entities.Role;
 import com.cryptowallet.entities.User;
@@ -16,20 +16,20 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-public class SecurityUserService implements UserDetailsService {
-    private final UserServiceDefault userServiceDefault;
+public class SecurityUserServiceImpl implements UserDetailsService {
+    private final UserServiceImpl userServiceImpl;
     private final RoleServiceImpl roleServiceImpl;
 
     @Autowired
-    public SecurityUserService(UserServiceDefault userServiceDefault, RoleServiceImpl roleServiceImpl) {
-        this.userServiceDefault = userServiceDefault;
+    public SecurityUserServiceImpl(UserServiceImpl userServiceImpl, RoleServiceImpl roleServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
         this.roleServiceImpl = roleServiceImpl;
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(@NonNull String login) throws UsernameNotFoundException {
-        User user = userServiceDefault.findByLoginOrEmail(login).get();
+        User user = userServiceImpl.findByLoginOrEmail(login).get();
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
                 mapRolesToAuthorises(roleServiceImpl.addToCollection(user.getRole())));
     }

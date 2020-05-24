@@ -1,7 +1,7 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacadeImpl;
+import com.cryptowallet.services.facades.UserAuthAuthServiceFacadeImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +37,7 @@ public class TestGetMethodsSecurityUserControllerImpl {
     private MockMvc mvc;
 
     @MockBean
-    private UserServiceFacadeImpl userServiceFacadeImpl;
+    private UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl;
     private User user;
 
     @Before
@@ -81,7 +81,7 @@ public class TestGetMethodsSecurityUserControllerImpl {
     @WithMockUser(username = "test")
     public void testGetUserProfileIsApproved () throws Exception {
         user.setApproved(true);
-        given(userServiceFacadeImpl.findByLogin("test")).willReturn(user);
+        given(userAuthServiceFacadeImpl.findByLogin("test")).willReturn(user);
         mvc.perform(get("/userProfile"))
                 .andExpect(authenticated())
                 .andDo(print())
@@ -96,7 +96,7 @@ public class TestGetMethodsSecurityUserControllerImpl {
     @WithMockUser(username = "test")
     public void testGetUserProfileIsNotApproved () throws Exception {
         user.setApproved(false);
-        given(userServiceFacadeImpl.findByLogin("test")).willReturn(user);
+        given(userAuthServiceFacadeImpl.findByLogin("test")).willReturn(user);
         mvc.perform(get("/userProfile"))
                 .andExpect(authenticated())
                 .andDo(print())
@@ -120,7 +120,7 @@ public class TestGetMethodsSecurityUserControllerImpl {
     @WithMockUser(username = "test")
     public void testGetResendTokenToActivation () throws Exception {
         user.setApproved(false);
-        given(userServiceFacadeImpl.findByLogin("test")).willReturn(user);
+        given(userAuthServiceFacadeImpl.findByLogin("test")).willReturn(user);
         mvc.perform(get("/resendTokenToActivation"))
                 .andExpect(authenticated())
                 .andDo(print())
@@ -129,7 +129,7 @@ public class TestGetMethodsSecurityUserControllerImpl {
                 .andExpect(model().attribute("user", user))
                 .andExpect(xpath("/html/body/div[2]").nodeCount(1))
                 .andExpect(content().string(containsString("Your account is not activated")));
-        verify(userServiceFacadeImpl, times(1)).sendActiveCodeToMail(user);
+        verify(userAuthServiceFacadeImpl, times(1)).sendActiveCodeToMail(user);
     }
 
 }

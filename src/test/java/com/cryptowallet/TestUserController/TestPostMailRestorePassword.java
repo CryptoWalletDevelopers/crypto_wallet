@@ -1,7 +1,7 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacadeImpl;
+import com.cryptowallet.services.facades.UserAuthAuthServiceFacadeImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ public class TestPostMailRestorePassword {
     private MockMvc mvc;
 
     @MockBean
-    private UserServiceFacadeImpl userServiceFacadeImpl;
+    private UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl;
     private User user;
 
     @Before
@@ -44,18 +44,18 @@ public class TestPostMailRestorePassword {
 
     @Test
     public void testPostMailRestorePasswordValid () throws Exception {
-        given(userServiceFacadeImpl.isUserExist(user.getLogin())).willReturn(true);
+        given(userAuthServiceFacadeImpl.isUserExist(user.getLogin())).willReturn(true);
         mvc.perform(post("/restorePassword").param("login", user.getLogin()).with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().size(1))
                 .andExpect(model().attribute("activeMessage", ACTIVATION_MESSAGE));
-        verify(userServiceFacadeImpl, times(1)).restorePassword(user.getLogin());
+        verify(userAuthServiceFacadeImpl, times(1)).restorePassword(user.getLogin());
     }
 
     @Test
     public void testPostMailRestorePasswordUserDontExist () throws Exception {
-        given(userServiceFacadeImpl.isUserExist(user.getLogin())).willReturn(false);
+        given(userAuthServiceFacadeImpl.isUserExist(user.getLogin())).willReturn(false);
         mvc.perform(post("/restorePassword").param("login", user.getLogin()).with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())

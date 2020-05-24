@@ -1,4 +1,4 @@
-package com.cryptowallet.services;
+package com.cryptowallet.services.implementations;
 
 import com.cryptowallet.entities.Role;
 import com.cryptowallet.repositories.RoleRepository;
@@ -37,4 +37,9 @@ public class RoleServiceImpl implements RoleService {
     public Role getUserRole() {
         return getRoleById(UsersRoles.ROLE_USER.getRole()).get();
     }
+
+    public void save(Role role) {
+        roleRepository.save(role);
+    }
+
 }

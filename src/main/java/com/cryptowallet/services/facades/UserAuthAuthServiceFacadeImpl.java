@@ -1,29 +1,28 @@
 package com.cryptowallet.services.facades;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.MailServiceDefault;
-import com.cryptowallet.services.RoleServiceImpl;
-import com.cryptowallet.services.UserServiceDefault;
+import com.cryptowallet.services.implementations.MailServiceImpl;
+import com.cryptowallet.services.implementations.RoleServiceImpl;
+import com.cryptowallet.services.implementations.UserServiceImpl;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 @Log4j2
 @Service
-public class UserServiceFacadeImpl implements UserServiceFacade {
-    private final UserServiceDefault userServiceDefault;
-    private final MailServiceDefault mailServiceDefault;
+public class UserAuthAuthServiceFacadeImpl implements UserAuthServiceFacade {
+    private final UserServiceImpl userServiceImpl;
+    private final MailServiceImpl mailServiceImpl;
     private final RoleServiceImpl roleServiceImpl;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceFacadeImpl(UserServiceDefault userServiceDefault, MailServiceDefault mailServiceDefault, RoleServiceImpl roleServiceImpl, PasswordEncoder passwordEncoder) {
-        this.userServiceDefault = userServiceDefault;
-        this.mailServiceDefault = mailServiceDefault;
+    public UserAuthAuthServiceFacadeImpl(UserServiceImpl userServiceImpl, MailServiceImpl mailServiceImpl, RoleServiceImpl roleServiceImpl, PasswordEncoder passwordEncoder) {
+        this.userServiceImpl = userServiceImpl;
+        this.mailServiceImpl = mailServiceImpl;
         this.roleServiceImpl = roleServiceImpl;
         this.passwordEncoder = passwordEncoder;
     }
@@ -34,22 +33,22 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
 
     @Override
     public boolean isUserExist(String login) {
-        return userServiceDefault.isUserExist(login);
+        return userServiceImpl.isUserExist(login);
     }
 
     @Override
     public User findUser(String loginOrEmail) {
-        return userServiceDefault.findByLoginOrEmail(loginOrEmail.toLowerCase()).orElse(null);
+        return userServiceImpl.findByLoginOrEmail(loginOrEmail.toLowerCase()).orElse(null);
     }
 
     @Override
     public User findByLogin(String login) {
-        return userServiceDefault.findByLogin(login).orElse(null);
+        return userServiceImpl.findByLogin(login).orElse(null);
     }
 
     @Override
     public User findByToken(String token) {
-        return userServiceDefault.findByToken(token).orElse(null);
+        return userServiceImpl.findByToken(token).orElse(null);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
         user.setEmail(user.getEmail().toLowerCase());
         user.setPassword(passwordEncode(user.getPassword()));
         user.setRole(roleServiceImpl.getUserRole());
-        userServiceDefault.saveUser(user);
+        userServiceImpl.saveUser(user);
         sendActiveCodeToMail(user);
         loginToSite(user.getLogin(), password, request);
     }
@@ -66,16 +65,16 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
     @Override
     public void sendActiveCodeToMail (User user) {
         if(!user.isApproved()) {
-            userServiceDefault.generateToken(user);
-            mailServiceDefault.sendActiveCodeToMail(user);
+            userServiceImpl.generateToken(user);
+            mailServiceImpl.sendActiveCodeToMail(user);
         }
     }
 
     @Override
     public void restorePassword(String login) {
         User user = findUser(login);
-        userServiceDefault.generateToken(user);
-        mailServiceDefault.sendRestorePasswordMail(user);
+        userServiceImpl.generateToken(user);
+        mailServiceImpl.sendRestorePasswordMail(user);
     }
 
     @Override
@@ -88,7 +87,7 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
         user.setApproved(true);
         user.setToken(null);
         user.setDateExpired(null);
-        userServiceDefault.saveUser(user);
+        userServiceImpl.saveUser(user);
     }
 
     public void clearFields(User user) {

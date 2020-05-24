@@ -44,11 +44,6 @@ public class TronWalletTests {
         currency = new Currency();
         currency.setIndex(195);
         currencyService.save(currency);
-        address_1 = new Address();
-        address_1.setCurrency(currency);
-        addressService.save(address_1);
-        address_1.setUser(user1);
-        user1.getAddresses().add(address_1);
     }
 
     @Test()
@@ -82,32 +77,40 @@ public class TronWalletTests {
     @Test
     public void getNewAddressTest(){
         String address1 = tronWallet.getNewAddress(user1);
-        address_1.setAddress(address1);
-        address_1.setIndex(tronWallet.getMaxAddressIndex(user1)+1);
+        int index1 = tronWallet.getMaxAddressIndex(user1)+1;
+        Address address_1 = new Address(user1, currency, index1, address1);
+        addressService.save(address_1);
+        user1.getAddresses().add(address_1);
         String address2 = tronWallet.getNewAddress(user1);
-        address_1.setAddress(address2);
-        address_1.setIndex(tronWallet.getMaxAddressIndex(user1)+1);
+        int index2 = tronWallet.getMaxAddressIndex(user1)+1;
+        Address address_2 = new Address(user1, currency, index2, address2);
+        addressService.save(address_2);
+        user1.getAddresses().add(address_2);
         String address3 = tronWallet.getNewAddress(user1);
-        address_1.setAddress(address3);
-        address_1.setIndex(tronWallet.getMaxAddressIndex(user1)+1);
+        int index3 = tronWallet.getMaxAddressIndex(user1)+1;
+        Address address_3 = new Address(user1, currency, index3, address3);
+        addressService.save(address_3);
+        user1.getAddresses().add(address_3);
         Assert.assertTrue(!address1.equals(address3));
     }
 
     @Test
     public void getMaxTronAddressIndexTest(){
         String address1 = tronWallet.getNewAddress(user1);
-        address_1.setUser(user1);
-        address_1.setAddress(address1);
-        address_1.setCurrency(currency);
+        int index1 = tronWallet.getMaxAddressIndex(user1)+1;
+        Address address_1 = new Address(user1, currency, index1, address1);
+        addressService.save(address_1);
         user1.getAddresses().add(address_1);
-        address_1.setIndex(tronWallet.getMaxAddressIndex(user1)+1);
         String address2 = tronWallet.getNewAddress(user1);
-        Address address_2 = new Address();
-        address_2.setUser(user1);
-        address_2.setAddress(address2);
-        address_2.setCurrency(currency);
+        int index2 = tronWallet.getMaxAddressIndex(user1)+1;
+        Address address_2 = new Address(user1, currency, index2, address2);
+        addressService.save(address_2);
         user1.getAddresses().add(address_2);
-        address_2.setIndex(tronWallet.getMaxAddressIndex(user1)+1);
+        String address3 = tronWallet.getNewAddress(user1);
+        int index3 = tronWallet.getMaxAddressIndex(user1)+1;
+        Address address_3 = new Address(user1, currency, index3, address3);
+        addressService.save(address_3);
+        user1.getAddresses().add(address_3);
         int max_index = tronWallet.getMaxAddressIndex(user1);
         Assert.assertTrue(max_index==2);
     }

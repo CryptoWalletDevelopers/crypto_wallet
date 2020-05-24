@@ -4,7 +4,7 @@ import com.cryptowallet.entities.User;
 
 import javax.servlet.http.HttpServletRequest;
 
-public interface UserServiceFacade {
+public interface UserAuthServiceFacade {
 
     /**
      *  Проверяет существуют ли данные в полях lohin или Email в базе данных Пользователей.

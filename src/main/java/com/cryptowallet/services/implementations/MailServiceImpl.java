@@ -1,4 +1,4 @@
-package com.cryptowallet.services;
+package com.cryptowallet.services.implementations;
 
 import com.cryptowallet.entities.User;
 import com.cryptowallet.services.interfaces.MailService;
@@ -15,7 +15,7 @@ import javax.mail.internet.MimeMessage;
 
 @Log4j2
 @Service
-public class MailServiceDefault implements MailService {
+public class MailServiceImpl implements MailService {
     @Value("${wallet.url}")
     private String url;
 

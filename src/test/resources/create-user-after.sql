@@ -1,1 +1,0 @@
-delete from "wallet-test".wallet."user";

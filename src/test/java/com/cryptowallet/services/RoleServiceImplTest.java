@@ -1,8 +1,10 @@
 package com.cryptowallet.services;
 
 import com.cryptowallet.entities.Role;
+import com.cryptowallet.services.implementations.RoleServiceImpl;
 import lombok.extern.log4j.Log4j2;
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,13 @@ import java.util.HashSet;
 class RoleServiceImplTest {
     @Autowired
     private RoleServiceImpl roleServiceImpl;
+
+    @BeforeEach
+    public void initTest() {
+        Role role = new Role();
+        role.setTitle("ROLE_USER");
+        roleServiceImpl.save(role);
+    }
 
     @Test
     void getRoleById() {

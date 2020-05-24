@@ -1,10 +1,10 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.MailServiceDefault;
-import com.cryptowallet.services.RoleServiceImpl;
-import com.cryptowallet.services.SecurityUserService;
-import com.cryptowallet.services.facades.UserServiceFacadeImpl;
+import com.cryptowallet.services.implementations.MailServiceImpl;
+import com.cryptowallet.services.implementations.RoleServiceImpl;
+import com.cryptowallet.services.implementations.SecurityUserServiceImpl;
+import com.cryptowallet.services.facades.UserAuthAuthServiceFacadeImpl;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -37,24 +37,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/create-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class TestPostCreateUser {
     @Autowired
     private MockMvc mvc;
     @Autowired
     private RoleServiceImpl roleServiceImpl;
     @Autowired
-    private UserServiceFacadeImpl userServiceFacadeImpl;
+    private UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl;
     @Autowired
     private WebApplicationContext context;
     @Autowired
-    private SecurityUserService securityUserService;
+    private SecurityUserServiceImpl securityUserServiceImpl;
 
     @MockBean
     private HttpServletRequest httpServletRequest;
     @MockBean
-    private MailServiceDefault mailServiceDefault;
+    private MailServiceImpl mailServiceImpl;
 
     private User user;
 
@@ -78,10 +76,10 @@ public class TestPostCreateUser {
                 .with(csrf()))
                 .andExpect(status().isFound())
                 .andDo(print())
-                .andExpect(model().size(0))
+                .andExpect(model().size(1))
                 .andExpect(redirectedUrl("/"))
                 .andExpect(authenticated());
-        verify(mailServiceDefault, times(1)).sendActiveCodeToMail(user);
+        verify(mailServiceImpl, times(1)).sendActiveCodeToMail(user);
     }
 
     @MockBean
@@ -96,6 +94,6 @@ public class TestPostCreateUser {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().size(2));    // ловим ошибку { email format error , login is exists }
-        verify(mailServiceDefault, times(0)).sendActiveCodeToMail(user);
+        verify(mailServiceImpl, times(0)).sendActiveCodeToMail(user);
     }
 }

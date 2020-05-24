@@ -1,7 +1,7 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacadeImpl;
+import com.cryptowallet.services.facades.UserAuthAuthServiceFacadeImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,7 @@ public class TestPostSaveNewPassword {
     private MockMvc mvc;
 
     @MockBean
-    private UserServiceFacadeImpl userServiceFacadeImpl;
+    private UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl;
     private User user;
 
     @Before
@@ -43,8 +43,8 @@ public class TestPostSaveNewPassword {
 
     @Test
     public void testPostSaveNewPasswordValid () throws Exception {
-        given(userServiceFacadeImpl.isUserExist(user.getEmail())).willReturn(true);
-        given(userServiceFacadeImpl.findUser(user.getEmail())).willReturn(user);
+        given(userAuthServiceFacadeImpl.isUserExist(user.getEmail())).willReturn(true);
+        given(userAuthServiceFacadeImpl.findUser(user.getEmail())).willReturn(user);
         mvc.perform(post("/newPassword")
                 .param("email", user.getEmail())
                 .param("password", user.getPassword())
@@ -53,12 +53,12 @@ public class TestPostSaveNewPassword {
                 .andExpect(status().isOk())
                 .andExpect(model().size(1))
                 .andExpect(content().string(containsString("Your password has been successfully saved!")));
-        verify(userServiceFacadeImpl, times(1)).updatePassword(user, user.getPassword());
+        verify(userAuthServiceFacadeImpl, times(1)).updatePassword(user, user.getPassword());
     }
 
     @Test
     public void testPostSaveNewPasswordUserDontExist () throws Exception {
-        given(userServiceFacadeImpl.isUserExist(user.getEmail())).willReturn(false);
+        given(userAuthServiceFacadeImpl.isUserExist(user.getEmail())).willReturn(false);
         mvc.perform(post("/newPassword")
                 .param("email", user.getEmail())
                 .param("password", user.getPassword())
@@ -71,7 +71,7 @@ public class TestPostSaveNewPassword {
 
     @Test
     public void testPostSaveNewPasswordNotValidPassword () throws Exception {
-        given(userServiceFacadeImpl.isUserExist(user.getEmail())).willReturn(true);
+        given(userAuthServiceFacadeImpl.isUserExist(user.getEmail())).willReturn(true);
         user.setPassword("123");
         mvc.perform(post("/newPassword")
                 .param("email", user.getEmail())

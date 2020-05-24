@@ -1,7 +1,7 @@
 package com.cryptowallet.TestUserController;
 
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacadeImpl;
+import com.cryptowallet.services.facades.UserAuthAuthServiceFacadeImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,7 @@ public class TestGetRestoreUser {
     private MockMvc mvc;
 
     @MockBean
-    private UserServiceFacadeImpl userServiceFacadeImpl;
+    private UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl;
     private User user;
 
     @Before
@@ -44,7 +44,7 @@ public class TestGetRestoreUser {
 
     @Test
     public void testGetRestoreUserValid () throws Exception {
-        given(userServiceFacadeImpl.findByToken(token)).willReturn(user);
+        given(userAuthServiceFacadeImpl.findByToken(token)).willReturn(user);
         mvc.perform(get("/restore/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -60,7 +60,7 @@ public class TestGetRestoreUser {
         Date userDate = new Date();
         userDate.setTime(date);
         user.setDateExpired(userDate);
-        given(userServiceFacadeImpl.findByToken(token)).willReturn(user);
+        given(userAuthServiceFacadeImpl.findByToken(token)).willReturn(user);
         mvc.perform(get("/restore/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -71,7 +71,7 @@ public class TestGetRestoreUser {
 
     @Test
     public void testGetRestoreUserDontExist () throws Exception {
-        given(userServiceFacadeImpl.findByToken(token)).willReturn(null);
+        given(userAuthServiceFacadeImpl.findByToken(token)).willReturn(null);
         mvc.perform(get("/restore/"+token).param("code", token))
                 .andDo(print())
                 .andExpect(status().isOk())

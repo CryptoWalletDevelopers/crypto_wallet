@@ -1,7 +1,8 @@
 package com.cryptowallet.controller;
 
+import com.cryptowallet.controller.interfaces.SecurityUserController;
 import com.cryptowallet.entities.User;
-import com.cryptowallet.services.facades.UserServiceFacadeImpl;
+import com.cryptowallet.services.facades.UserAuthAuthServiceFacadeImpl;
 import com.cryptowallet.utils.ValidateInputData;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Date;
@@ -33,12 +33,12 @@ public class SecurityUserControllerImpl implements SecurityUserController {
     private final String USER_EXIST = "User already exists";
     private final String USER_DONT_EXIST = "User dont exist";
 
-    private final UserServiceFacadeImpl userServiceFacadeImpl;
+    private final UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl;
     private final ValidateInputData validError;
 
     @Autowired
-    public SecurityUserControllerImpl(UserServiceFacadeImpl userServiceFacadeImpl) {
-        this.userServiceFacadeImpl = userServiceFacadeImpl;
+    public SecurityUserControllerImpl(UserAuthAuthServiceFacadeImpl userAuthServiceFacadeImpl) {
+        this.userAuthServiceFacadeImpl = userAuthServiceFacadeImpl;
         this.validError = new ValidateInputData();
     }
 
@@ -54,12 +54,12 @@ public class SecurityUserControllerImpl implements SecurityUserController {
     @Transactional
     public String createUser(@ModelAttribute(name = "user") @NonNull User user, Model model, HttpServletRequest request) {
         String password = user.getPassword();
-        validError.verifyUserCorrectness(user, userServiceFacadeImpl);
+        validError.verifyUserCorrectness(user, userAuthServiceFacadeImpl);
         if (!validError.isEmpty()){
             model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors());
             return "registration";
         }
-        userServiceFacadeImpl.createNewUser(user, password, request);
+        userAuthServiceFacadeImpl.createNewUser(user, password, request);
         return "redirect:/";
     }
 
@@ -72,14 +72,14 @@ public class SecurityUserControllerImpl implements SecurityUserController {
     @Override
     @GetMapping("/activate/{code}")
     public String activateUser(Model model, @PathVariable String code) {
-        final User user = userServiceFacadeImpl.findByToken(code);
+        final User user = userAuthServiceFacadeImpl.findByToken(code);
         if (user != null) {
             if (user.getDateExpired().getTime() + EXPIRED_TIME > new Date().getTime()) {
-                userServiceFacadeImpl.activateUser(user);
+                userAuthServiceFacadeImpl.activateUser(user);
                 model.addAttribute(MODEL_ATTRIBUTE, VERIFIED);
             } else {
                 model.addAttribute(MODEL_ATTRIBUTE, TOKEN_EXPIRED);
-                userServiceFacadeImpl.sendActiveCodeToMail(user);
+                userAuthServiceFacadeImpl.sendActiveCodeToMail(user);
             }
         } else {
             model.addAttribute(MODEL_ATTRIBUTE, NOT_VERIFIED);
@@ -98,8 +98,8 @@ public class SecurityUserControllerImpl implements SecurityUserController {
     public String sendMailRestorePassword(Model model, @RequestParam(name = "login") String login) {
         validError.clearValidate();
         if (validError.isLoginValid(login)) {
-            if (userServiceFacadeImpl.isUserExist(login.toLowerCase())) {
-                userServiceFacadeImpl.restorePassword(login);
+            if (userAuthServiceFacadeImpl.isUserExist(login.toLowerCase())) {
+                userAuthServiceFacadeImpl.restorePassword(login);
                 model.addAttribute(MODEL_ATTRIBUTE, ACTIVATION_MESSAGE);
                 return "index";
             } else {
@@ -116,7 +116,7 @@ public class SecurityUserControllerImpl implements SecurityUserController {
     @Override
     @GetMapping("/restore/{code}")
     public String restoreUser(Model model, @PathVariable String code) {
-        User user = userServiceFacadeImpl.findByToken(code);
+        User user = userAuthServiceFacadeImpl.findByToken(code);
         if (user != null) {
             if (user.getDateExpired().getTime() + EXPIRED_TIME > new Date().getTime()) {
                 model.addAttribute("email", user.getEmail());
@@ -136,15 +136,15 @@ public class SecurityUserControllerImpl implements SecurityUserController {
     public String saveNewPassword(Model model,
                                   @RequestParam(name = "password") @NonNull String password,
                                   @RequestParam(name = "email") @NonNull String email) {
-        if (userServiceFacadeImpl.isUserExist(email.toLowerCase())) {
-            User user = userServiceFacadeImpl.findUser(email);
+        if (userAuthServiceFacadeImpl.isUserExist(email.toLowerCase())) {
+            User user = userAuthServiceFacadeImpl.findUser(email);
             validError.clearValidate();
             if (!validError.isPasswordValid(password)) {
                 model.addAttribute("email", email);
                 model.addAttribute(ERROR_ATTRIBUTE, validError.getValidationErrors().values());
                 return "newPassword";
             } else {
-                userServiceFacadeImpl.updatePassword(user, password);
+                userAuthServiceFacadeImpl.updatePassword(user, password);
                 model.addAttribute(MODEL_ATTRIBUTE, PASSWORD_SAVED);
                 return "index";
             }
@@ -162,7 +162,7 @@ public class SecurityUserControllerImpl implements SecurityUserController {
         if (principal == null) {
             return "redirect:/login";
         }
-        User user = userServiceFacadeImpl.findByLogin(principal.getName());
+        User user = userAuthServiceFacadeImpl.findByLogin(principal.getName());
         model.addAttribute("user", user);
         return "userProfile";
     }
@@ -170,8 +170,8 @@ public class SecurityUserControllerImpl implements SecurityUserController {
     @Override
     @GetMapping("/resendTokenToActivation")
     public String resendTokenToActivation(@NonNull Model model, @NonNull Principal principal) {
-        User user = userServiceFacadeImpl.findByLogin(principal.getName());
-        userServiceFacadeImpl.sendActiveCodeToMail(user);
+        User user = userAuthServiceFacadeImpl.findByLogin(principal.getName());
+        userAuthServiceFacadeImpl.sendActiveCodeToMail(user);
         model.addAttribute("user", user);
         return "userProfile";
     }
