@@ -37,22 +37,23 @@
                         <td th:text="${w.currency}"/>
                         <td th:text="${w.address}"/>
                         <td th:text="${w.token}"/>
+                        <td class="operation">
+                            <a th:text="GET" th:href="@{'/wallet/get?wid=' + ${w.id}}" class="btn btn-secondary"/>
+                            <a th:text="SEND" th:href="@{'/wallet/send?wid=' + ${w.id}}" class="btn btn-secondary"/>
+                            <a th:text="UPDATE" th:href="@{'/wallet/update?wid=' + ${w.id}}" class="btn btn-secondary"/>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="operation">
-                <a th:text="GET" th:href="@{'/wallet/get'}" class="btn btn-secondary"/>
-                <a th:text="SEND" th:href="@{'/wallet/send'}" class="btn btn-secondary"/>
-            </div>
         </div>
         <div>
-            <form th:action="@{/wallet/add}" method="post" class="generation-new-wallet">
+            <form th:action="@{/wallet/new}" method="post" class="generation-new-wallet">
                 <select class="custom-select gen-new-wallet-with" id="inputGroupSelect01" th:name="currencyId">
                     <option th:text="'Choose...'" th:value="null"/>
                     <option th:each="c : ${currencies}" th:text="${c.title}" th:value="${c.id}"/>
                 </select>
-                <button type="submit" class="btn btn-secondary gen-new-wallet-with">Generation</button>
+                <button type="submit" class="btn btn-secondary gen-new-wallet-with">Get new address</button>
                 <input type="text" id="disabledTextInput" class="form-control gen-new-wallet-with"
                        th:value="${address}" placeholder="New address..." disabled>
             </form>
