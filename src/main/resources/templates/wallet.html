@@ -3,8 +3,8 @@
 <!--<head>-->
 <!--    <meta charset="UTF-8">-->
 
-<!--    <link th:href="@{/bootstrap/css/bootstrap.css}"-->
-<!--          rel="stylesheet" media="screen"/>-->
+<!--&lt;!&ndash;    <link th:href="@{/bootstrap/css/bootstrap.css}"&ndash;&gt;-->
+<!--&lt;!&ndash;          rel="stylesheet" media="screen"/>&ndash;&gt;-->
 <!--    <link th:href="@{/css/wallet.css}"-->
 <!--          href="../static/css/wallet.css"-->
 <!--          rel="stylesheet"/>-->
@@ -16,14 +16,18 @@
 <!--    <title>Wallet</title>-->
 <!--</head>-->
 
-<head th:replace="fragments/header :: header" />
+<head th:replace="fragments/header :: header">
+    <link th:href="@{/css/wallet.css}" href="../static/css/wallet.css" rel="stylesheet"/>
+    <title>Wallet</title>
+</head>
 
 <body>
 
 <div class="page">
-    <div class="header">
-        <h1>Wallet</h1>
-    </div>
+<!--    <div class="header">-->
+<!--        <h1>Wallet</h1>-->
+<!--    </div>-->
+    <div th:replace="fragments/navbar :: navbar" />
     <div class="body">
         <div class="wallets">
             <div class="user-wallets">
@@ -32,14 +36,14 @@
                     <tr>
                         <th scope="col">Currency</th>
                         <th scope="col">Address</th>
-                        <th scope="col">Token</th>
+                        <th scope="col">Balance</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="w : ${wallets}">
                         <td th:text="${w.currency}"/>
                         <td th:text="${w.address}"/>
-                        <td th:text="${w.token}"/>
+                        <td th:text="${w.balance}"/>
                         <td class="operation">
                             <a th:text="GET" th:href="@{'/wallet/get?wid=' + ${w.id}}" class="btn btn-secondary"/>
                             <a th:text="SEND" th:href="@{'/wallet/send?wid=' + ${w.id}}" class="btn btn-secondary"/>
@@ -66,5 +70,5 @@
 
 </body>
 
-<footer th:replace="'fragments/fotter :: footer" />
+<footer th:replace="fragments/footer :: footer" />
 </html>
