@@ -50,18 +50,6 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
     }
 
     @Override
-    public GlobalInfo getGlobalInfo() {
-        ResponseEntity<GlobalInfo> response = restTemplate.exchange(builderURL.getGlobalURL(), HttpMethod.GET,
-                null, GlobalInfo.class);
-        if(response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        }else {
-            log.warn(LOG_MSG);
-        }
-        return new GlobalInfo();
-    }
-
-    @Override
     public List<Ticker> getHistoryCoinInfoFoThePeriod(String idCoin, Period period) {
         List<Ticker> list = new ArrayList<>();
         ResponseEntity <List<Ticker>> response = restTemplate.exchange(builderURL.getHistoricalTickersURL(idCoin, period), HttpMethod.GET,

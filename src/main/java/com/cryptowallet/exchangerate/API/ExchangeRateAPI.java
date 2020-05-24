@@ -9,8 +9,6 @@ public interface ExchangeRateAPI {
 
     List<CoinID> getCoinIdList ();
 
-    GlobalInfo getGlobalInfo();
-
     List<Ticker> getHistoryCoinInfoFoThePeriod(String idCoin, Period period);
 
     Coin getCurrentCoinInfoById (String idCoin);

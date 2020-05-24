@@ -13,7 +13,6 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 public class BuilderURL {
     private final String URL = "https://api.coinpaprika.com/v1/";
-    private final String GLOBAL = "global";
     private final String TICKERS = "tickers/";
     private final String HISTORICAL = "/historical";
     private final String OHLCV_LATEST = "/ohlcv/latest/";
@@ -30,10 +29,6 @@ public class BuilderURL {
     private final String LOG_MSG = "Invalid Period!";
 
     public String getCoinIdURL () {return URL+COINS;}
-
-    public String getGlobalURL() {
-        return URL + GLOBAL;
-    }
 
     public String getTickersURL(String idCoin) {
         return URL + TICKERS + idCoin;
