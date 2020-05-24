@@ -1,33 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-
-<!--&lt;!&ndash;    <link th:href="@{/bootstrap/css/bootstrap.css}"&ndash;&gt;-->
-<!--&lt;!&ndash;          rel="stylesheet" media="screen"/>&ndash;&gt;-->
-<!--    <link th:href="@{/css/wallet.css}"-->
-<!--          href="../static/css/wallet.css"-->
-<!--          rel="stylesheet"/>-->
-
-<!--    <script th:src="@{/jquery/jquery.min.js}"></script>-->
-<!--    <script th:src="@{/popper/popper.min.js}"></script>-->
-<!--    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>-->
-
-<!--    <title>Wallet</title>-->
-<!--</head>-->
 
 <head th:replace="fragments/header :: header">
     <link th:href="@{/css/wallet.css}" href="../static/css/wallet.css" rel="stylesheet"/>
     <title>Wallet</title>
 </head>
 
-<body>
+<header th:replace="fragments/navbar :: navbar" />
 
+<body>
 <div class="page">
-<!--    <div class="header">-->
-<!--        <h1>Wallet</h1>-->
-<!--    </div>-->
-    <div th:replace="fragments/navbar :: navbar" />
     <div class="body">
         <div class="wallets">
             <div class="user-wallets">
@@ -71,4 +53,5 @@
 </body>
 
 <footer th:replace="fragments/footer :: footer" />
+
 </html>
