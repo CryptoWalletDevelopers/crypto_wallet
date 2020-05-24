@@ -1,8 +1,10 @@
 package com.cryptowallet.exchangerateAPI;
 
+import com.cryptowallet.exchangerate.API.ExchangeRateAPI;
 import com.cryptowallet.exchangerate.service.ExchangeRateAPIServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -13,6 +15,9 @@ public class TestExchangeRateAPIService {
 
     @Autowired
     private ExchangeRateAPIServiceImpl apiService;
+
+    @Mock
+    private ExchangeRateAPI exchangeRateAPI;
 
     @Test()
     public void testGetListCoinInfoValid () {

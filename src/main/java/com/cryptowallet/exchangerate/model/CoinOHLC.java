@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 /**
- * Статистика за день
+ * Статистика за один день
  * Open/High/Low/Close price values with volume and market_cap
  */
 public class CoinOHLC {

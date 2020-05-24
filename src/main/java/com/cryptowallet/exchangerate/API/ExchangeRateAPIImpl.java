@@ -94,7 +94,7 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
         if (start == 0) {getCoinIdList();}
         Integer size = coinID.size();
         try {
-            if(start>=size || limit==0 || limit>=size){ throw new IndexOutOfBoundsException (MSG_EXC);}
+            if(start<0 || start>=size || limit<=0 || limit>=size || start==limit){ throw new IndexOutOfBoundsException (MSG_EXC);}
             List<Coin> list = new ArrayList<>();
             for (int i = start; i < limit + start; i++) {
                 if(i==coinID.size()){break;}
