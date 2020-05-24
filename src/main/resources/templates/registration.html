@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Registration</title>
+</head>
+<body>
+<div th:replace="~{__fragments :: navigation('sign_up')}"></div>
+    <h2>Sign UP!</h2>
+    <div>
+        <p th:each="validError : ${not_valid}" th:text="${validError.getValue()}"></p>
+    </div>
+    <form th:action="@{/create_user}" th:object="${user}" method="POST">
+        <label>
+            <input type = "hidden" th:field="*{id}" placeholder="id" />
+        </label>
+        <label>
+            <input th:field="*{email}" placeholder="email" />
+        </label>
+        <label>
+            <input type="text" th:field="*{login}" placeholder="login" />
+        </label>
+        <label>
+            <input type="text" th:field="*{password}" placeholder="password" />
+        </label>
+        <button type="submit">create user</button>
+    </form>
+</body>
+</html>

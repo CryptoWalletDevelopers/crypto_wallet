@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 @Entity
 @Data
@@ -32,8 +33,8 @@ public class User {
     @Column
     private boolean approved;
 
-    @Column
-    private String date_exp;
+    @Column(name = "date_exp")
+    private Date dateExpired;
 
     public User(String login, String password, String email, boolean approved) {
         this.login = login;
@@ -50,7 +51,15 @@ public class User {
     @OneToMany(mappedBy =  "user", fetch = FetchType.EAGER)
     private Collection<Address> addresses;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="id_role")
+    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_role")
     private Role role;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                '}';
+    }
 }
