@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
 
-    <link th:href="@{/bootstrap/css/bootstrap.css}"
-          rel="stylesheet" media="screen"/>
-    <link th:href="@{/css/wallet.css}"
-          href="../static/css/wallet.css"
-          rel="stylesheet"/>
+<!--    <link th:href="@{/bootstrap/css/bootstrap.css}"-->
+<!--          rel="stylesheet" media="screen"/>-->
+<!--    <link th:href="@{/css/wallet.css}"-->
+<!--          href="../static/css/wallet.css"-->
+<!--          rel="stylesheet"/>-->
 
-    <script th:src="@{/jquery/jquery.min.js}"></script>
-    <script th:src="@{/popper/popper.min.js}"></script>
-    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<!--    <script th:src="@{/jquery/jquery.min.js}"></script>-->
+<!--    <script th:src="@{/popper/popper.min.js}"></script>-->
+<!--    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>-->
 
-    <title>Wallet</title>
-</head>
+<!--    <title>Wallet</title>-->
+<!--</head>-->
+
+<head th:replace="fragments/header :: header" />
+
 <body>
 
 <div class="page">
@@ -59,8 +62,9 @@
             </form>
         </div>
     </div>
-    <div class="footer">&copy;2020</div>
 </div>
 
 </body>
+
+<footer th:replace="'fragments/fotter :: footer" />
 </html>
