@@ -32,21 +32,23 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
     public ExchangeRateAPIImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         this.builderURL = new BuilderURL();
-        getCoinIdList();
+        updateCoinIdList();
     }
 
     @Override
-    public List<CoinID> getCoinIdList () {
+    public void updateCoinIdList() {
         ResponseEntity <List<CoinID>> response = restTemplate.exchange(builderURL.getCoinIdURL(), HttpMethod.GET,
                 null, new ParameterizedTypeReference<List<CoinID>>(){});
         if(response.getStatusCode().is2xxSuccessful()) {
             this.coinID = response.getBody();
             coinID.removeIf(c ->(c.getRank().equals(0)));
-            return coinID;
         }else {
             log.warn(LOG_MSG);
         }
-        return new ArrayList<>();
+    }
+
+    public List<CoinID> getCoinID (){
+        return this.coinID;
     }
 
     @Override
@@ -79,7 +81,8 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
 
     @Override
     public List<Coin> getListCoinInfo (Integer start, Integer limit) {
-        if (start == 0) {getCoinIdList();}
+        if (start == 0) {
+            updateCoinIdList();}
         Integer size = coinID.size();
         try {
             if(start<0 || start>=size || limit<=0 || limit>=size || start==limit){ throw new IndexOutOfBoundsException (MSG_EXC);}

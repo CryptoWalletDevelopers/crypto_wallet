@@ -1,7 +1,6 @@
 package com.cryptowallet.exchangerate.service;
 
 import com.cryptowallet.exchangerate.model.Coin;
-import com.cryptowallet.exchangerate.model.CoinID;
 import com.cryptowallet.exchangerate.model.CoinOHLC;
 import com.cryptowallet.exchangerate.model.Ticker;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
@@ -16,32 +15,36 @@ import java.util.List;
 public interface ExchangeRateAPIService {
 
     /**
-     * Возвращает лист ID валют отсортированных по рангу
+     * Обновляет лист ID валют отсортированных по рангу
+     * лист CoinID формируется при создании конструктора ExchangeRateAPIImpl и обновляется
+     * при вызове метода getListCoinInfo(Integer start, Integer limit), где start = 0
      */
-    List<CoinID> getCoinIdList ();
+    void updateCoinIdList();
 
     /**
      * Возвращает информацию по валюте на текущий момент,
+     * ID, название, ранг, количество монет находящихся в обращении, время последнего обновления
      * процентное изменение цены за 1ч, 12ч, 24ч, 7 дней, 30 дней, 1 год
      */
     Coin getCurrentCoinInfoById(String idCoin);
 
     /**
      * Возвращает лист валют c рангом от (start + 1) до (start + limit + 1) отсортированный по рангу
-     * отсчет массива start начинается от 0
+     * start принимает значения от 0 до размера массива (CoinID - 1)
+     * limit принимает значения от 1 до размера массива CoinID
      */
     List<Coin> getListCoinInfo(Integer start, Integer limit);
 
     /**
      * Возвращает информацию по цене, объёму, рыночной капитализации и времени
      * в каждый момент времени с интервалом от 5 минут до недели за указанный период времени
-     *  интервал зависит от указанного периода
-     *  максимальный размер массива в ответе 5000
+     * интервал зависит от указанного периода
+     * максимальный размер массива в ответе 5000
      */
     List<Ticker> getHistoryCoinInfoFoThePeriod(String idCoin, Period period);
 
     /**
-     * Статистика за день последний полный (24 ч) день (вчера)
+     * Статистика за последний полный день (24 ч) (вчера)
      * Open/High/Low/Close price values with volume and market_cap
      */
     List<CoinOHLC> getCoinOHLCInfoLastFullDay (String idCoin);

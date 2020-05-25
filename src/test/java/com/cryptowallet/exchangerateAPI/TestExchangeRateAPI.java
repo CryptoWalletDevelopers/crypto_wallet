@@ -30,7 +30,8 @@ public class TestExchangeRateAPI {
 
     @Test
     public void testCoinIdList () {
-        List<CoinID> coinIdList = exchangeRateAPIImpl.getCoinIdList();
+        exchangeRateAPIImpl.updateCoinIdList();
+        List<CoinID> coinIdList = exchangeRateAPIImpl.getCoinID();
         System.out.println(coinIdList);
         Assert.assertTrue(coinIdList.get(0).getRank().equals(1));
         Assert.assertTrue(coinIdList.get(0).getId().equals(bitcoinId));

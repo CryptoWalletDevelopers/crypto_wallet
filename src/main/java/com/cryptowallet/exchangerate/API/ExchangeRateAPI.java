@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ExchangeRateAPI {
 
-    List<CoinID> getCoinIdList ();
+    void updateCoinIdList();
 
     List<Ticker> getHistoryCoinInfoFoThePeriod(String idCoin, Period period);
 

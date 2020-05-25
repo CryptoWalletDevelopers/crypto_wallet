@@ -2,7 +2,6 @@ package com.cryptowallet.exchangerate.service;
 
 import com.cryptowallet.exchangerate.API.ExchangeRateAPIImpl;
 import com.cryptowallet.exchangerate.model.Coin;
-import com.cryptowallet.exchangerate.model.CoinID;
 import com.cryptowallet.exchangerate.model.CoinOHLC;
 import com.cryptowallet.exchangerate.model.Ticker;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
@@ -21,7 +20,7 @@ public class ExchangeRateAPIServiceImpl implements ExchangeRateAPIService {
     }
 
     @Override
-    public List<CoinID> getCoinIdList () {return exchangeRateAPIImpl.getCoinIdList();}
+    public void updateCoinIdList() {exchangeRateAPIImpl.updateCoinIdList();}
 
     @Override
     public List<Coin> getListCoinInfo (Integer start, Integer limit) {
