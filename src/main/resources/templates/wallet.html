@@ -2,53 +2,115 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="fragments/header :: header" />
+
 <link th:href="@{/css/wallet.css}" href="../static/css/wallet.css" rel="stylesheet"/>
+<script type="text/javascript" th:src="@{/js/wallet.js}"></script>
+
 <title>Wallet</title>
 
-<header th:replace="fragments/navbar :: navbar" />
+<div class="wrapper">
 
-<body>
+    <header th:replace="fragments/navbar :: navbar" />
 
-<div class="body">
-    <div class="wallets">
-        <table class="table table-striped table-dark">
-            <thead>
-            <tr>
-                <th scope="col">Currency</th>
-                <th scope="col">Address</th>
-                <th scope="col">Balance</th>
-                <th scope="col">Operation</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="w : ${wallets}">
-                <td th:text="${w.currency}"/>
-                <td th:text="${w.address}"/>
-                <td th:text="${w.balance}"/>
-                <td class="operation">
-                    <a th:text="GET" th:href="@{'/wallet/get?wid=' + ${w.id}}" class="btn btn-secondary"/>
-                    <a th:text="SEND" th:href="@{'/wallet/send?wid=' + ${w.id}}" class="btn btn-secondary"/>
-                    <a th:text="UPDATE" th:href="@{'/wallet/update?wid=' + ${w.id}}" class="btn btn-secondary"/>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <body>
+
+    <div class="body">
+        <h1>My wallets</h1>
+        <div class="wallets table-responsive">
+            <table class="table table-striped table-dark">
+                <thead>
+                <tr>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Balance</th>
+                    <th scope="col">Operation</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="w : ${wallets}">
+                    <td th:text="${w.currency}"/>
+                    <td th:text="${w.address}"/>
+                    <td th:text="${w.balance}"/>
+                    <td class="operation">
+                        <button class="btn btn-secondary"
+                                data-toggle="modal"
+                                data-target="#getModalWindow"
+                                data-id="${w.id}">GET</button>
+                        <button class="btn btn-secondary"
+                                data-toggle="modal"
+                                data-target="#sendModalWindow"
+                                data-id="${w.id}">SEND</button>
+                        <button th:text="UPDATE" th:href="@{'/wallet/update?wid=' + ${w.id}}" class="btn btn-secondary"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <form th:action="@{/wallet/new}" method="post" class="add-new-wallet">
+                <select class="custom-select add-new-wallet-with" id="inputGroupSelect01" th:name="currencyId">
+                    <option th:text="'Choose...'" th:value="null"/>
+                    <option th:each="c : ${currencies}" th:text="${c.title}" th:value="${c.id}"/>
+                </select>
+                <button type="submit" class="btn btn-secondary add-new-wallet-with">Get new address</button>
+                <input type="text" id="disabledTextInput" class="form-control add-new-wallet-with"
+                       th:value="${address}" placeholder="New address..." disabled>
+            </form>
+        </div>
     </div>
-    <div>
-        <form th:action="@{/wallet/new}" method="post" class="add-new-wallet">
-            <select class="custom-select add-new-wallet-with" id="inputGroupSelect01" th:name="currencyId">
-                <option th:text="'Choose...'" th:value="null"/>
-                <option th:each="c : ${currencies}" th:text="${c.title}" th:value="${c.id}"/>
-            </select>
-            <button type="submit" class="btn btn-secondary add-new-wallet-with">Get new address</button>
-            <input type="text" id="disabledTextInput" class="form-control add-new-wallet-with"
-                   th:value="${address}" placeholder="New address..." disabled>
-        </form>
+
+    </body>
+
+    <footer th:replace="fragments/footer :: footer" />
+
+</div>
+
+<!-- Modal GET -->
+<div class="modal fade" id="getModalWindow" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form th:action="@{'/wallet/get/'}" method="get" class="get-currency">
+                <div class="modal-body">
+                    <input type="hidden" id="get-id" th:name="wid">
+                    <input type="text" class="form-control element"
+                           th:name="quantity" placeholder="Enter quantity...">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary element">GET</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-</body>
-
-<footer th:replace="fragments/footer :: footer" />
+<!-- Modal SEND -->
+<div class="modal fade" id="sendModalWindow" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form th:action="@{'/wallet/send/}" method="get" class="send-currency">
+                <div class="modal-body">
+                    <input type="hidden" id="send-id" th:name="wid">
+                    <input type="text" class="form-control element"
+                           th:name="address" placeholder="Enter recipient address ...">
+                    <input type="text" class="form-control element"
+                           th:name="quantity" placeholder="Enter quantity...">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary element">SEND</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 </html>

@@ -1,15 +1,26 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  height: 100vh;
+  width: 100vw;
+}
+
 .body {
-  margin: 2% auto;
-  min-height: 560px;
+  padding: 2%;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .wallets {
-  padding: 1%;
   display: flex;
   justify-content: space-between;
+  width: 100%;
 }
 
 .table {
@@ -25,4 +36,9 @@
 
 .add-new-wallet-with {
   width: 30%
+}
+
+.element {
+  margin: 3% 0;
+  width: 100%;
 }
