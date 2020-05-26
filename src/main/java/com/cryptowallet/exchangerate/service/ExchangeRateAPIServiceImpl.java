@@ -7,7 +7,7 @@ import com.cryptowallet.exchangerate.model.Ticker;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -23,8 +23,20 @@ public class ExchangeRateAPIServiceImpl implements ExchangeRateAPIService {
     public void updateCoinIdList() {exchangeRateAPIImpl.updateCoinIdList();}
 
     @Override
+    public int getQuantityCoin () {
+        return exchangeRateAPIImpl.getQuantityCoin();
+    }
+
+    @Override
     public List<Coin> getListCoinInfo (Integer start, Integer limit) {
         return exchangeRateAPIImpl.getListCoinInfo(start, limit);
+    }
+
+    @Override
+    public List<Coin> getReversListCoinInfo (Integer start, Integer limit) {
+        List<Coin> list = exchangeRateAPIImpl.getListCoinInfo(start, limit);
+        list.sort(Comparator.comparing(Coin::getRank, Comparator.reverseOrder()));
+        return list;
     }
 
     @Override

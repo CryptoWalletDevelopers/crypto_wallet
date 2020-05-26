@@ -36,6 +36,7 @@ public class TestExchangeRateAPI {
         Assert.assertTrue(coinIdList.get(0).getRank().equals(1));
         Assert.assertTrue(coinIdList.get(0).getId().equals(bitcoinId));
         Assert.assertTrue(coinIdList.get(coinIdList.size()-1).getRank().equals(coinIdList.size()));
+        Assert.assertEquals(coinIdList.size(), exchangeRateAPIImpl.getQuantityCoin());
     }
 
     @Test

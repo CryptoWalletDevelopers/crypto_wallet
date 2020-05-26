@@ -28,7 +28,7 @@ public class BuilderURL {
     private final String TIME_ZONE = "Z";
     private final String LOG_MSG = "Invalid Period!";
 
-    public String getCoinIdURL () {return URL+COINS;}
+    public String getCoinIdURL () {return URL + COINS;}
 
     public String getTickersURL(String idCoin) {
         return URL + TICKERS + idCoin;

@@ -9,6 +9,8 @@ public interface ExchangeRateAPI {
 
     void updateCoinIdList();
 
+    int getQuantityCoin ();
+
     List<Ticker> getHistoryCoinInfoFoThePeriod(String idCoin, Period period);
 
     Coin getCurrentCoinInfoById (String idCoin);

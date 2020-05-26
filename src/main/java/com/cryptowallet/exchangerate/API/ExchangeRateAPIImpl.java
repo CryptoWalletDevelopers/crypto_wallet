@@ -24,6 +24,7 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
     private final long H24 = 24L;
     private final String LOG_MSG = "Request failed!";
     private final String MSG_EXC = "Position start or limit dont correct!";
+    private final String RANG_CHANGE = "Coins rang change, coin name is: ";
     private RestTemplate restTemplate;
     private BuilderURL builderURL;
     private List<CoinID> coinID;
@@ -41,10 +42,15 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
                 null, new ParameterizedTypeReference<List<CoinID>>(){});
         if(response.getStatusCode().is2xxSuccessful()) {
             this.coinID = response.getBody();
-            coinID.removeIf(c ->(c.getRank().equals(0)));
+            coinID.removeIf(c ->(c.getRank() == 0));//лист содержит порядка 2000 неактивных валют, поэтому удаляю
         }else {
             log.warn(LOG_MSG);
         }
+    }
+
+    @Override
+    public int getQuantityCoin () {
+        return coinID.size();
     }
 
     public List<CoinID> getCoinID (){
@@ -81,15 +87,21 @@ public class ExchangeRateAPIImpl implements ExchangeRateAPI{
 
     @Override
     public List<Coin> getListCoinInfo (Integer start, Integer limit) {
-        if (start == 0) {
-            updateCoinIdList();}
-        Integer size = coinID.size();
+        if (start == 0) {updateCoinIdList();}
+        Integer size = getQuantityCoin();
         try {
             if(start<0 || start>=size || limit<=0 || limit>=size || start==limit){ throw new IndexOutOfBoundsException (MSG_EXC);}
             List<Coin> list = new ArrayList<>();
+            Coin coin;
             for (int i = start; i < limit + start; i++) {
-                if(i==coinID.size()){break;}
-                list.add(getCurrentCoinInfoById(coinID.get(i).getId()));
+                if(i==size){break;}
+                coin = getCurrentCoinInfoById(coinID.get(i).getId());
+                if(coin.getRank() != i+1){
+                    log.warn(RANG_CHANGE + coin.getName());
+                    updateCoinIdList();
+                    coin = getCurrentCoinInfoById(coinID.get(i).getId());
+                }
+                list.add(coin);
             }
             return list;
         } catch (IndexOutOfBoundsException e) {

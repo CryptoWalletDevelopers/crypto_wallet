@@ -1,7 +1,6 @@
 package com.cryptowallet.exchangerateAPI;
 
 import com.cryptowallet.exchangerate.model.Coin;
-import com.cryptowallet.exchangerate.model.CoinID;
 import com.cryptowallet.exchangerate.model.CoinOHLC;
 import com.cryptowallet.exchangerate.model.Ticker;
 import com.cryptowallet.exchangerate.model.enumpack.Period;
@@ -31,6 +30,7 @@ public class TestExchangeRateAPIService {
     @Test
     public void testCoinIdList () {
         apiService.updateCoinIdList();
+        Assert.assertNotNull(apiService.getQuantityCoin());
     }
 
     @Test
@@ -97,6 +97,15 @@ public class TestExchangeRateAPIService {
         Assert.assertNotNull(coinList);
         Assert.assertEquals(20, coinList.size());
         Assert.assertEquals(bitcoinId, coinList.get(0).getId());
+        System.out.println(coinList);
+    }
+
+    @Test
+    public void testGetReversListCoinInfoValid () {
+        List<Coin> coinList = apiService.getReversListCoinInfo(0, 20);
+        Assert.assertNotNull(coinList);
+        Assert.assertEquals(20, coinList.size());
+        Assert.assertEquals(bitcoinId, coinList.get(19).getId());
         System.out.println(coinList);
     }
 

@@ -21,6 +21,11 @@ public interface ExchangeRateAPIService {
      */
     void updateCoinIdList();
 
+     /**
+      * Возвращает количество активных криптовалют
+     */
+    int getQuantityCoin ();
+
     /**
      * Возвращает информацию по валюте на текущий момент,
      * ID, название, ранг, количество монет находящихся в обращении, время последнего обновления
@@ -36,6 +41,13 @@ public interface ExchangeRateAPIService {
     List<Coin> getListCoinInfo(Integer start, Integer limit);
 
     /**
+    * Возвращает лист валют c рангом от (start + limit + 1) до (start + 1)
+    * start принимает значения от 0 до размера массива (CoinID - 1)
+    * limit принимает значения от 1 до размера массива CoinID
+    */
+    List<Coin> getReversListCoinInfo (Integer start, Integer limit);
+
+     /**
      * Возвращает информацию по цене, объёму, рыночной капитализации и времени
      * в каждый момент времени с интервалом от 5 минут до недели за указанный период времени
      * интервал зависит от указанного периода
