@@ -1,10 +1,10 @@
 package com.cryptowallet;
 
-import com.cryptowallet.API.TronApi;
-import com.cryptowallet.tronModels.Account;
-import com.cryptowallet.tronModels.Block;
-import com.cryptowallet.tronModels.Result;
-import com.cryptowallet.tronModels.Transaction;
+import com.cryptowallet.API.blockchain.TronAPI;
+import com.cryptowallet.models.tronModels.Account;
+import com.cryptowallet.models.tronModels.Block;
+import com.cryptowallet.models.tronModels.Result;
+import com.cryptowallet.models.tronModels.Transaction;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class TronApiTest {
     @Autowired
-    private TronApi tronApi;
+    private TronAPI tronApi;
 
     @Test
     public void getBlockByNumTest() {

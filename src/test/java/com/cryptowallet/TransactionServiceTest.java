@@ -1,7 +1,7 @@
 package com.cryptowallet;
 
 import com.cryptowallet.services.implementations.TronTransactionServiceImpl;
-import com.cryptowallet.tronModels.Transaction;
+import com.cryptowallet.models.tronModels.Transaction;
 import com.cryptowallet.wallets.TronWallet;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +29,7 @@ public class TransactionServiceTest {
     @Test()
     public void TransferTransactionTest() throws InvalidProtocolBufferException {
         System.out.println(tronTransactionService.TransferTransaction("TKoKKzqr4TkPgoGmAxH94f3fZKKe9eUPCe","TKmdnkRurAxJyd1VeE8BLGmY5oaH2UBfLn",10000));
-      //  Assert.assertTrue((tronTransactionService.TransferTransaction("TKoKKzqr4TkPgoGmAxH94f3fZKKe9eUPCe","TKmdnkRurAxJyd1VeE8BLGmY5oaH2UBfLn",10000).isResult()==true); //fails, but the signed transaction is correct
+        Assert.assertTrue((tronTransactionService.TransferTransaction("TKoKKzqr4TkPgoGmAxH94f3fZKKe9eUPCe","TKmdnkRurAxJyd1VeE8BLGmY5oaH2UBfLn",10000).isResult()==true));
     }
 
     @Test

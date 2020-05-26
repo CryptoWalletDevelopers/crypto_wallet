@@ -1,10 +1,10 @@
 package com.cryptowallet.exchangerateAPI;
 
-import com.cryptowallet.exchangerate.model.Coin;
-import com.cryptowallet.exchangerate.model.CoinOHLC;
-import com.cryptowallet.exchangerate.model.Ticker;
-import com.cryptowallet.exchangerate.model.enumpack.Period;
-import com.cryptowallet.exchangerate.service.ExchangeRateAPIServiceImpl;
+import com.cryptowallet.models.exchangerateModels.Coin;
+import com.cryptowallet.models.exchangerateModels.CoinOHLC;
+import com.cryptowallet.models.exchangerateModels.Ticker;
+import com.cryptowallet.models.exchangerateModels.enumpack.Period;
+import com.cryptowallet.services.implementations.ExchangeRateAPIServiceImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

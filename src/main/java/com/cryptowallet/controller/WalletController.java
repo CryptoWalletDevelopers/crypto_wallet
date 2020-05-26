@@ -1,5 +1,5 @@
 package com.cryptowallet.controller;
-import com.cryptowallet.API.TronApi;
+import com.cryptowallet.API.blockchain.TronAPI;
 import com.cryptowallet.entities.*;
 import com.cryptowallet.services.implementations.CurrencyServiceImpl;
 import com.cryptowallet.services.implementations.TronTransactionServiceImpl;
@@ -17,12 +17,12 @@ public class WalletController {
     private UserServiceImpl userService;
     private TronTransactionServiceImpl tronTransactionService;
     private CurrencyServiceImpl currencyService;
-    private TronApi tronApi;
+    private TronAPI tronApi;
     private UserWallet userWallet;
     private final int INDEX = 195;
 
     @Autowired
-    public WalletController(UserServiceImpl userService, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronApi tronApi, UserWallet userWallet) {
+    public WalletController(UserServiceImpl userService, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronAPI tronApi, UserWallet userWallet) {
         this.userService = userService;
         this.tronTransactionService = tronTransactionService;
         this.currencyService = currencyService;

@@ -1,6 +1,6 @@
 package com.cryptowallet.services.implementations;
 
-import com.cryptowallet.API.TronApi;
+import com.cryptowallet.API.blockchain.TronAPI;
 import com.cryptowallet.entities.Address;
 import com.cryptowallet.entities.Currency;
 import com.cryptowallet.entities.User;
@@ -20,12 +20,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private AddressServiceImpl addressService;
     private TronWallet tronWallet;
-    private TronApi tronApi;
+    private TronAPI tronApi;
     private final int tronIndex = 195;
     public static final int TOKEN_LENGTH = 50;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AddressServiceImpl addressService, TronWallet tronWallet, TronApi tronApi) {
+    public UserServiceImpl(UserRepository userRepository, AddressServiceImpl addressService, TronWallet tronWallet, TronAPI tronApi) {
         this.userRepository = userRepository;
         this.addressService = addressService;
         this.tronWallet = tronWallet;
