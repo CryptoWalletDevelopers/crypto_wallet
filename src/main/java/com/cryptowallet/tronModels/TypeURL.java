@@ -1,7 +1,5 @@
 package com.cryptowallet.tronModels;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.IOException;
 
 public enum TypeURL {
