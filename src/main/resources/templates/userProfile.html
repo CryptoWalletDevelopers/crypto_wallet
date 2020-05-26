@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <title>Profile</title>
+    <link rel="stylesheet" href="css/fragments.css" />
+</head>
+<body>
+<div th:replace="~{__fragments :: navigation('Profile')}"></div>
+<h1>Profile</h1>
+<div th:if="not ${user.approved}">
+    <h3>Your account is not activated, check your mail or click on the link to resend the activation code </h3>
+    <a th:href="@{/resendTokenToActivation}">Resend activation code</a>
+</div>
+
+<h5 th:text="'Login: ' + ${user.login}" />
+<h5 th:text="'Email: ' + ${user.email}" />
+
+</body>
+</html>
