@@ -1,10 +1,9 @@
 package com.cryptowallet.services.implementations;
 
-import com.cryptowallet.API.exchangerate.API.ExchangeRateAPIImpl;
+import com.cryptowallet.API.exchangerate.ExchangeRateAPIImpl;
 import com.cryptowallet.models.exchangerateModels.*;
 import com.cryptowallet.models.exchangerateModels.enumpack.Period;
 import com.cryptowallet.services.interfaces.ExchangeRateAPIService;
-import com.google.common.base.Ticker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;

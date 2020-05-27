@@ -39,7 +39,7 @@ public interface ExchangeRateAPIService {
      * limit принимает значения от 1 до размера массива CoinID
      * @return
      */
-    List<com.cryptowallet.models.exchangerateModels.Coin> getListCoinInfo(Integer start, Integer limit);
+    List<Coin> getListCoinInfo(Integer start, Integer limit);
 
     /**
     * Возвращает лист валют c рангом от (start + limit + 1) до (start + 1)

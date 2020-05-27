@@ -1,6 +1,6 @@
 package com.cryptowallet.exchangerateAPI;
 
-import com.cryptowallet.API.exchangerate.API.ExchangeRateAPIImpl;
+import com.cryptowallet.API.exchangerate.ExchangeRateAPIImpl;
 import com.cryptowallet.models.exchangerateModels.Coin;
 import com.cryptowallet.models.exchangerateModels.CoinID;
 import com.cryptowallet.models.exchangerateModels.CoinOHLC;
