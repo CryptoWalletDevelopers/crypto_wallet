@@ -23,7 +23,6 @@
                     <th scope="col">Currency</th>
                     <th scope="col">Address</th>
                     <th scope="col">Balance</th>
-                    <th scope="col">Operation</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -31,24 +30,29 @@
                     <td th:text="${w.currency}"/>
                     <td th:text="${w.address}"/>
                     <td th:text="${w.balance}"/>
-                    <td class="operation">
-                        <button class="btn btn-secondary"
-                                data-toggle="modal"
-                                data-target="#getModalWindow"
-                                data-id="${w.id}">GET</button>
-                        <button class="btn btn-secondary"
-                                data-toggle="modal"
-                                data-target="#sendModalWindow"
-                                data-id="${w.id}">SEND</button>
-                        <button th:text="UPDATE" th:href="@{'/wallet/update?wid=' + ${w.id}}" class="btn btn-secondary"/>
-                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+        <div class="operation">
+            <button class="btn btn-secondary oper-btn"
+                    data-toggle="modal"
+                    data-target="#getModalWindow"
+                    th:text="GET"
+            />
+            <button class="btn btn-secondary oper-btn"
+                    data-toggle="modal"
+                    data-target="#sendModalWindow"
+                    th:text="SEND"
+            />
+            <button class="btn btn-secondary oper-btn"
+                    th:href="@{/wallet/update/}"
+                    th:text="UPDATE"
+            />
+        </div>
         <div>
             <form th:action="@{/wallet/new}" method="post" class="add-new-wallet">
-                <select class="custom-select add-new-wallet-with" id="inputGroupSelect01" th:name="currencyId">
+                <select class="custom-select add-new-wallet-with" th:name="currencyId">
                     <option th:text="'Choose...'" th:value="null"/>
                     <option th:each="c : ${currencies}" th:text="${c.title}" th:value="${c.id}"/>
                 </select>
@@ -76,7 +80,10 @@
             </div>
             <form th:action="@{'/wallet/get/'}" method="get" class="get-currency">
                 <div class="modal-body">
-                    <input type="hidden" id="get-id" th:name="wid">
+                    <select class="custom-select element" th:name="walletId">
+                        <option th:text="'Choose...'" th:value="null"/>
+                        <option th:each="w : ${wallets}" th:text="${w.address}" th:value="${w.id}"/>
+                    </select>
                     <input type="text" class="form-control element"
                            th:name="quantity" placeholder="Enter quantity...">
                 </div>
@@ -99,7 +106,10 @@
             </div>
             <form th:action="@{'/wallet/send/}" method="get" class="send-currency">
                 <div class="modal-body">
-                    <input type="hidden" id="send-id" th:name="wid">
+                    <select class="custom-select element" th:name="walletId">
+                        <option th:text="'Choose...'" th:value="null"/>
+                        <option th:each="w : ${wallets}" th:text="${w.address}" th:value="${w.id}"/>
+                    </select>
                     <input type="text" class="form-control element"
                            th:name="address" placeholder="Enter recipient address ...">
                     <input type="text" class="form-control element"
