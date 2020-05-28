@@ -1,9 +1,10 @@
+
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id                    BIGSERIAL,
   login                 VARCHAR(30) NOT NULL UNIQUE,
   password              VARCHAR(30),
-  email                 VARCHAR(30) UNIQUE,
+  email                 VARCHAR(30) NOT NULL UNIQUE,
   token                 VARCHAR(50),
   approved              BOOL,
   PRIMARY KEY (id)
