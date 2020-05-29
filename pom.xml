@@ -3,10 +3,10 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
+    <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.2.RELEASE</version>
+		<version>2.2.6.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -44,6 +44,7 @@
 			<url>https://dl.bintray.com/novacrypto/Hashing/</url>
 		</repository>
 	</repositories>
+
 	<dependencies>
 		<!--Thymeleaf-->
 		<dependency>
@@ -111,61 +112,66 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator-core</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>jquery</artifactId>
 			<version>${webjars-jquery.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
 			<version>${webjars-bootstrap.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>popper.js</artifactId>
 			<version>${webjars-popper.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
 			<version>${webjars-font-awesome.version}</version>
 		</dependency>
 		<!-- end of webjars -->
-
 		<!--Flyway-->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
-
 		<!-- Webjars -->
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator-core</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>jquery</artifactId>
 			<version>${webjars-jquery.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
 			<version>${webjars-bootstrap.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>popper.js</artifactId>
 			<version>${webjars-popper.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
 			<version>${webjars-font-awesome.version}</version>
 		</dependency>
 		<!-- end of webjars -->
-
 		<!--Exclude logback, add log4j2 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -177,7 +183,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!--Security-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -189,7 +194,6 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<!--	JUnit 5 - Jupiter	-->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -197,8 +201,8 @@
 			<version>5.5.2</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
 
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -209,80 +213,93 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
 
+		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.11.0</version>
 		</dependency>
+
 		<!-- Testing Dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-
 		<!--        Crypto libraries-->
 		<dependency>
 			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP44</artifactId>
 			<version>2019.01.27</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP32</artifactId>
 			<version>2019.01.27</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP39</artifactId>
 			<version>2019.01.27</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>core</artifactId>
 			<version>1.58.0.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.3.2</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
 			<version>3.0.2</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>core</artifactId>
 			<version>1.58.0.0</version>
-		</dependency><dependency>
+		</dependency>
+
+		<dependency>
 		<groupId>com.madgag.spongycastle</groupId>
 		<artifactId>prov</artifactId>
 		<version>1.58.0.0</version>
-	</dependency>
+		</dependency>
+
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>pkix</artifactId>
 			<version>1.54.0.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>bcpkix-jdk15on</artifactId>
 			<version>1.58.0.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>29.0-jre</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -290,6 +307,7 @@
 		</dependency>
 
 		<!--		TestDB-->
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
@@ -313,6 +331,7 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
@@ -324,6 +343,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -336,31 +356,37 @@
 			<artifactId>BIP44</artifactId>
 			<version>2019.01.27</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP32</artifactId>
 			<version>2019.01.27</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP39</artifactId>
 			<version>2019.01.27</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>core</artifactId>
 			<version>1.58.0.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.3.2</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
 			<version>3.0.2</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>core</artifactId>
@@ -370,21 +396,25 @@
 		<artifactId>prov</artifactId>
 		<version>1.58.0.0</version>
 	</dependency>
+
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>pkix</artifactId>
 			<version>1.54.0.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>bcpkix-jdk15on</artifactId>
 			<version>1.58.0.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>29.0-jre</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -397,16 +427,19 @@
 			<scope>test</scope>
 			<version>1.4.194</version>
 		</dependency>
+
 		<dependency>
 			<groupId>top.jfunc.common</groupId>
 			<artifactId>converter</artifactId>
 			<version>1.8.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-expression</artifactId>
 			<version>5.2.6.RELEASE</version>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -424,11 +457,13 @@
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.11.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
 			<version>3.11.4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -447,6 +482,14 @@
 				<version>6.0.1</version>
 				<configuration>
 					<configFiles>src/main/resources/flyway.conf</configFiles>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>8</source>
+					<target>8</target>
 				</configuration>
 			</plugin>
 		</plugins>
