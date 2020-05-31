@@ -64,7 +64,6 @@ public class WalletController {
         ArrayList<WalletItem> itemList = userService.getWalletItems(user);
         model.addAttribute("itemList", itemList);
         tronTransactionService.TransferTransaction(address_to,address_from,amount);
-        System.out.println(tronTransactionService.TransferTransaction(address_to,address_from,amount).isResult());
         return "wallet";
     }
 
