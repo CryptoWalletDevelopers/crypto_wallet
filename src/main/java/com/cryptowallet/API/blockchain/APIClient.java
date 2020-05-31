@@ -1,7 +1,8 @@
 package com.cryptowallet.API.blockchain;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cryptowallet.models.tronModels.*;
-import top.jfunc.json.impl.JSONObject;
+import top.jfunc.json.impl.JSONArray;
 
 public abstract class APIClient {
 

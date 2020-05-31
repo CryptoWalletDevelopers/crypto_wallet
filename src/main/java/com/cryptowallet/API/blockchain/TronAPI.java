@@ -1,16 +1,22 @@
 package com.cryptowallet.API.blockchain;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cryptowallet.models.tronModels.*;
 import com.cryptowallet.wallets.TronWallet;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import top.jfunc.json.impl.JSONObject;
+import top.jfunc.json.JsonObject;
+import top.jfunc.json.impl.JSONArray;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
@@ -141,24 +147,26 @@ public class TronAPI extends APIClient {
     }
 
     @Override
-    public Result broadcastTransaction(String[] signature, String txID, JSONObject rawData, String raw_data_hex){
+    public Result broadcastTransaction(String[] signature, String txID, JSONObject rawData, String raw_data_hex) {
         String url = "https://api.trongrid.io/wallet/broadcasttransaction";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        Map<String, Object> request = new HashMap<>();
+        JSONObject request = new JSONObject();
         request.put("visible", false);
         request.put("signature", signature);
         request.put("txID", txID);
-        request.put("rawData", rawData);
+        request.put("raw_data", rawData);
         request.put("raw_data_hex", raw_data_hex);
-        HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,headers);
+
+        HttpEntity<JSON> entity = new HttpEntity<>(request,headers);
+
         ResponseEntity<Result> response = this.restTemplate.postForEntity(url, entity, Result.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
-        } else {
+        if (response.getStatusCode() != HttpStatus.OK) {
             return null;
         }
+
+        return response.getBody();
     }
 
     @Override

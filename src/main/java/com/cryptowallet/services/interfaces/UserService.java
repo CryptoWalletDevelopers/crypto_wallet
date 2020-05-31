@@ -32,7 +32,7 @@ public interface UserService {
 
     void generateToken (@NonNull User user);
 
-   Optional<User> findUserByEmail(@NonNull String email);
+    User findUserByEmail(@NonNull String email);
 
    void save (@NonNull User user);
 

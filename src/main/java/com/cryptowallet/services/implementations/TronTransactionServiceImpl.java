@@ -1,5 +1,6 @@
 package com.cryptowallet.services.implementations;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cryptowallet.API.blockchain.TronAPI;
 import com.cryptowallet.services.interfaces.TransactionService;
 import com.cryptowallet.models.tronModels.Result;
@@ -12,7 +13,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.jfunc.json.impl.JSONObject;
 
 @Component
 public class TronTransactionServiceImpl implements TransactionService {
@@ -53,7 +53,7 @@ public class TronTransactionServiceImpl implements TransactionService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        JSONObject jsonObject = new JSONObject(rawDataStr);
+        JSONObject jsonObject = JSONObject.parseObject(rawDataStr);
 
         return tronApi.broadcastTransaction(signedTransaction.getSignature(),signedTransaction.getTxID(), jsonObject, signedTransaction.getRawDataHex());
     }

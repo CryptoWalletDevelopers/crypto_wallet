@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface CurrencyService {
     void save (@NonNull Currency currency);
     Optional<Currency> findCurrencyByIndex(@NonNull int index);
-    Currency findCurrencyByTitle(@NonNull String title);
+    Optional<Currency> findCurrencyByTitle(@NonNull String title);
+    Optional<Currency> findCurrencyByShortTitle(@NonNull String shortTitle);
     List<Currency> findAll();
 }

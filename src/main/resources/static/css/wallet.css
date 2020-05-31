@@ -1,56 +1,84 @@
-* {
-  margin: 0;
-  padding: 0;
+.page {
+  width: 1200px;
+  height:600px;
+  margin: 0 auto;
 }
 
-.wrapper {
-  height: 100vh;
-  width: 100vw;
+.header {
+  height: 10%;
+  border-bottom: 1px solid;
 }
 
 .body {
-  padding: 2%;
-  height: 100%;
-  width: 100%;
+  margin: 15px auto;
+  height: 90%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-}
-
-.wallets {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: center;
 }
 
 .table {
-  width: 100%;
-  border-radius: 5px;
+  width: 1000px;
 }
 
-.operation {
-  margin: 2% auto;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.oper-btn {
-  margin: 0 2%;
-  width: 25%;
-}
-
-.add-new-wallet {
-  padding: 1%;
+.wallets {
+  padding: 10px;
   display: flex;
   justify-content: space-between;
 }
 
-.add-new-wallet-with {
+.generation-new-wallet {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.gen-new-wallet-with {
   width: 30%
 }
 
-.element {
-  margin: 3% 0;
-  width: 100%;
+.footer {
+  height:10%;
+  border-top: 1px solid;
+}
+
+.operation_button {
+  display: inline-block;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 50%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover, .close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
 }
