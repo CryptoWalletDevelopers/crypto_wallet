@@ -27,7 +27,7 @@
                             <h5 class="card-title">Описание</h5>
                             <p class="card-text">This is a wider card with supporting text below as a natural lead-in
                                 to additional content. This content is a little bit longer.</p>
-                            <form th:action="@{/walletPage}">
+                            <form th:action="@{/wallet}">
                                  <button type="submit" class="btn btn-outline-dark btn-block">Вход</button>
                             </form>
                         </div>
@@ -45,15 +45,13 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" th:href="@{/explorer}">TRX</a>
-                            <a class="dropdown-item" href="#">BTC</a>
-                            <a class="dropdown-item" href="#">ETC</a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row justify-content-md-center">
                 <div class="col-6">
-                    <form th:action="@{/walletPage}">
+                    <form th:action="@{/wallet}">
                          <button type="submit" class="btn btn-secondary btn-lg btn-block">Wallet Service</button>
                     </form>
                 </div>
