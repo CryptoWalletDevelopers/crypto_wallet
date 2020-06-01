@@ -21,56 +21,53 @@ public class WalletController {
     private TronTransactionServiceImpl tronTransactionService;
     private CurrencyServiceImpl currencyService;
     private TronAPI tronApi;
-    private UserWallet userWallet;
     private ArrayList<Currency> currencyList;
-    private final int INDEX = 195;
 
     @Autowired
-    public WalletController(UserServiceImpl userService, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronAPI tronApi, UserWallet userWallet) {
+    public WalletController(UserServiceImpl userService, TronTransactionServiceImpl tronTransactionService, CurrencyServiceImpl currencyService, TronAPI tronApi) {
         this.userService = userService;
         this.tronTransactionService = tronTransactionService;
         this.currencyService = currencyService;
         this.tronApi = tronApi;
-        this.userWallet = userWallet;
     }
 
     @GetMapping
     public String walletPage(Principal principal, Model model){
-        User user = userService.findByLogin(principal.getName()).get();
-        ArrayList<WalletItem> itemList = userService.getWalletItems(user);
-        model.addAttribute("itemList", itemList);
+        model.addAttribute("itemList", getTableContent(principal));
         return "wallet";
     }
 
     @PostMapping(value = "/new")
     public String getNewAddress(Principal principal, @RequestParam("title") String  title, Model model){
-        User user = userService.findByLogin(principal.getName()).get();
-        String address = userService.getNewStringTronAddress(user, currencyService.findCurrencyByShortTitle(title).get());
-        ArrayList<WalletItem> itemList = userService.getWalletItems(user);
-        model.addAttribute("itemList", itemList);
+        String address = userService.getNewStringTronAddress(userService.findByLogin(principal.getName()).get(), currencyService.findCurrencyByShortTitle(title).get());
+        model.addAttribute("itemList", getTableContent(principal));
         model.addAttribute("address", address);
         return "wallet";
     }
 
-    @PostMapping(value = "/update")
-    public String getInfo(@RequestParam(name = "address") String address, Model model){
-        model.addAttribute("balance", tronApi.getAccountInfoByAddress(address).getData()[0].getBalance());
+    @GetMapping(value = "/update")
+    public String updateInfo(Principal principal, Model model){
+        model.addAttribute("itemList", getTableContent(principal));
         return "wallet";
     }
 
     @PostMapping(value = "/transfer")
-    public String send(Principal principal, @RequestParam(name = "address_to") String address_to, @RequestParam(name = "address_from") String address_from, @RequestParam(name= "amount") int amount, Model model) throws InvalidProtocolBufferException {
-        User user = userService.findByLogin(principal.getName()).get();
-        ArrayList<WalletItem> itemList = userService.getWalletItems(user);
-        model.addAttribute("itemList", itemList);
-        tronTransactionService.TransferTransaction(address_to,address_from,amount);
+    public String send(Principal principal, @RequestParam(name = "addressTo") String addressTo, @RequestParam(name = "addressFrom") String addressFrom, @RequestParam(name= "amount") int amount, Model model) throws InvalidProtocolBufferException {
+        model.addAttribute("itemList", getTableContent(principal));
+        tronTransactionService.TransferTransaction(addressTo,addressFrom,amount);
         return "wallet";
     }
 
     @PostMapping(value = "/acquire")
-    public String confirmPurchase(@RequestParam(name = "address") String address, @RequestParam(name = "amount") int amount) throws InvalidProtocolBufferException {
+    public String confirmPurchase(Principal principal, @RequestParam(name = "address") String address, @RequestParam(name = "amount") int amount, Model model) throws InvalidProtocolBufferException {
         String address_from ="TKmdnkRurAxJyd1VeE8BLGmY5oaH2UBfLn";
         tronTransactionService.TransferTransaction(address,address_from,amount);
+        model.addAttribute("itemList", getTableContent(principal));
         return "wallet";
+    }
+
+    private ArrayList<WalletItem> getTableContent(Principal principal){
+        User user = userService.findByLogin(principal.getName()).get();
+        return userService.getWalletItems(user);
     }
 }

@@ -49,8 +49,11 @@
         <br>
         <br>
         <div align="center">
-            <button id="myBtnGet">get coins</button>
-            <button id="myBtnSend">send coins</button>
+            <button id="BtnGet">get coins</button>
+            <button id="BtnSend">send coins</button>
+            <form th:action="@{/wallet/update}">
+                <button type="submit">Update Info</button>
+            </form>
         </div>
         <br>
         <br>
@@ -67,7 +70,7 @@
         </div>
     </div>
 
-    <div id="myAcquire" class="modal">
+    <div id="Acquire" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -90,7 +93,7 @@
     </div>
 
     <!-- section 2 -->
-    <div id="myTransfer" class="modal">
+    <div id="Transfer" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -98,11 +101,11 @@
                 <table style="padding: 5px; text-align: center;" align="center">
                     <tr>
                         <td>address_to</td>
-                        <td><input type="text" th:name="address_to" placeholder="to" /></td>
+                        <td><input type="text" th:name="addressTo" placeholder="to" /></td>
                     </tr>
                     <tr>
                         <td>address_from</td>
-                        <td><input type="text" th:name="address_from" placeholder="from" /></td>
+                        <td><input type="text" th:name="addressFrom" placeholder="from" /></td>
                     </tr>
                     <tr>
                         <td>amount</td>
@@ -119,28 +122,13 @@
 </div>
 </div>
     <script>
-        var modal = document.getElementById('myAcquire');
-        var btn = document.getElementById("myTransfer");
+        var searchModel = document.getElementById('Acquire');
+        var btn = document.getElementById("BtnGet");
         var span = document.getElementsByClassName("close")[0];
         btn.onclick = function() {
-            modal.style.display = "block";
-        }
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        var searchModel = document.getElementById('myTransfer');
-        var btn1 = document.getElementById("myBtnSend");
-        var span1 = document.getElementsByClassName("close")[0];
-        btn1.onclick = function() {
             searchModel.style.display = "block";
         }
-        span1.onclick = function() {
+        span.onclick = function() {
             searchModel.style.display = "none";
         }
         window.onclick = function(event) {
@@ -148,7 +136,23 @@
                 searchModel.style.display = "none";
             }
         }
+
+        var searchModel1 = document.getElementById('Transfer');
+        var btn1 = document.getElementById("BtnSend");
+        var span1 = document.getElementsByClassName("close")[0];
+        btn1.onclick = function() {
+            searchModel1.style.display = "block";
+        }
+        span1.onclick = function() {
+            searchModel1.style.display = "none";
+        }
+        window.onclick = function(event) {
+            if (event.target == searchModel1) {
+                searchModel1.style.display = "none";
+            }
+        }
     </script>
+
 <footer th:replace="fragments/footer :: footer"></footer>
 </body>
 </html>
