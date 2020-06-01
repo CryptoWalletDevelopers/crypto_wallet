@@ -11,6 +11,8 @@ import com.cryptowallet.utils.PasswordGenerator;
 import com.cryptowallet.wallets.TronWallet;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,15 +21,17 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private AddressServiceImpl addressService;
+    private CurrencyServiceImpl currencyService;
     private TronWallet tronWallet;
     private TronAPI tronApi;
-    private final int tronIndex = 195;
+    private String tronShortTitle = "TRX";
     public static final int TOKEN_LENGTH = 50;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AddressServiceImpl addressService, TronWallet tronWallet, TronAPI tronApi) {
+    public UserServiceImpl(UserRepository userRepository, AddressServiceImpl addressService, CurrencyServiceImpl currencyService, TronWallet tronWallet, TronAPI tronApi) {
         this.userRepository = userRepository;
         this.addressService = addressService;
+        this.currencyService = currencyService;
         this.tronWallet = tronWallet;
         this.tronApi = tronApi;
     }
@@ -57,6 +61,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByLoginOrEmail(loginOrEmail.toLowerCase(), loginOrEmail.toLowerCase());
     }
 
+    public boolean isUserLoggedIn(){
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof UserDetails;
+    }
+
     @Override
     public void saveUser(User user) {
         user.setLogin(user.getLogin().toLowerCase().trim());
@@ -77,7 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findUserByEmail(@NonNull String email) {
+    public User findUserByEmail(@NonNull String email) {
         return userRepository.findUserByEmail(email);
     }
 
@@ -86,12 +94,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    public HashMap<String, Integer> getAddressAndCurrency(@NonNull User user){
-        HashMap<String, Integer> map = new HashMap<>();
+    public HashMap<String, String> getAddressAndCurrency(@NonNull User user){
+        HashMap<String, String> map = new HashMap<>();
         Collection<Address> addresses =  user.getAddresses();
         if(!addresses.isEmpty()){
             addresses.stream().forEach(address -> {
-                map.put(address.getAddress(), address.getCurrency().getIndex());
+                map.put(address.getAddress(), address.getCurrency().getShortTitle());
             });
         }
         return map;
@@ -100,14 +108,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public ArrayList<WalletItem> getWalletItems(@NonNull User user){
         ArrayList<WalletItem> walletItems= new ArrayList<>();
-        HashMap<String, Integer> pairs = getAddressAndCurrency(user);
+        HashMap<String, String> pairs = getAddressAndCurrency(user);
         if(!pairs.isEmpty()){
-            for (Map.Entry<String, Integer> entry : pairs.entrySet()) {
-                if (entry.getValue() == tronIndex) {
+            for (Map.Entry<String, String> entry : pairs.entrySet()) {
+                if (entry.getValue().equals(tronShortTitle)) {
                     if (tronApi.getAccountInfoByAddress(entry.getKey()).getData().length == 0) {
-                        walletItems.add(new WalletItem(entry.getKey(), entry.getValue(), 0L));
+                        walletItems.add(new WalletItem(entry.getKey(), entry.getValue(), 0.0));
                     } else {
-                        Long balance = tronApi.getAccountInfoByAddress(entry.getKey()).getData()[0].getBalance();
+                        Currency currency = currencyService.findCurrencyByShortTitle(entry.getValue()).get();
+                        Double balance = tronApi.getAccountInfoByAddress(entry.getKey()).getData()[0].getBalance()/Math.pow(10, currency.getPrecision());
                         walletItems.add(new WalletItem(entry.getKey(), entry.getValue(), balance));
                     }
                 }

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head th:replace="fragments/header :: header"></head>
+<head><meta charset="utf-8"></head>
 <body>
 <header>
-    <nav th:replace="fragments/navbar :: navbar"></nav>
 </header>
+<div th:insert="navigation"></div>
 <div class="container">
     <div class="row">
         <div class="col-9">
@@ -26,7 +27,9 @@
                             <h5 class="card-title">Описание</h5>
                             <p class="card-text">This is a wider card with supporting text below as a natural lead-in
                                 to additional content. This content is a little bit longer.</p>
-                            <button type="button" class="btn btn-outline-dark btn-block">Вход</button>
+                            <form th:action="@{/walletPage}">
+                                 <button type="submit" class="btn btn-outline-dark btn-block">Вход</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -38,24 +41,29 @@
                 <div class="col-6">
                     <div class="dropdown">
                         <button class="btn btn-secondary btn-lg dropdown-toggle btn-block" id="dropdownMenuButton" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Выбрать валюту
+                            Explorer
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="#">TRX</a>
+                            <a class="dropdown-item" th:href="@{/explorer}">TRX</a>
                             <a class="dropdown-item" href="#">BTC</a>
-                            <a class="dropdown-item" href="#">ETC..</a>
+                            <a class="dropdown-item" href="#">ETC</a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row justify-content-md-center">
                 <div class="col-6">
-                    <button type="button" class="btn btn-secondary btn-lg btn-block">Wallet Service</button>
+                    <form th:action="@{/walletPage}">
+                         <button type="submit" class="btn btn-secondary btn-lg btn-block">Wallet Service</button>
+                    </form>
                 </div>
             </div>
             <div class="row justify-content-md-center">
                 <div class="col-6">
-                    <a th:href="@{/exchange}" type="button" class="btn btn-secondary btn-lg btn-block">Курсы Валют</a>
+<!--                    <a th:href="@{/exchange}" type="button" class="btn btn-secondary btn-lg btn-block">Курсы Валют</a>-->
+                    <form th:action="@{/exchange}">
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">Wallet Service</button>
+                    </form>
                 </div>
             </div>
         </div>

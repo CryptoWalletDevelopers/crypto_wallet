@@ -29,8 +29,13 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public Currency findCurrencyByTitle(@NonNull String title) {
-        return currencyRepository.findCurrencyByTitle(title).get();
+    public Optional<Currency> findCurrencyByTitle(@NonNull String title) {
+        return currencyRepository.findCurrencyByTitle(title);
+    }
+
+    @Override
+    public Optional<Currency> findCurrencyByShortTitle(@NonNull String shortTitle) {
+        return currencyRepository.findCurrencyByShortTitle(shortTitle);
     }
 
     @Override
