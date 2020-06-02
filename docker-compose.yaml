@@ -1,0 +1,26 @@
+version: '3'
+services:
+
+  database:
+    container_name: crypto_wallet_database
+    image: postgres:11
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=​12345
+      - POSTGRES_DB=wallet
+    ports:
+      - "5432:5432"
+    links:
+      - wallet
+#    volumes:
+#      - ./dockerConfigs/:/var/lib/postgresql/data/
+
+  wallet:
+    container_name: crypto_wallet
+    image: openjdk:8-jdk-alpine
+    ports:
+      - "8189:8189"
+    restart: always
+    volumes:
+      - ./:/deploy
+    entrypoint: ["java","-jar","/deploy/target/wallet-0.0.1-SNAPSHOT.war"] #["/bin/sh", "-c", "`cd /deploy && ./mvnw -Dmaven.test.skip=true package && java -jar target/wallet-0.0.1-SNAPSHOT.war`"]

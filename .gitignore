@@ -32,3 +32,5 @@ build/
 
 flyway.conf
 /log/
+
+.war*
