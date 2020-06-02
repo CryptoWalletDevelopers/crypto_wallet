@@ -22,11 +22,18 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Log4j2
 @Component
 public class CryptoCoinExchangeClient {
+
+    private final String START_PARAMETER = "start";
+    private final String LIMIT_PARAMETER = "limit";
+    private final String CRYPTOCURRENCY_TYPE = "cryptocurrency_type";
+    private final String SORT_PARAMETER = "sort";
+    private int default_limit = 10;
 
     @Value("${coinMarketCap.api.key}")
     private String apiKey;
@@ -41,11 +48,14 @@ public class CryptoCoinExchangeClient {
     private ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
     private RestTemplate restTemplate = new RestTemplate(requestFactory);
 
-    public List<DataDTO> getCryptoCoins(){
+    public List<DataDTO> getCryptoCoins(Map<String,String> params){
         List<NameValuePair> parameters = new ArrayList<>();
-        parameters.add(new BasicNameValuePair("start","1"));
-        parameters.add(new BasicNameValuePair("limit","15"));
-        parameters.add(new BasicNameValuePair("cryptocurrency_type","coins"));
+        if(params.isEmpty()){
+            params.put(LIMIT_PARAMETER, String.valueOf(default_limit));
+        }
+        parameters.add(new BasicNameValuePair(START_PARAMETER,"1"));
+        parameters.add(new BasicNameValuePair(LIMIT_PARAMETER,params.get(LIMIT_PARAMETER)));
+        parameters.add(new BasicNameValuePair(CRYPTOCURRENCY_TYPE,"coins"));
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.ACCEPT, "application/json");
         headers.add(cmcApi, apiKey);
@@ -63,7 +73,7 @@ public class CryptoCoinExchangeClient {
                 return Objects.requireNonNull(response.getBody()).getDataDTO();
             } else {
                 log.error("Request Failed.");
-                return null;
+                throw new RuntimeException("Request Failed.");
             }
         }catch(URISyntaxException e){
             log.error(e);

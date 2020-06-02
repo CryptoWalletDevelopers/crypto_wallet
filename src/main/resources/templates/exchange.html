@@ -7,7 +7,23 @@
 </header>
 <div class="container">
     <h1>DEMO</h1>
-    <table class="table table-dark table-striped">
+    <div class="col-md-12">
+        <form class="form-horizontal" th:action="@{/exchange}" method="GET">
+            <div class="mr-2">
+                <select th:name="limit" class="custom-select my-1 mr-sm-2 ">
+                    <option th:if="${param.limit != null}" th:selectetd="${param.limit}" th:text="${param.limit}"
+                            th:value="${param.pq}"></option>
+                    <option th:text="10" th:value="10"></option>
+                    <option th:text="15" th:value="15"></option>
+                    <option th:text="20" th:value="20"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-outline-primary mr-2" id="submitFilter" th:text="'Применить'"></button>
+            <a class="btn btn-outline-primary" th:href="@{'/exchange'}" th:text="'Сбросить'"></a>
+        </form>
+    </div>
+    <br>
+    <table id="coins-list" class="table table-dark table-striped">
         <thead>
         <tr>
             <th th:text="'Название'"></th>
@@ -26,22 +42,46 @@
             <td th:text="${coin.getPrice()}"/>
             <td>
                 <span th:if="${coin.getPercentChang1h() > 0}"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
-                <span th:unless="${coin.getPercentChang1h() > 0}"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                <span th:unless="${coin.getPercentChang1h() > 0}"><i class="fa fa-caret-down"
+                                                                     aria-hidden="true"></i></span>
                 <span th:text="${coin.getPercentChang1h()}"/>
             </td>
             <td>
                 <span th:if="${coin.getPercentChang24h() > 0}"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
-                <span th:unless="${coin.getPercentChang24h() > 0}"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                <span th:unless="${coin.getPercentChang24h() > 0}"><i class="fa fa-caret-down"
+                                                                      aria-hidden="true"></i></span>
                 <span th:text="${coin.getPercentChang24h()}"/>
             </td>
             <td>
                 <span th:if="${coin.getPercentChang7d() > 0}"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
-                <span th:unless="${coin.getPercentChang7d() > 0}"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                <span th:unless="${coin.getPercentChang7d() > 0}"><i class="fa fa-caret-down"
+                                                                     aria-hidden="true"></i></span>
                 <span th:text="${coin.getPercentChang7d()}"/>
             </td>
         </tr>
         </tbody>
     </table>
+    <!--/*@thymesVar id="page" type="org.springframework.data.domain.Page<com.cryptowallet.entities.CryptoCoin>"*/-->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link"
+                   th:href="@{'catalog?p='+ ${page.previousOrFirstPageable().getPageNumber() + 1} + ${filtersDef}}" th:text="#{nav.prev}"></a>
+            </li>
+            <li class="page-item" th:if="${page.hasContent()}" th:classappend="${page.getNumber() + 1 == i ? 'active' : ''}"
+                th:each="i : ${#numbers.sequence(1, page.getTotalPages())}">
+                <a class="page-link" th:text="${i}" th:href="@{'catalog?p=' + ${i} + ${filtersDef}}"></a>
+            </li>
+            <li class="page-item" th:unless="${page.hasContent()}" th:classappend="${page.getNumber() + 1 == i ? 'active' : ''}"
+                th:each="i : ${#numbers.sequence(1, page.getTotalPages()+1)}">
+                <a class="page-link" th:text="${i}" th:href="@{'catalog?p=' + ${i} + ${filtersDef}}"></a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"
+                   th:href="@{'catalog?p='+ ${page.nextOrLastPageable().getPageNumber() + 1} + ${filtersDef}}" th:text="#{nav.next}"></a>
+            </li>
+        </ul>
+    </nav>
 </div>
 <footer th:replace="fragments/footer :: footer"></footer>
 </body>

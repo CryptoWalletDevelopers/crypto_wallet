@@ -1,7 +1,7 @@
 package com.cryptowallet.entities.dto.cryptoCoinDTO;
 
 import com.cryptowallet.entities.dto.BasicJson;
-import com.cryptowallet.entities.dto.monetaryUnit.USD;
+import com.cryptowallet.entities.dto.monetaryunit.USD;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

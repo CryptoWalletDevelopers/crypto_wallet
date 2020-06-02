@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,8 +22,8 @@ public class CryptoPriceServiceImpl implements CryptoPriceService {
     }
 
     @Override
-    public List<CryptoCoin> getData(){
-        return cryptoCoinExchangeClient.getCryptoCoins().stream()
+    public List<CryptoCoin> getData(Map<String, String> params){
+        return cryptoCoinExchangeClient.getCryptoCoins(params).stream()
                 .map(this::toCryptoCoin)
                 .collect(Collectors.toList());
     }

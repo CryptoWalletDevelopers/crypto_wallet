@@ -1,4 +1,4 @@
-package com.cryptowallet.entities.dto.monetaryUnit;
+package com.cryptowallet.entities.dto.monetaryunit;
 
 import com.cryptowallet.entities.dto.BasicJson;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
