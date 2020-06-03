@@ -56,7 +56,4 @@ public class UserServiceImplTest {
         int index = userService.getTronAddressIndex(user1);
         Assert.assertTrue(index==-1);
     }
-
-
-
 }

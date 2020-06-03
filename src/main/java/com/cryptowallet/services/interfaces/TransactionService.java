@@ -1,6 +1,6 @@
 package com.cryptowallet.services.interfaces;
 
-import com.cryptowallet.tronModels.Result;
+import com.cryptowallet.models.tronModels.Result;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;

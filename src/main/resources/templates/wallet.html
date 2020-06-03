@@ -1,10 +1,158 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"></head>
 <head>
     <meta charset="UTF-8">
+
+    <link th:href="@{/bootstrap/css/bootstrap.css}"
+          rel="stylesheet" media="screen"/>
+    <link th:href="@{/css/wallet.css}"
+          href="../static/css/wallet.css"
+          rel="stylesheet"/>
+
+    <script th:src="@{/jquery/jquery.min.js}"></script>
+    <script th:src="@{/popper/popper.min.js}"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+
     <title>Wallet</title>
 </head>
 <body>
+<div th:insert="navigation"></div>
 
+<div class="container">
+<div class="page">
+    <div class="header">
+        <h1>Wallet</h1>
+    </div>
+    <div class="body">
+        <div class="wallets">
+            <div class="user-wallets">
+                <table class="table table-striped table-dark">
+                    <thead>
+                    <tr>
+                        <th scope="col">Currency</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Balance</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${itemList}">
+                        <td th:text="${item.getCurrency()}"/>
+                        <td th:text="${item.getAddress()}"/>
+                        <td th:text="${item.getBalance()}"/>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div align="center">
+            <button id="BtnGet">get coins</button>
+            <button id="BtnSend">send coins</button>
+            <form th:action="@{/wallet/update}">
+                <button type="submit">Update Info</button>
+            </form>
+        </div>
+        <br>
+        <br>
+        <div>
+            <form th:action="@{/wallet/new}" method="post" class="generation-new-wallet">
+                <select class="custom-select add-new-wallet-with" th:name="title">
+                    <option th:text="'Currency...'" th:value="null"/>
+                    <option th:text="TRX" th:value="TRX"/>
+                </select>
+                <button type="submit" class="btn btn-secondary gen-new-wallet-with">Get new address</button>
+                <input type="text" id="disabledTextInput" class="form-control gen-new-wallet-with"
+                       th:value="${address}" placeholder="New address..." disabled>
+            </form>
+        </div>
+    </div>
+
+    <div id="Acquire" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form th:action="@{/wallet/acquire}" method="post">
+                <table style="padding: 5px; text-align: center;" align="center">
+                    <tr>
+                        <td>address</td>
+                        <td><input type="text" th:name="address" placeholder="address" /></td>
+                    </tr>
+                    <tr>
+                        <td>amount</td>
+                        <td><input type="text" th:name="amount" placeholder="amount" /></td>
+                    </tr>
+                </table>
+                <center>
+                    <input type="submit" value="confirm" />
+                </center>
+            </form>
+        </div>
+    </div>
+
+    <!-- section 2 -->
+    <div id="Transfer" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form th:action="@{/wallet/transfer}" method="post">
+                <table style="padding: 5px; text-align: center;" align="center">
+                    <tr>
+                        <td>address_to</td>
+                        <td><input type="text" th:name="addressTo" placeholder="to" /></td>
+                    </tr>
+                    <tr>
+                        <td>address_from</td>
+                        <td><input type="text" th:name="addressFrom" placeholder="from" /></td>
+                    </tr>
+                    <tr>
+                        <td>amount</td>
+                        <td><input type="text" th:name="amount" placeholder="amount" /></td>
+                    </tr>
+                </table>
+                <center>
+                    <input type="submit" value="confirm" />
+                </center>
+            </form>
+
+        </div>
+    </div>
+</div>
+</div>
+    <script>
+        var searchModel = document.getElementById('Acquire');
+        var btn = document.getElementById("BtnGet");
+        var span = document.getElementsByClassName("close")[0];
+        btn.onclick = function() {
+            searchModel.style.display = "block";
+        }
+        span.onclick = function() {
+            searchModel.style.display = "none";
+        }
+        window.onclick = function(event) {
+            if (event.target == searchModel) {
+                searchModel.style.display = "none";
+            }
+        }
+
+        var searchModel1 = document.getElementById('Transfer');
+        var btn1 = document.getElementById("BtnSend");
+        var span1 = document.getElementsByClassName("close")[0];
+        btn1.onclick = function() {
+            searchModel1.style.display = "block";
+        }
+        span1.onclick = function() {
+            searchModel1.style.display = "none";
+        }
+        window.onclick = function(event) {
+            if (event.target == searchModel1) {
+                searchModel1.style.display = "none";
+            }
+        }
+    </script>
+
+<footer th:replace="fragments/footer :: footer"></footer>
 </body>
 </html>

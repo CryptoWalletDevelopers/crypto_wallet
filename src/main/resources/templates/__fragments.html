@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="css/fragments.css">
+    <title>Document</title>
+</head>
+<body>
+
+<!--     NAVIGATION FRAGMENT      -->
+<div style="margin: 0; width: 100%; background-color: rgba(0,0,0,0);" th:fragment="navigation(activeTab)">
+    <nav>
+        <ul style="display: flex; flex-wrap: wrap; flex-direction: row; list-style-type: none; vertical-align: center; margin: 0; padding: 0; align-items: center;">
+            <li style="padding: 20px; font-size: 18px; background-color: rgba(30,27,210,0.12);"><a th:href="@{'/'}"> home </a></li>
+            <li style="padding: 20px; font-size: 18px; background-color: rgba(30,27,210,0.12);"><a th:href="@{'/login'}"> Login page </a></li>
+
+            <li style="padding: 20px; font-size: 18px; background-color: rgba(30,27,210,0.12);">
+                <form sec:authorize="isAnonymous()" th:action="@{/authenticate}" method="POST">
+                    <div>
+                        <input type="text" name="username" placeholder="login" />
+                        <input type="password" name="password" placeholder="Password" />
+                        <button type="submit">Log In</button>
+                    </div>
+                </form>
+            </li>
+            <li sec:authorize="isAnonymous()" style="padding: 20px; font-size: 18px; background-color: rgba(30,27,210,0.12);"><a th:href="@{'/sign_up'}"> Sign UP </a></li>
+            <li sec:authorize="isAuthenticated()" class="nav-item" th:classappend="${activeTab == 'Profile' ? 'active' : ''}">
+                <a class="nav-link" th:href="@{/userProfile}" th:text="Profile"></a>
+            </li>
+            <li sec:authorize="isAuthenticated()" style="padding: 20px; font-size: 18px; background-color: rgba(30,27,210,0.12);">
+                <form th:action="@{'/logout'}" method="post">
+                    <button type="submit">Log Out</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+</body>
+</html>

@@ -147,7 +147,7 @@ public class TronWallet extends Wallet implements Generatable {
     }
 
 
-    public com.cryptowallet.tronModels.Transaction signTransaction2Byte(com.cryptowallet.tronModels.Transaction transaction, byte[] privateKey) throws Exception {
+    public com.cryptowallet.models.tronModels.Transaction signTransaction2Byte(com.cryptowallet.models.tronModels.Transaction transaction, byte[] privateKey) throws Exception {
         ECKey ecKey = ECKey.fromPrivate(privateKey);
         byte[] hash = hexStr2byteArray(transaction.getTxID(), 32);
         byte[] sign = hexStr2byteArray(ecKey.sign(hash).toHex(), 65);

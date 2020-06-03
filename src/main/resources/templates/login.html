@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <title>Authorisation</title>
+    <link rel="stylesheet" href="css/fragments.css" />
+</head>
+<body>
+<div th:replace="~{__fragments :: navigation('login')}"></div>
+<h1>Login!</h1>
+
+<form th:action="@{/authenticate}" method="POST">
+    <div th:if="${param.error} != null">
+        <div>
+            Invalid username or password
+        </div>
+    </div>
+    <div th:if="${param.logout} != null">
+        <div>
+            You have been logged out
+        </div>
+    </div>
+    <input type="text" name="username" placeholder="login or email" />
+    <input type="password" name="password" placeholder="Password" />
+    <button type="submit">Login</button>
+</form>
+<a th:href="@{/restorePassword}">Restore password</a>
+
+</body>
+</html>

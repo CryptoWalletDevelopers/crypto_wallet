@@ -98,21 +98,20 @@ public class TronWalletTests {
     public void getMaxTronAddressIndexTest(){
         String address1 = tronWallet.getNewAddress(user1);
         int index1 = tronWallet.getMaxAddressIndex(user1)+1;
-        System.out.println(index1);
-        Address address_1 = new Address(user1, currency,index1, address1);
+        Address address_1 = new Address(user1, currency, index1, address1);
         addressService.save(address_1);
         user1.getAddresses().add(address_1);
         String address2 = tronWallet.getNewAddress(user1);
         int index2 = tronWallet.getMaxAddressIndex(user1)+1;
-        Address address_2 = new Address(user1, currency,index2, address2);
+        Address address_2 = new Address(user1, currency, index2, address2);
         addressService.save(address_2);
         user1.getAddresses().add(address_2);
         String address3 = tronWallet.getNewAddress(user1);
         int index3 = tronWallet.getMaxAddressIndex(user1)+1;
-        Address address_3 = new Address(user1, currency,index3, address3);
+        Address address_3 = new Address(user1, currency, index3, address3);
         addressService.save(address_3);
         user1.getAddresses().add(address_3);
-        int max_index =  tronWallet.getMaxAddressIndex(user1);
+        int max_index = tronWallet.getMaxAddressIndex(user1);
         Assert.assertTrue(max_index==2);
     }
 }
