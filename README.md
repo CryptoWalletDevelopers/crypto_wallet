@@ -5,17 +5,17 @@ Crypto_wallet is a prototype of a secure and simple crypto service. This service
 
 ## Installation
 Application runs on `http://127.0.0.1:8189`<br>
-Make sure the `docker-compose` util is installed.
-to start service run:
+Make sure the `docker-compose` util is installed.<br>
+To start service run:
 ```
 make up
 ```
 
-to stop service run:
+To stop service run:
 ```
 make down
 ```
-to rebuild service run:
+To rebuild service run:
 ```
 make update
 ```
