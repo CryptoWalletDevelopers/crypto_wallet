@@ -26,6 +26,7 @@
 		<webjars-jquery.version>3.4.0</webjars-jquery.version>
 		<webjars-popper.version>1.13.0</webjars-popper.version>
 		<webjars-font-awesome.version>5.5.0</webjars-font-awesome.version>
+		<paypal.api.version>1.14.0</paypal.api.version>
 	</properties>
 
 	<repositories>
@@ -46,6 +47,13 @@
 	</repositories>
 
 	<dependencies>
+		<!-- PayPal -->
+		<dependency>
+			<groupId>com.paypal.sdk</groupId>
+			<artifactId>rest-api-sdk</artifactId>
+			<version>${paypal.api.version}</version>
+		</dependency>
+
 		<!--Thymeleaf-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -137,6 +145,7 @@
 			<version>${webjars-font-awesome.version}</version>
 		</dependency>
 		<!-- end of webjars -->
+
 		<!--Flyway-->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -153,6 +162,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
 		<!--Security-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -203,7 +213,7 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<!--        Crypto libraries-->
+		<!--Crypto libraries-->
 		<dependency>
 			<groupId>io.github.novacrypto</groupId>
 			<artifactId>BIP44</artifactId>
