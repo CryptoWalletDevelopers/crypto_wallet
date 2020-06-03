@@ -8,6 +8,7 @@ import com.cryptowallet.services.implementations.AddressServiceImpl;
 import com.cryptowallet.services.implementations.CurrencyServiceImpl;
 import com.cryptowallet.services.implementations.UserServiceImpl;
 import com.cryptowallet.wallets.TronWallet;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +34,6 @@ public class TronWalletTests {
 
     private User user1;
     private Currency currency;
-    private Address address_1;
 
 
     @Before
